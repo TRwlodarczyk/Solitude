@@ -231,3 +231,7 @@ ggplot(dt_plants15, aes(PC1, PC2, col=Scientific_Name, fill=Scientific_Name))+
   geom_point(shape=21, col="black")
 
 biplot(myPr15, scale=0)
+
+
+#Correlations between variables and principal components 
+cor(dt_plants_nounce15[,12:23], dt_plants15[,24:25])
