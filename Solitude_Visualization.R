@@ -235,3 +235,4 @@ biplot(myPr15, scale=0)
 
 #Correlations between variables and principal components 
 cor(dt_plants_nounce15[,12:23], dt_plants15[,24:25])
+
