@@ -45,7 +45,13 @@ typeof(tr$Cu_concentration) # confirm the value is no longer a character
 dt_plants <- subset(tr, Scientific_Name != 'QA_Sample')
 
 
-
+###
+P1 <- subset(dt_plants, Plot=='P1')
+P2 <- subset(dt_plants, Plot=='P2')
+P5 <- subset(dt_plants, Plot=='P5')
+P6 <- subset(dt_plants, Plot=='P6')
+P125 <- subset(dt_plants, Plot!='P6')
+P125
 
 
 Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, group=Scientific_Name)) +
@@ -70,7 +76,7 @@ Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, group=
 #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 Cu_All
 
-########All with color of the points for plots
+########All with color of the points for plots####
 
 Cu_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
   geom_boxplot()+
@@ -143,13 +149,51 @@ Cu_6<- ggplot(P6, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = media
 Cu_6
 
 
-###
-P1 <- subset(dt_plants, Plot=='P1')
-P2 <- subset(dt_plants, Plot=='P2')
-P5 <- subset(dt_plants, Plot=='P5')
-P6 <- subset(dt_plants, Plot=='P6')
-P125 <- subset(dt_plants, Plot!='P6')
-P125
+
+
+
+
+
+Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot), size=1) +
+  ylim(0,600)+
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Cu_AllPlots
+
+
+
+Fe_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Fe_concentration, FUN = median), y = Fe_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot), size=1) +
+  #ylim(0,600)+
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Fe_AllPlots
+
+#Chromium is too low to be considered
+Re_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot), size=1) +
+  #ylim(0,600)+
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Re_AllPlots
+
+
+
+
+
 
 Cu_All_P1<- ggplot(P1, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
@@ -197,6 +241,41 @@ All_byplot<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, fi
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 All_byplot
+
+
+
+
+# Selenium
+
+Se <- subset(dt_plants, Scientific_Name == 'Isocoma cf. tenuisecta' | Scientific_Name == 'Populus fremontii' | Scientific_Name == 'Senegalia (Acacia) greggii' )
+
+Se_box <- ggplot(Se, aes(x = reorder(Scientific_Name, Se_concentration, FUN=median), y = Se_concentration, fill=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 45))+
+  geom_jitter(color="red", size=3, alpha=0.9) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08"))
+Se_box
+
+
+
+#Rhenium
+
+
+Re <- subset(dt_plants, Scientific_Name == 'Isocoma cf. tenuisecta' | Scientific_Name == 'Baccharis sarothroides' | Scientific_Name == 'Senegalia (Acacia) greggii'| Scientific_Name == 'Nultuma (Prosopis) velutina' | Scientific_Name == 'Mimosa biuncifera (=aculeaticarpa)' | Scientific_Name == 'Fraxinus velutina'| Scientific_Name == 'Datura wrightii' )
+
+Re_box <- ggplot(Re, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, fill=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 45))+
+  geom_jitter(color="red", size=3, alpha=0.9) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E", "#CC503E", "#CC503E","#CC503E" ))
+Re_box
+
+
+
 
 
 # CLusters K-mean
@@ -308,6 +387,12 @@ shapiro.test(P6$Zn_concentration) # < 0.05 = non normally distributed
 plot(density(P6$Mn_concentration))
 shapiro.test(P6$Mn_concentration) # < 0.05 = non normally distributed
 
+
+
+
+
+
+
 # I need to drop unvertainity columns first
 
 dt_plants_nounc = select(dt_plants, -Cl_uncertainty,-Ca_uncertainty, -Ti_uncertainty,
@@ -328,18 +413,32 @@ dt_plants_nounce15 <- subset(dt_plants_nounc, Plot=="P1" | Plot=="P5")
 dt_plants_nounce125 <- subset(dt_plants_nounc, Plot=="P1" | Plot=="P5" | Plot=="P2")
 
 # Changing from Cu_concentration to Cu etc.
-#colnames(dt_plants_nounce125)[12] <- "Cl"
-#colnames(dt_plants_nounce125)[13] <- "Ca"
-#colnames(dt_plants_nounce125)[14] <- "Ti"
-#colnames(dt_plants_nounce125)[15] <- "Cr"
-#colnames(dt_plants_nounce125)[16] <- "Mn"
-#colnames(dt_plants_nounce125)[17] <- "Fe"
-#colnames(dt_plants_nounce125)[18] <- "Cu"
-#colnames(dt_plants_nounce125)[19] <- "Zn"
-#colnames(dt_plants_nounce125)[20] <- "As"
-#colnames(dt_plants_nounce125)[21] <- "Se"
-#colnames(dt_plants_nounce125)[22] <- "Cd"
-#colnames(dt_plants_nounce125)[23] <- "Re"
+colnames(dt_plants_nounce125)[12] <- "Cl"
+colnames(dt_plants_nounce125)[13] <- "Ca"
+colnames(dt_plants_nounce125)[14] <- "Ti"
+colnames(dt_plants_nounce125)[15] <- "Cr"
+colnames(dt_plants_nounce125)[16] <- "Mn"
+colnames(dt_plants_nounce125)[17] <- "Fe"
+colnames(dt_plants_nounce125)[18] <- "Cu"
+colnames(dt_plants_nounce125)[19] <- "Zn"
+colnames(dt_plants_nounce125)[20] <- "As"
+colnames(dt_plants_nounce125)[21] <- "Se"
+colnames(dt_plants_nounce125)[22] <- "Cd"
+colnames(dt_plants_nounce125)[23] <- "Re"
+
+colnames(dt_plants_nounc6)[12] <- "Cl"
+colnames(dt_plants_nounc6)[13] <- "Ca"
+colnames(dt_plants_nounc6)[14] <- "Ti"
+colnames(dt_plants_nounc6)[15] <- "Cr"
+colnames(dt_plants_nounc6)[16] <- "Mn"
+colnames(dt_plants_nounc6)[17] <- "Fe"
+colnames(dt_plants_nounc6)[18] <- "Cu"
+colnames(dt_plants_nounc6)[19] <- "Zn"
+colnames(dt_plants_nounc6)[20] <- "As"
+colnames(dt_plants_nounc6)[21] <- "Se"
+colnames(dt_plants_nounc6)[22] <- "Cd"
+colnames(dt_plants_nounc6)[23] <- "Re"
+
 
 #PCA
 require(stats)
@@ -348,7 +447,7 @@ myPr2 <- prcomp(dt_plants_nounc2[,12:23], scale=TRUE)
 myPr5 <- prcomp(dt_plants_nounc5[,12:23], scale=TRUE)
 myPr6 <- prcomp(dt_plants_nounc6[,12:23], scale=TRUE)
 myPr15 <- prcomp(dt_plants_nounce15[,12:23], scale=TRUE)
-myPr125 <- prcomp(dt_plants_nounce125[,12:23], scale=FALSE)
+myPr125 <- prcomp(dt_plants_nounce125[,12:23], scale=TRUE) # it was not working because the scale was FALSE
 
 
 #myPr2 <- prcomp(~Cu_concentration + Zn_concentration, Mn_concentration, data = dt_plants)
@@ -359,11 +458,11 @@ summary(myPr1) # SD - variability across single principle component,
               #We can represent cumultative proportion by l plot
 plot(myPr125, type="l") #shows variances across principle components (square of a standard deviation)
 
-#To interpret PC we use function biplot
+#To interpret PC we use function biplot. Because PC1 and PC2 account for the most variation in the data, we only draw those. 
 
 biplot(myPr1, scale=0)
 biplot(myPr125, scale=0)
-
+summary(myPr125)#PC1 and PC2 accounts for 47% percent of the data so it might not create a very accurate representation of the data!
 
 biplot125 <- biplot(myPr125,
              col=c('blue', 'red'),
