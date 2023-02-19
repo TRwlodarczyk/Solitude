@@ -50,29 +50,103 @@ dt_plants <- subset(tr, Scientific_Name != 'QA_Sample')
 
 Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, group=Scientific_Name)) +
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  theme(legend.position = "none")+
+  #theme(legend.position = "none")+
   scale_x_discrete(guide = guide_axis(angle = 45))+
-  geom_jitter(color="red", size=0.6, alpha=0.9) +
+  geom_jitter(aes(colour = Plot)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
   #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 Cu_All
 
-#All with size of the points for plots
 
-Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
+#plot 1 2 5
+
+
+Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, group=Scientific_Name)) +
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  theme(legend.position = "none")+
+  #theme(legend.position = "none")+
   scale_x_discrete(guide = guide_axis(angle = 45))+
+  geom_jitter(aes(colour = Plot)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 Cu_All
 
+########All with color of the points for plots
+
+Cu_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot)) +
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Cu_125
+
+Zn_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Zn_concentration, FUN = median), y = Zn_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot)) +
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Zn_125
+
+Se_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Se_concentration, FUN = median), y = Se_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot)) +
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Se_125
 
 
+Re_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot)) +
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Re_125
+
+
+
+
+Cr_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cr_concentration, FUN = median), y = Cr_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot)) +
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Cr_125
+
+# Plot 6
+
+
+Cu_6<- ggplot(P6, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  #theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  geom_jitter(aes(colour = Plot)) +
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+Cu_6
+
+
+###
 P1 <- subset(dt_plants, Plot=='P1')
 P2 <- subset(dt_plants, Plot=='P2')
 P5 <- subset(dt_plants, Plot=='P5')
 P6 <- subset(dt_plants, Plot=='P6')
+P125 <- subset(dt_plants, Plot!='P6')
+P125
 
 Cu_All_P1<- ggplot(P1, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
@@ -111,8 +185,100 @@ Cu_All_P6
 Cu_Arranged <- ggarrange(Cu_All_P1, Cu_All_P2, Cu_All_P5, Cu_All_P6, nrow=2, ncol=2, common.legend = TRUE)
 Cu_Arranged
 
+
 #
- 
+All_byplot<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, fill=Plot)) +
+  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  theme(legend.position = "none")+
+  scale_x_discrete(guide = guide_axis(angle = 45))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+All_byplot
+
+
+# CLusters K-mean
+
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+
+df_1[,1:11] <- sapply(df_1[,1:11],as.numeric) 
+df[,1:11] <- sapply(df[,1:11],as.numeric) 
+
+df_1 <- read.table("ByPlot.txt", header=T)
+df <- read.table("ByPlot.txt", header=T)
+
+df <- df %>% mutate_all(~(scale(.) %>% as.vector))
+df
+df <- na.omit(df)
+k2 <- kmeans(df, centers = 2, nstart = 25)
+str(k2)
+k2 <- kmeans(df, centers = 3, nstart = 25)
+str(k2)
+k2 <- kmeans(df, centers = 4, nstart = 25)
+str(k2)
+fviz_cluster(k2, data = df)
+
+df2 <- read.table("CLUSTER_noCd.txt", header=T)
+df2 <- df2 %>% mutate_all(~(scale(.) %>% as.vector))
+df2
+k2k <- kmeans(df2, centers = 3, nstart = 25)
+str(k2)
+fviz_cluster(k2k, data = df2)
+
+## MIN MAX MEAN
+
+library(dplyr)
+library(tidyr)
+
+PlAll <- read.table("ByPlot.txt", header=T)
+PlP1 <- read.table("ByPlot_1.txt", header=T)
+PlP2 <- read.table("ByPlot_2.txt", header=T)
+PlP5 <- read.table("ByPlot_5.txt", header=T)
+PlP6 <- read.table("ByPlot_6.txt", header=T)
+SoilAll <- read.table("SoilAll.txt", header=T)
+
+PlP1  %>%
+  pivot_longer(everything()) %>%
+  group_by(name) %>%
+  summarise_at(vars(value), list(Min = min, Mean = mean, Max = max, Sd = sd))
+
+
+#summarise(PlP1)
+
+PlAll  %>%
+  pivot_longer(everything()) %>%
+  group_by(name) %>%
+  summarise_at(vars(value), list(Min = min, Mean = mean, Max = max, Sd = sd))
+
+#Soil
+SoilAll  %>%
+  pivot_longer(everything()) %>%
+  group_by(name) %>%
+  summarise_at(vars(value), list(Min = min, Mean = mean, Max = max, Sd = sd))
+
+
+# Nice table
+
+library(sjPlot)
+
+
+test1 <- read.table("test1.txt", sep = "\t")
+
+tab_df(test1, file="test1.doc")
+
+
+
+
+
+
+
+
+
+
+
+
+
 plot(density(dt_plants$Cu_concentration))
 plot(density(dt_plants$Zn_concentration))
 plot(density(dt_plants$Mn_concentration))
