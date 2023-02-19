@@ -73,7 +73,9 @@ Cu_All
 ########All with color of the points for plots
 
 Cu_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
+  geom_boxplot()+
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
   #theme(legend.position = "none")+
   scale_x_discrete(guide = guide_axis(angle = 0))+
   geom_jitter(aes(colour = Plot)) +
@@ -81,6 +83,7 @@ Cu_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = m
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 Cu_125
+
 
 Zn_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Zn_concentration, FUN = median), y = Zn_concentration, group=Scientific_Name)) +
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
@@ -270,13 +273,7 @@ tab_df(test1, file="test1.doc")
 
 
 
-
-
-
-
-
-
-
+subset
 
 
 plot(density(dt_plants$Cu_concentration))
@@ -328,14 +325,30 @@ dt_plants_nounc2 <- subset(dt_plants_nounc, Plot=="P2")
 dt_plants_nounc5 <- subset(dt_plants_nounc, Plot=="P5")
 dt_plants_nounc6 <- subset(dt_plants_nounc, Plot=="P6")
 dt_plants_nounce15 <- subset(dt_plants_nounc, Plot=="P1" | Plot=="P5")
+dt_plants_nounce125 <- subset(dt_plants_nounc, Plot=="P1" | Plot=="P5" | Plot=="P2")
+
+# Changing from Cu_concentration to Cu etc.
+#colnames(dt_plants_nounce125)[12] <- "Cl"
+#colnames(dt_plants_nounce125)[13] <- "Ca"
+#colnames(dt_plants_nounce125)[14] <- "Ti"
+#colnames(dt_plants_nounce125)[15] <- "Cr"
+#colnames(dt_plants_nounce125)[16] <- "Mn"
+#colnames(dt_plants_nounce125)[17] <- "Fe"
+#colnames(dt_plants_nounce125)[18] <- "Cu"
+#colnames(dt_plants_nounce125)[19] <- "Zn"
+#colnames(dt_plants_nounce125)[20] <- "As"
+#colnames(dt_plants_nounce125)[21] <- "Se"
+#colnames(dt_plants_nounce125)[22] <- "Cd"
+#colnames(dt_plants_nounce125)[23] <- "Re"
 
 #PCA
-
+require(stats)
 myPr1 <- prcomp(dt_plants_nounc1[,12:23], scale=TRUE)
 myPr2 <- prcomp(dt_plants_nounc2[,12:23], scale=TRUE)
 myPr5 <- prcomp(dt_plants_nounc5[,12:23], scale=TRUE)
 myPr6 <- prcomp(dt_plants_nounc6[,12:23], scale=TRUE)
 myPr15 <- prcomp(dt_plants_nounce15[,12:23], scale=TRUE)
+myPr125 <- prcomp(dt_plants_nounce125[,12:23], scale=FALSE)
 
 
 #myPr2 <- prcomp(~Cu_concentration + Zn_concentration, Mn_concentration, data = dt_plants)
@@ -344,11 +357,28 @@ summary(myPr1) # SD - variability across single principle component,
               #Proportion of variance - e.g., 23 % of data is explained by principle component 1, 18% of data is explained by principle component 2 etc.
               #Cumulative Proportion - PC1 explains 23 % of the variability of data, PC1 + PC2 explains 41%, PC1+PC2+PC3 explains 52% etc
               #We can represent cumultative proportion by l plot
-plot(myPr1, type="l") #shows variances across principle components (square of a standard deviation)
+plot(myPr125, type="l") #shows variances across principle components (square of a standard deviation)
 
 #To interpret PC we use function biplot
 
 biplot(myPr1, scale=0)
+biplot(myPr125, scale=0)
+
+
+biplot125 <- biplot(myPr125,
+             col=c('blue', 'red'),
+             cex=c(0.8, 0.8),
+             xlim=c(-.4, .4),
+             main='PCA Results',
+             expand=1.2)
+
+biplot6 <-  biplot(myPr6,
+            col=c('blue', 'red'),
+            cex=c(0.8, 0.8),
+            xlim=c(-.4, .4),
+            main='PCA Results',
+            expand=1.2)
+
 
 #Extract PC scores 
 str(myPr1)
@@ -389,6 +419,7 @@ dt_plants_all <- cbind(dt_plants_nounc, myPr_all$x[,1:2])
 
 ggplot(dt_plants_all, aes(PC1, PC2, col=Plot, fill=Plot))+
   stat_ellipse(geom="polygon", col="black", alpha=0.5)+
+  theme_classic()+
   geom_point(shape=21, col="black")
 
 # Plot by species for plot 1 and 5
