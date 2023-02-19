@@ -13,7 +13,7 @@ pacman::p_load(igraph,
 
 # Load and examine data
 data <- getURL("https://raw.githubusercontent.com/Gchism94/AntColonyPerformance/main/analysis/data/raw_data/Colony18CircleAggnNRMatrix.csv")
-data <- read.csv(text = data, row.names = 1, header = TRUE)
+data <- read.csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/GitHub/Colony18CircleAggnNRMatrix.csv", row.names = 1, header = TRUE)
 
 # First 6 rows
 head(data)
@@ -92,4 +92,4 @@ p <- ggraph(network, layout = "stress") +
   scale_fill_gradientn("Degree", colours = pal) +
   theme_graph(base_size = 14) + 
   theme(legend.position = "bottom")
-
+p
