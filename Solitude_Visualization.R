@@ -253,9 +253,9 @@ Se_box <- ggplot(Se, aes(x = reorder(Scientific_Name, Se_concentration, FUN=medi
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
   theme(legend.position = "none")+
   scale_x_discrete(guide = guide_axis(angle = 45))+
-  geom_jitter(color="red", size=3, alpha=0.9) +
+  geom_jitter(color="#85b8bc", size=3, alpha=0.9) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08"))
+  scale_fill_manual(values = c("#251433", "#c7abdd", "#8347b2"))
 Se_box
 
 
@@ -269,9 +269,12 @@ Re_box <- ggplot(Re, aes(x = reorder(Scientific_Name, Re_concentration, FUN = me
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
   theme(legend.position = "none")+
   scale_x_discrete(guide = guide_axis(angle = 45))+
-  geom_jitter(color="red", size=3, alpha=0.9) +
+  geom_jitter(color="#85b8bc", size=2, alpha=0.9) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E", "#CC503E", "#CC503E","#CC503E" ))
+  #scale_fill_manual(values = c("", "", "", "", "", "","" ))
+  scale_fill_manual(values = c("#4b2866", "#c7abdd", "#a578c9", "#381e4c", "#8347b2", "#5d327f","#251433" ))
+  #scale_fill_brewer(palette = "Greens")
+
 Re_box
 
 
