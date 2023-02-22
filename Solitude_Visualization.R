@@ -11,11 +11,7 @@ library(reshape)
 library("readxl")
 library(ggpubr)
 library(agricolae)
-library(ggplot2)
-library(dplyr)
-library(data.table)
-library(reshape2)
-library(reshape)
+
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
 dt <-read.delim("Solitude_2.15.23.txt")
@@ -530,6 +526,20 @@ ggplot(dt_plants15, aes(PC1, PC2, col=Scientific_Name, fill=Scientific_Name))+
   geom_point(shape=21, col="black")
 
 biplot(myPr15, scale=0)
+
+
+#CHAOS!
+
+ggplot(dt_plants15, aes(PC1, PC2, col=Scientific_Name, fill=Scientific_Name))+
+  stat_ellipse(geom="polygon", col="black", alpha=0.5)+
+  theme_classic()+
+  geom_abline(intercept=2,color="red", 
+              linetype="dashed", size=1 )+
+  geom_abline(intercept=4,color="blue", 
+              linetype="dashed", size=1 )+
+  geom_boxplot()+
+  geom_point(shape=21, col="black")
+
 
 
 #Correlations between variables and principal components 
