@@ -545,3 +545,29 @@ ggplot(dt_plants15, aes(PC1, PC2, col=Scientific_Name, fill=Scientific_Name))+
 #Correlations between variables and principal components 
 cor(dt_plants_nounce15[,12:23], dt_plants15[,24:25])
 
+
+
+#PLS
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ropls)
+
+dt_plants_nounc
+
+
+dt_plants_nounc_3 <- dt_plants_nounc |> select(-Scientific_Name, -Group, -Plot, -Sample_Name, -Tube_No, -Type_of_Sample, -Cup_No, -pXRF_measurement_ID, -File, -Material)
+
+typeof(dt_plants_nounc_3$Total_Weight)
+dt_plants_nounc_3[,1] <- sapply(dt_plants_nounc_3[,1],as.numeric)
+
+dt_nounc_PCA <- opls(x=dt_plants_nounc_3)
+plot(baked_pca)
+
+
+plot(dt_nounc_PCA, typeVc ="x-score", parAsColFcVn=dt_plants_nounc$Plot)
+dt_opls <-opls(dt_plants_nounc_3, dt_plants_nounc$Plot)
+
+
+
