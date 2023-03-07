@@ -53,10 +53,10 @@ biplot(penguin_pca)
 #USING ropls package, to install you can't find it under INstal Tool you need to use bioconductor
 #install bioc manager first > install.packages("BiocManager")
 
-if (!require("BiocManager", quietly=TRUE))
-  install.packages(BiocManager)
+#if (!require("BiocManager", quietly=TRUE))
+#  install.packages(BiocManager)
 
-BiocManager::install("ropls")
+#BiocManager::install("ropls")
 
 #pre number of component
 
