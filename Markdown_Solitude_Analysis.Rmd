@@ -24,12 +24,20 @@ library(reshape)
 library("readxl")
 library(ggpubr)
 library(agricolae)
+library(lemon) #to nicely print the table 
 
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
 dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
+knit_print.data.frame <- lemon_print
 
+```
 
+# **Time management**
+
+![](images/Time%20management.JPG)
+
+```{r warning=FALSE}
 ```
 
 # **ND removed, Converted to a Dataframe**
@@ -56,15 +64,13 @@ tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataf
 tr[,12:44] <- sapply(tr[,12:44],as.numeric) # Change a character to numeric (double)
 typeof(tr$Cu_concentration) # confirm the value is no longer a character
 
+
 ```
 
 # **Head of the dataset**
 
-```{r warning=FALSE}
-
+```{r caption="Data frame is now printed using `kable`.",render=lemon_print}
 head(tr)
-
-
 ```
 
 # **Subsets and wrangling**
@@ -169,7 +175,6 @@ Re_AllPlots
 
 ```
 
-
 ## **Boxplots - Re - Selected species**
 
 ```{r warning=FALSE}
@@ -188,7 +193,6 @@ Re_box <- ggplot(Re_best, aes(x = reorder(Scientific_Name, Re_concentration, FUN
 Re_box
 
 ```
-
 
 ## **Boxplots - Zn - All Plots**
 
@@ -226,7 +230,6 @@ Se_AllPlots
 
 ## **Boxplots - Se - Selected species**
 
-
 ```{r warning=FALSE}
 
 Se_box <- ggplot(Se_best, aes(x = reorder(Scientific_Name, Se_concentration, FUN=median), y = Se_concentration, fill=Scientific_Name)) +
@@ -239,7 +242,6 @@ Se_box <- ggplot(Se_best, aes(x = reorder(Scientific_Name, Se_concentration, FUN
 Se_box
 
 ```
-
 
 ## **Boxplots - Cu - Plot 6**
 
@@ -262,48 +264,135 @@ Cu_Plot6
 
 ```
 
+# **Soil Table**
+
+![](images/Soil.JPG)
 
 ```{r warning=FALSE}
 
 
 ```
 
+# **PCA Analysis**
+
+## **Creating principal components**
+
 ```{r warning=FALSE}
+
+require(stats)
+myPr1 <- prcomp(dt_plants_nounc1[,12:23], scale=TRUE)
+myPr2 <- prcomp(dt_plants_nounc2[,12:23], scale=TRUE)
+myPr5 <- prcomp(dt_plants_nounc5[,12:23], scale=TRUE)
+myPr6 <- prcomp(dt_plants_nounc6[,12:23], scale=TRUE)
+myPr15 <- prcomp(dt_plants_nounce15[,12:23], scale=TRUE)
+myPr125 <- prcomp(dt_plants_nounce125[,12:23], scale=TRUE) # it was not working because the scale was FALSE
 
 
 ```
 
+## **Biplots1**
+
 ```{r warning=FALSE}
+
+biplot(myPr1, scale=0)
+biplot(myPr125, scale=0)
+
+```
+
+## **Biplots2 - Plot 1, 2 and 5**
+
+```{r warning=FALSE}
+
+biplot125 <- biplot(myPr125,
+             col=c('blue', 'red'),
+             cex=c(0.8, 0.8),
+             xlim=c(-.4, .4),
+             main='PCA Results',
+             expand=1.2)
 
 
 ```
 
+## **Biplots2 - Plot 6**
+
 ```{r warning=FALSE}
+biplot6 <-  biplot(myPr6,
+            col=c('blue', 'red'),
+            cex=c(0.8, 0.8),
+            xlim=c(-.4, .4),
+            main='PCA Results',
+            expand=1.2)
+
+```
+
+## **Bind dataframes with PC1 and PC2 for each plot**
+
+```{r warning=FALSE}
+
+dt_plants1 <- cbind(dt_plants_nounc1, myPr1$x[,1:2])
+dt_plants2 <- cbind(dt_plants_nounc2, myPr2$x[,1:2])
+dt_plants5 <- cbind(dt_plants_nounc5, myPr5$x[,1:2])
+dt_plants6 <- cbind(dt_plants_nounc6, myPr6$x[,1:2])
+dt_plants15 <- cbind(dt_plants_nounce15, myPr15$x[,1:2])
+
+```
+
+## **PCA All plots**
+
+```{r warning=FALSE}
+
+# Plot for all plot
+myPr_all <- prcomp(dt_plants_nounc[,12:23], scale=TRUE)
+dt_plants_all <- cbind(dt_plants_nounc, myPr_all$x[,1:2])
+
+ggplot(dt_plants_all, aes(PC1, PC2, col=Plot, fill=Plot))+
+  stat_ellipse(geom="polygon", col="black", alpha=0.5)+
+  theme_classic()+
+  geom_point(shape=21, col="black")
 
 
 ```
 
+## **Variances across principle components**
+
 ```{r warning=FALSE}
 
+plot(myPr125, type="l")
 
+summary(myPr1)
 ```
 
+# **Partial Least Square Discriminant Analysis (PLS-DA)**
+
 ```{r warning=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ropls)
 
 
+
+
+dt_plants_nounc_3 <- dt_plants_nounc |> select(-Scientific_Name, -Group, -Plot, -Sample_Name, -Tube_No, -Type_of_Sample, -Cup_No, -pXRF_measurement_ID, -File, -Material)
+
+typeof(dt_plants_nounc_3$Total_Weight)
+dt_plants_nounc_3[,1] <- sapply(dt_plants_nounc_3[,1],as.numeric)
+
+dt_nounc_PCA <- opls(x=dt_plants_nounc_3)
+plot(dt_nounc_PCA)
+
+
+plot(dt_nounc_PCA, typeVc ="x-score", parAsColFcVn=dt_plants_nounc$Plot)
+dt_opls <-opls(dt_plants_nounc_3, dt_plants_nounc$Plot)
+
+summary(dt_opls)
 ```
 
-```{r warning=FALSE}
-
-
-```
 
 ```{r warning=FALSE}
 
-
-```
-
-```{r warning=FALSE}
+plot(dt_nounc_PCA, typeVc ="x-score", parAsColFcVn=dt_plants_nounc$Cu)
+dt_opls <-opls(dt_plants_nounc_3, dt_plants_nounc$Cu)
 
 
 ```
