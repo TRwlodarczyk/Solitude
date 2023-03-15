@@ -570,4 +570,24 @@ plot(dt_nounc_PCA, typeVc ="x-score", parAsColFcVn=dt_plants_nounc$Plot)
 dt_opls <-opls(dt_plants_nounc_3, dt_plants_nounc$Plot)
 
 
+# Correlation Plot for SHiny
 
+library(plotly)
+library(heatmaply)
+library(ggcorrplot)
+
+dt_cor <-  dt_plants_nounc |> select(-Scientific_Name, -Group, -Plot, -Sample_Name, -Tube_No, -Type_of_Sample, -Cup_No, -pXRF_measurement_ID, -File, -Material)
+typeof(dt_cor$Total_Weight)
+dt_cor[,1] <- sapply(dt_cor[,1],as.numeric)
+dt_cor
+
+heatmaply_cor(
+  cor(dt_cor),
+  xlab = "Features", 
+  ylab = "Features",
+  k_col = 2, 
+  k_row = 2
+)
+
+
+write.table(dt_cor, file = "my_data.txt", sep = "\t", col.names=TRUE)
