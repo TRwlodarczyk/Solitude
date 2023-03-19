@@ -61,7 +61,7 @@ for(i in 1:11)
 
 #transform to dataframe
 tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
-tr[,12:44] <- sapply(tr[,12:44],as.numeric) # Change a character to numeric (double)
+tr[,12:46] <- sapply(tr[,12:46],as.numeric) # Change a character to numeric (double)
 typeof(tr$Cu_concentration) # confirm the value is no longer a character
 
 

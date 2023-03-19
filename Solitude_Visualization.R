@@ -14,7 +14,7 @@ library(agricolae)
 
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
-dt <-read.delim("Solitude_2.15.23.txt")
+dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
 
 #replace ND with 0
 
@@ -39,6 +39,8 @@ typeof(tr$Cu_concentration) # confirm the value is no longer a character
 #subset data to remove quality control samples
 
 dt_plants <- subset(tr, Scientific_Name != 'QA_Sample')
+dt_plants_trimmed <- dt_plants[c(-2,-4,-5,-6,-8,-10,-11, -24, -25, -40, -41, -42, -43, -44, -45, -seq(11,45,by=2))]
+dt_plants_trimmed[,3] <- sapply(dt_plants_trimmed[,3],as.numeric)
 
 
 ###
@@ -150,16 +152,31 @@ Cu_6
 
 
 
-Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot), size=1) +
-  ylim(0,600)+
+Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median),
+                                    y = Cu_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
   coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+  scale_color_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 600), breaks = seq(0, 800, by = 50)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=10),
+        axis.title.x = element_text(size = 13),
+        axis.text.y = element_text(size=10.5, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 10)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Copper Concentration (ppm)")
 Cu_AllPlots
+
+#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+#theme(legend.position = "none")+
+#ylim(0,600)+
+#scale_y_discrete(breaks = seq(1, length(unique(dt_plants$Scientific_Name)), by = 100)) +
+
 
 
 
