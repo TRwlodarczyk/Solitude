@@ -97,6 +97,24 @@ title(main = "Redundancy Analysis (RDA) Biplot")
 #
 cor(dt_plants_trimmed$Total_Weight, dt_plants_trimmed$Substrate_RT) # Wow
 
+#### PLS-DA
+
+library(pls)
+library(caret)
+# extract the variables of interest from dt_plants_trimmed
+X <- dt_plants_trimmed[, 5:17]
+# extract the grouping variable (e.g. plot number)
+Y <- as.factor(dt_plants_trimmed[, 2])
+
+# perform PLS-DA with 2 components
+plsda <- plsda(X, Y, ncomp = 2)
+
+# plot the scores of the first two components
+plot(plsda$scores[,1], plsda$scores[,2], col=Y)
+
+
+
+
 
 ###
 P1 <- subset(dt_plants, Plot=='P1')
