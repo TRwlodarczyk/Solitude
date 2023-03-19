@@ -43,6 +43,61 @@ dt_plants_trimmed <- dt_plants[c(-2,-4,-5,-6,-8,-10,-11, -24, -25, -40, -41, -42
 dt_plants_trimmed[,3] <- sapply(dt_plants_trimmed[,3],as.numeric)
 
 
+
+# Redundancy Analysis (RDA)
+
+
+library(vegan)
+
+# Create a matrix of the environmental variables (columns 5 to 18)
+env_mat <- as.matrix(dt_plants_trimmed[,5:18])
+
+# Create a data frame of the response variables (weight and thickness)
+resp_df <- data.frame(weight = dt_plants_trimmed[,3], thickness = dt_plants_trimmed[,18])
+
+# Perform RDA
+rda_result <- rda(env_mat, resp_df)
+
+# Print the RDA results
+summary(rda_result)
+
+#Plot
+# Plot the RDA biplot
+plot(rda_result, scaling = 3)
+
+# Add labels to the plot
+text(rda_result, display = "species", col = "blue", cex = 0.8) #species - environmental variales
+text(rda_result, display = "sites", col = "red", cex = 0.8) # the sites - response variables 
+
+# Add a title to the plot
+title(main = "Redundancy Analysis (RDA) Biplot")
+
+
+
+##### When Cu is is zmienna wujasniajaca
+
+
+# Create a matrix of the environmental variables (columns 5 to 18)
+env_mat2 <- as.matrix(dt_plants_trimmed[,5:18])
+
+# Create a data frame of the response variables (weight and thickness)
+resp_df2 <- data.frame(Cu = dt_plants_trimmed[,12])
+
+# Perform RDA
+rda_result <- rda(env_mat2, resp_df2)
+plot(rda_result, scaling = 3)
+text(rda_result, display = "species", col = "blue", cex = 0.8) #species - environmental variales
+text(rda_result, display = "sites", col = "red", cex = 0.8) # the sites - response variables 
+title(main = "Redundancy Analysis (RDA) Biplot")
+
+
+
+
+
+#
+cor(dt_plants_trimmed$Total_Weight, dt_plants_trimmed$Substrate_RT) # Wow
+
+
 ###
 P1 <- subset(dt_plants, Plot=='P1')
 P2 <- subset(dt_plants, Plot=='P2')
