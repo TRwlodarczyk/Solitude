@@ -46,9 +46,9 @@ knit_print.data.frame <- lemon_print
 
 #replace ND with 0
 
-tr <- matrix(data = NA, ncol = ncol(dt[,c(1:44)]), nrow=nrow(dt))
-colnames(tr) <- colnames(dt[,c(1:44)])
-for (i in 12:44)
+tr <- matrix(data = NA, ncol = ncol(dt[,c(1:46)]), nrow=nrow(dt))
+colnames(tr) <- colnames(dt[,c(1:46)])
+for (i in 12:46)
 {
   tr[,c(i)] <- gsub(".*ND.*", 0, dt[,i])
 }
@@ -95,10 +95,10 @@ Re_best <- subset(dt_plants, Scientific_Name == 'Isocoma cf. tenuisecta' | Scien
 
 dt_plants_nounc = select(dt_plants, -Cl_uncertainty,-Ca_uncertainty, -Ti_uncertainty,
                          -Cr_uncertainty, -Mn_uncertainty, -Fe_uncertainty, -Ni_uncertainty, -Cu_uncertainty,
-                         -Zn_uncertainty, -As_uncertainty, -Se_uncertainty, -Cd_uncertainty, -Re_uncertainty, -Hg_uncertainty,
+                         -Zn_uncertainty, -As_uncertainty, -Se_uncertainty, -Cd_uncertainty, -Re_uncertainty, -Hg_uncertainty, -Co_uncertainty,
                          -Tl_uncertainty, -Pb_uncertainty, -Substrate_RT)
 
-dt_plants_nounc = select(dt_plants_nounc, -Hg_concentration, -Tl_concentration, -Pb_concentration, -Ni_concentration)
+dt_plants_nounc = select(dt_plants_nounc, -Hg_concentration, -Tl_concentration, -Pb_concentration, -Ni_concentration, -Co_concentration)
 
 
 #Filtering plants By Plot with subset function

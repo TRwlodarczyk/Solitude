@@ -591,3 +591,4 @@ heatmaply_cor(
 
 
 write.table(dt_cor, file = "my_data.txt", sep = "\t", col.names=TRUE)
+
