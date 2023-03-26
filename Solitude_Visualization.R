@@ -11,6 +11,7 @@ library(reshape)
 library("readxl")
 library(ggpubr)
 library(agricolae)
+library(tidyverse)
 
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
@@ -41,6 +42,90 @@ typeof(tr$Cu_concentration) # confirm the value is no longer a character
 dt_plants <- subset(tr, Scientific_Name != 'QA_Sample')
 dt_plants_trimmed <- dt_plants[c(-2,-4,-5,-6,-8,-10,-11, -24, -25, -40, -41, -42, -43, -44, -45, -seq(11,45,by=2))]
 dt_plants_trimmed[,3] <- sapply(dt_plants_trimmed[,3],as.numeric)
+
+write.table(dt_plants_trimmed, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/new.txt')
+write.csv(dt_plants_trimmed, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Tomasz.csv", row.names=FALSE)
+
+
+# Subset to see how many for diff weight I have
+
+dt_plants_ICP <- filter(dt_plants, ICP == 'y')
+dt_plants_ICP[,7] <- sapply(dt_plants_ICP[,7],as.numeric)
+
+library(dplyr)
+library(nortest)
+library(car)
+
+# create weight ranges
+ranges <- c(0, 0.3, 0.5, 0.7, 0.9, Inf)
+
+# filter dataset by weight ranges
+# filter dataset by weight ranges
+
+
+ICP_low <- dt_plants_ICP %>%
+  mutate(weight_range = cut(Total_Weight, breaks = ranges)) %>%
+  filter(weight_range == "(0,0.3]")
+
+ICP_low2 <- dt_plants_ICP %>%
+  mutate(weight_range = cut(Total_Weight, breaks = ranges)) %>%
+  filter(weight_range == "(0.3,0.5]")
+
+ICP_medium <- dt_plants_ICP %>%
+  mutate(weight_range = cut(Total_Weight, breaks = ranges)) %>%
+  filter(weight_range == "(0.5,0.7]")
+
+ICP_medium2 <- dt_plants_ICP %>%
+  mutate(weight_range = cut(Total_Weight, breaks = ranges)) %>%
+  filter(weight_range == "(0.7,0.9]")
+
+ICP_high <- dt_plants_ICP %>%
+  mutate(weight_range = cut(Total_Weight, breaks = ranges)) %>%
+  filter(weight_range == "(0.9,Inf]")
+
+ICP_All <- dt_plants_ICP %>%
+  mutate(weight_range = cut(Total_Weight, breaks = ranges)) %>%
+  filter(weight_range == "(0,Inf]") 
+
+
+# Fit linear model to ICP_low subset
+model <- lm(Substrate_RT ~ Total_Weight, data = ICP_low)
+model2 <- lm(Substrate_RT ~ Total_Weight, data = ICP_low2)
+model3 <- lm(Substrate_RT ~ Total_Weight, data = ICP_medium)
+model4 <- lm(Substrate_RT ~ Total_Weight, data = ICP_medium2)
+model5 <- lm(Substrate_RT ~ Total_Weight, data = ICP_high)
+model_all <- lm(Substrate_RT ~ Total_Weight, data = dt_plants_ICP)
+
+# Compute R-squared value
+rsq <- summary(model)$r.squared
+cat("R-squared value:", rsq, "\n\n")
+
+rsq <- summary(model2)$r.squared
+cat("R-squared value:", rsq, "\n\n")
+
+rsq <- summary(model3)$r.squared
+cat("R-squared value:", rsq, "\n\n")
+
+rsq <- summary(model4)$r.squared
+cat("R-squared value:", rsq, "\n\n")
+
+rsq <- summary(model5)$r.squared
+cat("R-squared value:", rsq, "\n\n")
+
+rsq <- summary(model_all)$r.squared
+cat("R-squared value:", rsq, "\n\n")
+
+# Test normality of residuals
+residuals <- model$residuals
+cat("Normality test of residuals:\n")
+print(ad.test(residuals))
+
+# Generate residual plot
+ggplot(data = data.frame(Total_Weight = ICP_low$Total_Weight, Residuals = residuals),
+       aes(x = Total_Weight, y = Residuals)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  labs(title = "Residual plot for ICP_low subset", x = "Total weight", y = "Residuals")
 
 
 
