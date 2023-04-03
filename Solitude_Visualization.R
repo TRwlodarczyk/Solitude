@@ -210,27 +210,7 @@ P125 <- subset(dt_plants, Plot!='P6')
 P125
 
 
-Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 45))+
-  geom_jitter(aes(colour = Plot)) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_All
 
-
-#plot 1 2 5
-
-
-Cu_All<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 45))+
-  geom_jitter(aes(colour = Plot)) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_All
 
 ########All with color of the points for plots####
 
@@ -306,8 +286,7 @@ Cu_6
 
 
 
-
-
+library(ggridges)
 
 
 Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median),
@@ -362,25 +341,6 @@ Re_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Re_concentratio
 Re_AllPlots
 
 
-
-
-
-
-Cu_All_P1<- ggplot(P1, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 45))+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_All_P1
-
-Cu_All_P2<- ggplot(P2, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 45))+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_All_P2
 
 Cu_All_P5<- ggplot(P5, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
   geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
@@ -751,13 +711,20 @@ library(plotly)
 library(heatmaply)
 library(ggcorrplot)
 
-dt_cor <-  dt_plants_nounc |> select(-Scientific_Name, -Group, -Plot, -Sample_Name, -Tube_No, -Type_of_Sample, -Cup_No, -pXRF_measurement_ID, -File, -Material)
+dt_plants_trimmed
+dt_plants_trimmed2 <- dt_plants_trimmed[c(-1,-2,-4)]
+
+
+dt_cor <-  dt_plants_tr |> select(-Scientific_Name, -Group, -Plot, -Sample_Name, -Tube_No, -Type_of_Sample, -Cup_No, -pXRF_measurement_ID, -ICP, -Material)
 typeof(dt_cor$Total_Weight)
 dt_cor[,1] <- sapply(dt_cor[,1],as.numeric)
-dt_cor
+
+
+dt_plants_trimmed2[,1] <- sapply(dt_plants_trimmed2[,1], as.numeric)
+
 
 heatmaply_cor(
-  cor(dt_cor),
+  cor(dt_plants_trimmed2),
   xlab = "Features", 
   ylab = "Features",
   k_col = 2, 
@@ -765,5 +732,68 @@ heatmaply_cor(
 )
 
 
-write.table(dt_cor, file = "my_data.txt", sep = "\t", col.names=TRUE)
+#heatmap without Weight and RT
+
+dt_plants_trimmed3 <- dt_plants_trimmed2 |> select(-Total_Weight, -Substrate_RT)
+
+
+heatmaply_cor(
+  cor(dt_plants_trimmed3),
+  xlab = "Features", 
+  ylab = "Features",
+  k_col = 2, 
+  k_row = 2
+)
+
+#write.table(dt_cor, file = "my_data.txt", sep = "\t", col.names=TRUE)
+
+
+
+
+library(ggplot2)
+library(reshape2)
+
+# Melt data into long format
+dt_plants_trimmed_cb <- dt_plants_trimmed[c(-2,-3, -4, -18)]
+melted_data <- melt(dt_plants_trimmed_cb, id.vars = c("Scientific_Name"))
+
+#write.table(dt_cor, file = "my_data.txt", sep = "\t", col.names=TRUE)
+
+# Subset data to only include metal concentrations
+metal_data <- subset(melted_data, variable %in% colnames(dt_plants_trimmed_cb)[5:17])
+
+write.csv(melted_data, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Melted.csv", row.names=FALSE)
+
+
+
+# Create circular barplot
+ggplot(metal_data, aes(x = Scientific_Name, y = value, fill = variable)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar(theta = "x") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Metal Concentrations for All Species")
+
+
+ggplot(dt_plants_trimmed_cb, aes(x = Scientific_Name, y = Cu_concentration, fill = Scientific_Name)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar(theta = "x") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Metal Concentrations for All Species")
+
+
+ggplot(dt_plants_trimmed_cb, aes(x = Scientific_Name, y = Cu_concentration, fill = Scientific_Name)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar(theta = "x") +
+  #scale_fill_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.border = element_blank(),
+        plot.title = element_text(size = 18, face = "bold")) +
+  geom_text(data = dt_plants_trimmed_cb, aes(x = Scientific_Name, y = Cu_concentration/2, label = Scientific_Name), 
+            color = "white", size = 4, angle = -90, hjust = 1)
+
 

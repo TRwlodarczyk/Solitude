@@ -51,3 +51,40 @@ ggplot(data = iris_means, mapping = aes(x=Species, y=SL_mean))+
   geom_errorbar(mapping=aes(ymin = SL_mean - SL_se, 
                             ymax = SL_mean + SL_se), 
                 width=0.3)
+
+#Make long-format data for calculations. Melt the table into Species, trait, value
+
+iris_long <- pivot_longer(data=iris, 
+                          cols = -Species, # tell to ignore Species column so it doesn't melt it
+                          names_to = "trait",
+                          values_to = "measurement") 
+iris_long
+
+
+iris_means <- iris %>% 
+  pivot_longer(cols= -Species,
+               names_to="trait",
+               values_to="measurement") %>%
+  group_by(Species, trait) %>%
+  summarize(trait_mean=mean(measurement),
+            trait_se=sd(measurement)/sqrt(n()))
+iris_means # you can always ungroup by ungroup()
+
+
+# ggplot 
+
+ggplot(data = iris_means, mapping = aes(x=Species, y=trait_mean))+
+  geom_point()+
+  geom_errorbar(mapping=aes(ymin = trait_mean - trait_se, 
+                            ymax = trait_mean + trait_se), 
+                width=0.3)+
+  facet_wrap(~ trait) # create separate for each column instead one graph
+
+iris_means
+
+# remove dot # do SLT!!!!
+iris_means$trait <- gsub(pattern=".",
+                         replacement=" ",
+                         x = iris_means$trait,
+                         fixed = TRUE)
+iris_means
