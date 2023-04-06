@@ -198,9 +198,6 @@ plsda <- plsda(X, Y, ncomp = 2)
 plot(plsda$scores[,1], plsda$scores[,2], col=Y)
 
 
-
-
-
 ###
 P1 <- subset(dt_plants, Plot=='P1')
 P2 <- subset(dt_plants, Plot=='P2')
@@ -209,84 +206,6 @@ P6 <- subset(dt_plants, Plot=='P6')
 P125 <- subset(dt_plants, Plot!='P6')
 P125
 
-
-
-
-########All with color of the points for plots####
-
-Cu_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+
-  theme_classic()+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot)) +
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_125
-
-
-Zn_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Zn_concentration, FUN = median), y = Zn_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot)) +
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Zn_125
-
-Se_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Se_concentration, FUN = median), y = Se_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot)) +
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Se_125
-
-
-Re_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot)) +
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Re_125
-
-
-
-
-Cr_125<- ggplot(P125, aes(x = reorder(Scientific_Name, Cr_concentration, FUN = median), y = Cr_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot)) +
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cr_125
-
-# Plot 6
-
-
-Cu_6<- ggplot(P6, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot)) +
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_6
-
-
-
-library(ggridges)
 
 
 Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median),
@@ -309,6 +228,372 @@ Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentratio
   ylab("Copper Concentration (ppm)")
 Cu_AllPlots
 
+## CESM
+#png(file="figure_name.png", unit="in", width=10, height=6.5,res=600,type="cairo")
+#Settings
+#  theme(
+#    axis.title.x = element_text(size= 19, margin = unit(c(3, 0, 0, 0), "mm")), #adjust distance between axis label and ticks. mm are units
+#    axis.title.y = element_text(size = 19, margin = unit(c(0, 3, 0, 0), "mm"), angle = 90),
+#    axis.text.x = element_text(size=14),
+#    axis.text.y = element_text(size=14),
+#    legend.position = c(.1, .70),
+#    legend.title=element_text(size=12),
+#    legend.text=element_text(size=12.5),
+#    panel.grid.major = element_blank(),
+#    panel.grid.minor = element_blank())
+#dev.off()
+
+
+
+Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median),
+                                    y = Cu_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 50, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 250, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 300, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 600), breaks = seq(0, 800, by = 50)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Copper Concentration (ppm)")
+Cu_AllPlots
+
+
+                  
+
+As_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, As_concentration, FUN = median),
+                                    y = As_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 3, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 15, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 1000, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 18), breaks = seq(0, 18, by = 2)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Arsenic Concentration (ppm)")
+As_AllPlots
+
+
+Ca_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ca_concentration, FUN = median),
+                                    y = Ca_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 5000, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 20000, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 40000, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 55000), breaks = seq(0, 55000, by = 5000)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Calcium Concentration (ppm)")
+Ca_AllPlots
+
+
+Ca_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ca_concentration, FUN = median),
+                                    y = Ca_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 5000, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 20000, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 40000, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 55000), breaks = seq(0, 55000, by = 5000)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Calcium Concentration (ppm)")
+Ca_AllPlots
+
+Cr_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cr_concentration, FUN = median),
+                                    y = Cr_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 2, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 15, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 25, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 4)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Chromium Concentration (ppm)")
+Cr_AllPlots
+
+
+Cr_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cr_concentration, FUN = median),
+                                    y = Cr_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 2, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 15, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 25, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 4)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab(expression(paste("Chromium Concentration (", "ppm", ")")))
+Cr_AllPlots
+
+Fe_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Fe_concentration, FUN = median),
+                                    y = Fe_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 300, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 300)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab(expression(paste("Iron Concentration (", "ppm", ")")))
+Fe_AllPlots
+
+Mn_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Mn_concentration, FUN = median),
+                                    y = Mn_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 200, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 20, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  #geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  #geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 300)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab(expression(paste("Manganese Concentration (", "ppm", ")")))
+Mn_AllPlots # 10 - 20 ppm is a deficiency!
+
+
+Ni_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ni_concentration, FUN = median),
+                                    y = Ni_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  #geom_hline(yintercept = 300, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  #geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  #geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 300)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab(expression(paste("Nickel Concentration (", "ppm", ")")))
+Ni_AllPlots
+
+
+
+Re_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median),
+                                    y = Re_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  #geom_hline(yintercept = 300, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  #geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  #geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 300)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  #ylab(expression(paste("Rhenium Concentration (", "ppm", ")")))
+  ylab('Rhenium concentration (ppm)')
+Re_AllPlots
+
+
+Se_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Se_concentration, FUN = median),
+                                    y = Se_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 2, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  #ylab(expression(paste("Rhenium Concentration (", "ppm", ")")))
+  ylab('Selenium concentration (ppm)')
+Se_AllPlots
+
+
+Zn_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Zn_concentration, FUN = median),
+                                    y = Zn_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 27, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  #geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  #geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  #ylab(expression(paste("Rhenium Concentration (", "ppm", ")")))
+  ylab('Zinc concentration (ppm)')
+Zn_AllPlots
+
+
+Ti_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ti_concentration, FUN = median),
+                                    y = Ti_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  #geom_hline(yintercept = 27, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  #geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  #geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  #ylab(expression(paste("Rhenium Concentration (", "ppm", ")")))
+  ylab('Titanium concentration (ppm)')
+Ti_AllPlots
+
+
+Cd_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cd_concentration, FUN = median),
+                                    y = Cd_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
+  geom_hline(yintercept = 0.3, linetype = "dashed", color = "#AFE1AF", size=1.2)+
+  #geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
+  #geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  coord_flip()+
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 12.5)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  #ylab(expression(paste("Rhenium Concentration (", "ppm", ")")))
+  ylab('Cadmium concentration (ppm)')
+Cd_AllPlots
+
+
+
+
+
+
+
+summary(dt_plants)
+sd(dt_plants$Cd_concentration)
 #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 #theme(legend.position = "none")+
 #ylim(0,600)+
@@ -364,18 +649,6 @@ Cu_Arranged <- ggarrange(Cu_All_P1, Cu_All_P2, Cu_All_P5, Cu_All_P6, nrow=2, nco
 Cu_Arranged
 
 
-#
-All_byplot<- ggplot(dt_plants, aes(x = Scientific_Name, y = Cu_concentration, fill=Plot)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 45))+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-All_byplot
-
-
-
-
 # Selenium
 
 Se <- subset(dt_plants, Scientific_Name == 'Isocoma cf. tenuisecta' | Scientific_Name == 'Populus fremontii' | Scientific_Name == 'Senegalia (Acacia) greggii' )
@@ -393,7 +666,6 @@ Se_box
 
 #Rhenium
 
-
 Re <- subset(dt_plants, Scientific_Name == 'Isocoma cf. tenuisecta' | Scientific_Name == 'Baccharis sarothroides' | Scientific_Name == 'Senegalia (Acacia) greggii'| Scientific_Name == 'Nultuma (Prosopis) velutina' | Scientific_Name == 'Mimosa biuncifera (=aculeaticarpa)' | Scientific_Name == 'Fraxinus velutina'| Scientific_Name == 'Datura wrightii' )
 
 Re_box <- ggplot(Re, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, fill=Scientific_Name)) +
@@ -407,9 +679,6 @@ Re_box <- ggplot(Re, aes(x = reorder(Scientific_Name, Re_concentration, FUN = me
   #scale_fill_brewer(palette = "Greens")
 
 Re_box
-
-
-
 
 
 # CLusters K-mean
@@ -520,10 +789,6 @@ plot(density(P6$Zn_concentration))
 shapiro.test(P6$Zn_concentration) # < 0.05 = non normally distributed
 plot(density(P6$Mn_concentration))
 shapiro.test(P6$Mn_concentration) # < 0.05 = non normally distributed
-
-
-
-
 
 
 
@@ -797,3 +1062,7 @@ ggplot(dt_plants_trimmed_cb, aes(x = Scientific_Name, y = Cu_concentration, fill
             color = "white", size = 4, angle = -90, hjust = 1)
 
 
+#### SOIL PLANT SMMARY
+
+summary(dt_plants_nounc_3)
+sd(dt_plants$Ti_concentration)

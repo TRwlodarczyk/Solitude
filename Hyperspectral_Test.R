@@ -12,3 +12,5 @@ plot(dt$mining00000.asd~dt$Wavelength)
 
 ggplot(data=dt, aes(x=Wavelength, y=mining00000.asd))+
   geom_point()
+
+
