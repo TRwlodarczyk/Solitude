@@ -150,15 +150,24 @@ colnames(dt_plants_nounc6)[23] <- "Re"
 
 ```{r warning=FALSE}
 
-Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median), y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot), size=1) +
-  ylim(0,600)+
+Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median),
+                                    y = Cu_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
   coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+  scale_color_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 600), breaks = seq(0, 800, by = 50)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=10),
+        axis.title.x = element_text(size = 13),
+        axis.text.y = element_text(size=10.5, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 10)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab("Copper Concentration (ppm)")
 Cu_AllPlots
 
 ```
@@ -166,15 +175,24 @@ Cu_AllPlots
 ## **Boxplots - Re - All Plots**
 
 ```{r warning=FALSE}
-Re_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot), size=1) +
-  #ylim(0,600)+
+Re_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median),
+                                    y = Re_concentration, group=Scientific_Name)) +
+  geom_boxplot()+
+  geom_jitter(aes(colour = Plot), size=1.1) +
   coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
+  scale_color_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E")) +
+  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_y_continuous(limits = c(0, 110), breaks = seq(0, 110, by = 10)) +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=10),
+        axis.title.x = element_text(size = 13),
+        axis.text.y = element_text(size=10.5, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 10)) +
+  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
+  ylab('Rhenium concentration (ppm)')
 Re_AllPlots
 
 ```

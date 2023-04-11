@@ -181,6 +181,7 @@ ggplot(dt_subset, aes(x = reorder(Scientific_Name, !!sym(input$concentration_var
   ylab(paste0(ylab, " (ppm)"))
   }
   
+  
   ######################################
    
   # Define function to create barplot
