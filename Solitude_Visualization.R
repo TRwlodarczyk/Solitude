@@ -13,10 +13,19 @@ library("readxl")
 library(ggpubr)
 library(agricolae)
 library(tidyverse)
+library (readr) #to read URL
 }
 
-setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
-dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
+#setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
+#dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
+#urlfile="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/Solitude_Complete_List_3.6.23.csv" # tr doesn't work on this dataset with csv file
+#dt<-read_csv(url(urlfile))
+
+urlfile="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/Solitude_Complete_List_3.6.23.txt"
+dt<-read.delim(url(urlfile))
+
+
+
 
 #replace ND with 0
 

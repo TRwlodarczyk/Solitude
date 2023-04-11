@@ -14,7 +14,10 @@ library(ggcorrplot)
 library(corrplot)
 
 
-dt_plants <- read.csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/GitHub/Solitude/Tomasz.csv")
+#dt_plants <- read.csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/GitHub/Solitude/Tomasz.csv")
+
+urlfile="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/Tomasz.csv"
+dt_plants<-read_csv(url(urlfile))
 
 # Define UI
 ui <- fluidPage(titlePanel("Solitude Plants & Soil"),

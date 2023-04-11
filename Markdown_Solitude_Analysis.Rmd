@@ -27,8 +27,12 @@ library(agricolae)
 library(lemon) #to nicely print the table 
 
 
-setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
-dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
+#setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
+#dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
+
+urlfile="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/Solitude_Complete_List_3.6.23.txt"
+dt<-read.delim(url(urlfile))
+
 knit_print.data.frame <- lemon_print
 
 ```
