@@ -174,9 +174,9 @@ ggplot(dt_subset, aes(x = reorder(Scientific_Name, !!sym(input$concentration_var
         axis.text.y = element_text(size=12, face="italic"),
         axis.title.y = element_blank(),
         legend.key.size = unit(1, "lines"),
-        legend.text = element_text(size = 11),
-        plot.background = element_rect(fill = "grey"),
-        panel.background = element_rect(fill = "grey", colour="black")) +
+        legend.text = element_text(size = 11)) +
+        #plot.background = element_rect(fill = "grey"),
+        #panel.background = element_rect(fill = "grey", colour="black")) +
   guides(colour = guide_legend(override.aes = list(size = 3.5)))+
   ylab(paste0(ylab, " (ppm)"))
   }
