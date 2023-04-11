@@ -35,7 +35,7 @@ ui <- fluidPage(titlePanel("Solitude Plants & Soil"),
   
 
   
-  # Define main panel for displaying plots and tables
+  # Define main panel for displaying plots and tables.
   mainPanel(
     navlistPanel(
       "Plots & Tables",
