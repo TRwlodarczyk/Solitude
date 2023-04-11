@@ -22,7 +22,7 @@ dt_plants<-read_csv(url(urlfile))
 # Define UI
 ui <- fluidPage(titlePanel("Solitude Plants & Soil"),
                 
-                
+          
  tags$img(src="CESMlogo.png", align = "right",height='100px',width='400px', deleteFile=FALSE),                
                 
   theme = bs_theme(
