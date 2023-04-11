@@ -3,6 +3,7 @@
 # twlodarczyk@arizona.edu
 # 2023-02-15
 
+{
 library(ggplot2)
 library(dplyr)
 library(data.table)
@@ -12,7 +13,7 @@ library("readxl")
 library(ggpubr)
 library(agricolae)
 library(tidyverse)
-
+}
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data")
 dt <-read.delim("Solitude_Complete_List_3.6.23.txt")
