@@ -50,11 +50,50 @@ typeof(tr$Cu_concentration) # confirm the value is no longer a character
 #subset data to remove quality control samples
 
 dt_plants <- subset(tr, Scientific_Name != 'QA_Sample')
-dt_plants_trimmed <- dt_plants[c(-2,-4,-5,-6,-8,-10,-11, -24, -25, -40, -41, -42, -43, -44, -45, -seq(11,45,by=2))]
+dt_plants_trimmed <- dt_plants[c(-2,-4,-5,-6,-8,-10,-11, -24, -25, -40, -41, -42, -43, -45, -seq(11,45,by=2))] #a removed -44 as I want to keep Pb
 dt_plants_trimmed[,3] <- sapply(dt_plants_trimmed[,3],as.numeric)
 
 write.table(dt_plants_trimmed, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/new.txt')
 write.csv(dt_plants_trimmed, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Tomasz.csv", row.names=FALSE)
+write.csv(dt_plants, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/dt_plants.csv", row.names=FALSE)
+
+
+# Create a summary table by plots
+
+
+#summary_dt <- dt_plants_trimmed %>% # and then
+#  group_by(Plot) %>% # and then
+#  summary() # creat a new column that does mean of sepal length
+
+
+dt_plants_summary <- dt_plants_trimmed %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  pivot_longer(cols = 5:18, names_to = "Concentration", values_to = "Value") %>%
+  group_by(Concentration, Plot) %>%
+  summarise(min = min(Value), 
+            max = max(Value), 
+            mean = mean(Value), 
+            median = median(Value), 
+            sd = sd(Value), 
+            .groups = "drop") %>%
+  pivot_wider(names_from = Plot, values_from = c(min, max, mean, median, sd), names_glue = "{Plot}_{.value}") %>%
+  select(Concentration, contains("_")) %>%
+  pivot_longer(cols = -Concentration, names_to = "Plot_Stat", values_to = "Value") %>%
+  separate(Plot_Stat, into = c("Plot", "Stat"), sep = "_") %>%
+  pivot_wider(names_from = Plot, values_from = Value) %>%
+  arrange(Concentration)
+
+
+write.csv(dt_plants_summary, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/dt_plants_summary.csv", row.names=FALSE)
+dt_summary_new <- read_csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/Table/dt_plants_summary2.csv")
+
+library(sjPlot)
+
+
+dt_plants_summary3 <- read.table("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/Table/summary.txt", sep = "\t")
+
+tab_df(dt_plants_summary3, file="test1.doc")
+
 
 
 # Subset to see how many for diff weight I have
@@ -259,9 +298,9 @@ Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentratio
                                     y = Cu_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 50, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 250, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 300, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -279,15 +318,16 @@ Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentratio
 Cu_AllPlots
 
 
-                  
+
+
 
 As_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, As_concentration, FUN = median),
                                     y = As_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 3, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 15, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 1000, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 12, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -309,9 +349,9 @@ Ca_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ca_concentratio
                                     y = Ca_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 5000, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 20000, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 40000, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 15000, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  geom_hline(yintercept = 40000, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -329,36 +369,14 @@ Ca_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ca_concentratio
 Ca_AllPlots
 
 
-Ca_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ca_concentration, FUN = median),
-                                    y = Ca_concentration, group=Scientific_Name)) +
-  geom_boxplot()+
-  geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 5000, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 20000, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 40000, linetype = "dashed", color = "#003A6B", size=1.2)+
-  coord_flip()+
-  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  scale_y_continuous(limits = c(0, 55000), breaks = seq(0, 55000, by = 5000)) +
-  theme_classic()+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
-        axis.title.x = element_text(size = 19),
-        axis.text.y = element_text(size=14, face="italic"),
-        axis.title.y = element_blank(),
-        legend.key.size = unit(1, "lines"),
-        legend.text = element_text(size = 12.5)) +
-  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
-  ylab("Calcium Concentration (ppm)")
-Ca_AllPlots
 
 Cr_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cr_concentration, FUN = median),
                                     y = Cr_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 2, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 15, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 25, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 100, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -376,36 +394,13 @@ Cr_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cr_concentratio
 Cr_AllPlots
 
 
-Cr_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cr_concentration, FUN = median),
-                                    y = Cr_concentration, group=Scientific_Name)) +
-  geom_boxplot()+
-  geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 2, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 15, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 25, linetype = "dashed", color = "#003A6B", size=1.2)+
-  coord_flip()+
-  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 4)) +
-  theme_classic()+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
-        axis.title.x = element_text(size = 19),
-        axis.text.y = element_text(size=14, face="italic"),
-        axis.title.y = element_blank(),
-        legend.key.size = unit(1, "lines"),
-        legend.text = element_text(size = 12.5)) +
-  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
-  ylab(expression(paste("Chromium Concentration (", "ppm", ")")))
-Cr_AllPlots
-
 Fe_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Fe_concentration, FUN = median),
                                     y = Fe_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 300, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 500, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -426,10 +421,9 @@ Mn_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Mn_concentratio
                                     y = Mn_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 200, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 20, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  #geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  #geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 500, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -451,9 +445,9 @@ Ni_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ni_concentratio
                                     y = Ni_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  #geom_hline(yintercept = 300, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  #geom_hline(yintercept = 1200, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  #geom_hline(yintercept = 2500, linetype = "dashed", color = "#003A6B", size=1.2)+
+  #geom_hline(yintercept = 100, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -501,9 +495,9 @@ Se_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Se_concentratio
                                     y = Se_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 2, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 5, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -526,9 +520,9 @@ Zn_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Zn_concentratio
                                     y = Zn_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 27, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  #geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  #geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  #geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -551,9 +545,9 @@ Ti_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Ti_concentratio
                                     y = Ti_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  #geom_hline(yintercept = 27, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  #geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  #geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  #geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -576,9 +570,9 @@ Cd_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cd_concentratio
                                     y = Cd_concentration, group=Scientific_Name)) +
   geom_boxplot()+
   geom_jitter(aes(colour = Plot), size=1.1) +
-  geom_hline(yintercept = 0.3, linetype = "dashed", color = "#AFE1AF", size=1.2)+
-  #geom_hline(yintercept = 10, linetype = "dashed", color = "#83A3BE", size=1.2)+
-  #geom_hline(yintercept = 100, linetype = "dashed", color = "#003A6B", size=1.2)+
+  geom_hline(yintercept = 10, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
+  #geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size=1.2)+
   coord_flip()+
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_x_discrete(guide = guide_axis(angle = 0))+
@@ -596,13 +590,65 @@ Cd_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cd_concentratio
   ylab('Cadmium concentration (ppm)')
 Cd_AllPlots
 
+####### COrrelation both plants on plot 6 (35 datapoints)
+subset_plants <- dt_plants[dt_plants$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens"),]
+subset_plants <- dt_plants[dt_plants$Plot %in% c("P6"),]
+shapiro.test(subset_plants$Cu_concentration) # non norm
+shapiro.test(subset_plants$Cr_concentration) # non norm
+shapiro.test(subset_plants$Fe_concentration) # non norm
+cor.test(subset_plants$Fe_concentration, subset_plants$Cu_concentration, method="spearman") # significant cor but ties
+cor.test(subset_plants$Cr_concentration, subset_plants$Cu_concentration, method="spearman") # no significant but ties
+cor.test(subset_plants$Fe_concentration, subset_plants$Cr_concentration, method="spearman") # no significant but ties
+
+# Subset Only Xanthisma plot 6 (only 5 datapoints)
+subset_plants <- dt_plants[dt_plants$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens"),]
+subset_plants <- dt_plants[dt_plants$Plot %in% c("P6"),]
+subset_plants2 <- subset_plants[subset_plants$Scientific_Name %in% c("Xanthisma gracile"),]
+shapiro.test(subset_plants2$Cu_concentration) # normal distribution
+shapiro.test(subset_plants2$Cr_concentration) # normal distribution
+shapiro.test(subset_plants2$Fe_concentration) # normal distribution
+cor.test(subset_plants2$Fe_concentration, subset_plants2$Cu_concentration, method="pearson") # significant cor
+cor.test(subset_plants2$Cr_concentration, subset_plants2$Cu_concentration, method="pearson") # no signif
+cor.test(subset_plants2$Fe_concentration, subset_plants2$Cr_concentration, method="pearson") # no signif
+
+# Subset onlu xanthisma all  plots (13 datapooints)
+subset_plants <- dt_plants[dt_plants$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens"),]
+subset_plants_allX <- subset_plants[subset_plants$Scientific_Name %in% c("Xanthisma gracile"),]
+shapiro.test(subset_plants_allX$Cu_concentration) # non normal
+shapiro.test(subset_plants_allX$Cr_concentration) # non normal
+shapiro.test(subset_plants_allX$Fe_concentration) # non normal
+cor.test(subset_plants_allX$Fe_concentration, subset_plants_allX$Cu_concentration, method="spearman") # no signif
+cor.test(subset_plants_allX$Cr_concentration, subset_plants_allX$Cu_concentration, method="spearman") # no signif
+cor.test(subset_plants_allX$Fe_concentration, subset_plants_allX$Cr_concentration, method="spearman") # no signif
+
+#Subset only Pseudognaphalium plot 6 (5 observations)
+
+subset_plants <- dt_plants[dt_plants$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens"),]
+subset_plants3 <- subset_plants[subset_plants$Scientific_Name %in% c("Pseudognaphalium canescens"),]
+shapiro.test(subset_plants3$Cu_concentration) # normal distribution
+shapiro.test(subset_plants3$Cr_concentration) # normal distribution
+shapiro.test(subset_plants3$Fe_concentration) # normal distribution
+cor.test(subset_plants3$Fe_concentration, subset_plants3$Cu_concentration, method="pearson") # no signif
+cor.test(subset_plants3$Cr_concentration, subset_plants3$Cu_concentration, method="pearson") # no signif
+cor.test(subset_plants3$Fe_concentration, subset_plants3$Cr_concentration, method="pearson") # no signif
+
+#Subset only Biechera perennans plot 6 (4 datapoints)
+
+subset_plants_BP <- dt_plants[dt_plants$Scientific_Name %in% c("cf. Boechera perennans"),]
+shapiro.test(subset_plants_BP$Cu_concentration) # normal distribution
+shapiro.test(subset_plants_BP$Cr_concentration) # normal distribution
+shapiro.test(subset_plants_BP$Fe_concentration) # normal distribution
+cor.test(subset_plants_BP$Fe_concentration, subset_plants_BP$Cu_concentration, method="pearson") # no signif p>0.05
+cor.test(subset_plants_BP$Cr_concentration, subset_plants_BP$Cu_concentration, method="pearson") # no signif
+cor.test(subset_plants_BP$Fe_concentration, subset_plants_BP$Cr_concentration, method="pearson") # no signif
 
 
 
+shapiro.test(subset_plants3$Cu_concentration) # > 0.05 =  normally distributed
+shapiro.test(subset_plants$Fe_concentration) # <0.05 non normally all Fe, Cr, Cu
 
 
 
-summary(dt_plants)
 sd(dt_plants$Cd_concentration)
 #scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
 #theme(legend.position = "none")+
@@ -611,39 +657,6 @@ sd(dt_plants$Cd_concentration)
 
 
 
-
-Fe_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Fe_concentration, FUN = median), y = Fe_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot), size=1) +
-  #ylim(0,600)+
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Fe_AllPlots
-
-#Chromium is too low to be considered
-Re_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Re_concentration, FUN = median), y = Re_concentration, group=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  #theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 0))+
-  geom_jitter(aes(colour = Plot), size=1) +
-  #ylim(0,600)+
-  coord_flip()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Re_AllPlots
-
-
-
-Cu_All_P5<- ggplot(P5, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
-  geom_boxplot()+theme_classic()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.title.x=element_blank())+
-  theme(legend.position = "none")+
-  scale_x_discrete(guide = guide_axis(angle = 45))+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-#scale_fill_manual(values = c("#38A6A5", "#73AF48", "#EDAD08", "#CC503E"))
-Cu_All_P5
 
 
 Cu_All_P6<- ggplot(P6, aes(x = Scientific_Name, y = Cu_concentration, fill=Scientific_Name)) +
