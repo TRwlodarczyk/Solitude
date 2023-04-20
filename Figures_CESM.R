@@ -2,33 +2,370 @@
 # Tomasz Wlodarczyk
 # twlodarczyk@arizona.edu
 # 2023-04-15
-
+{
+library(data.table)
+library(reshape2)
+library(reshape)
+library("readxl")
+library(ggpubr)
+library(agricolae)
+library(tidyverse)
+library (readr) #to read URL
+}
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/Boxplots")
-dt <-read_csv("dt_plants.csv")
+dt_plants <-read_csv("dt_plants.csv")
+dt_plants2 <-read_csv("dt_plants2.csv") # this one includes the species number
 
-
-Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Group, Cu_concentration, FUN = median),
-                                    y = Cu_concentration, group=Scientific_Name)) +
-  geom_boxplot()+
-  geom_point(aes(colour = Plot, Shape=)) +
-  geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size=1.2)+
-  #geom_hline(yintercept = 250, linetype = "longdash", color = "#707070", size=1.2)+
-  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size=1.2)+
-  coord_flip()+
+Cu <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cu_concentration, FUN = median),
+                            y = Cu_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_x_discrete(guide = guide_axis(angle = 0))+
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
   scale_y_continuous(limits = c(0, 600), breaks = seq(0, 800, by = 50)) +
-  theme_classic()+
+  theme_classic() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
         axis.title.x = element_text(size = 19),
         axis.text.y = element_text(size=14, face="italic"),
         axis.title.y = element_blank(),
         legend.key.size = unit(1, "lines"),
-        legend.text = element_text(size = 12.5)) +
-  guides(colour = guide_legend(override.aes = list(size = 3.5)))+
-  ylab("Copper Concentration (ppm)")
-Cu_AllPlots
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Cu (mg/kg)")
 
+Cu
+
+As <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, As_concentration, FUN = median),
+                                     y = As_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 12, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 18), breaks = seq(0, 18, by = 2)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("As (mg/kg)")
+
+As
+
+
+
+Ca <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Ca_concentration, FUN = median),
+                                     y = Ca_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 15000, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  geom_hline(yintercept = 40000, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 55000), breaks = seq(0, 55000, by = 5000)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Ca (mg/kg)")
+
+Ca
+
+
+
+Cr <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cr_concentration, FUN = median),
+                                     y = Cr_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 4)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Cr (mg/kg)")
+
+Cr
+
+
+
+Fe <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Fe_concentration, FUN = median),
+                                     y = Fe_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 500, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 2650), breaks = seq(0, 2650, by = 250)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Fe (mg/kg)")
+
+Fe
+
+
+
+Mn <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Mn_concentration, FUN = median),
+                            y = Mn_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  #geom_hline(yintercept = 500, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  #scale_y_continuous(limits = c(0, 2650), breaks = seq(0, 2650, by = 250)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Mn (mg/kg)")
+
+Mn
+
+
+
+Ni <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Ni_concentration, FUN = median),
+                            y = Ni_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 5), breaks = seq(0, 5, by = 1)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Ni (mg/kg)")
+
+Ni
+
+
+
+Re <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Re_concentration, FUN = median),
+                            y = Re_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  #geom_hline(yintercept = 500, linetype = "dashed", color = "#9a9a9a", size=1.2)+
+  #geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  #scale_y_continuous(limits = c(0, 2650), breaks = seq(0, 2650, by = 250)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Re (mg/kg)")
+
+Re
+
+Se <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Se_concentration, FUN = median),
+                            y = Se_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 5, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  #geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 10)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Se (mg/kg)")
+
+Se
+
+
+
+Zn <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Zn_concentration, FUN = median),
+                            y = Zn_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  #geom_hline(yintercept = 5, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  #geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 90), breaks = seq(0, 90, by = 15)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Zn (mg/kg)")
+
+Zn
+
+
+
+
+# Counts across different pltos
+
+ggplot(dt_plants2, aes(x = Plot, y = reorder(CESM_Name, table(CESM_Name)[CESM_Name]), group = Form)) +
+  geom_point(shape = 4, size = 1.55, color = "black", stroke = 1.1)+  # specify shape argument as 4 for X symbol and customize size, color, and stroke
+  facet_grid(Form ~ ., scales = "free_y", space = "free_y") +
+  labs(x = "Plot", color = "Form") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=14),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size=14, face="italic"),
+        strip.text = element_text(size = 14, face = "bold"))
+
+
+
+
+
+
+
+
+
+#########OTHER########
+ggplot(dt_plants, aes(x = Scientific_Name, fill = Plot)) +
+  geom_bar() +
+  facet_wrap(~Form, nrow = 1, scales = "free_x") +
+  coord_flip() +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  theme_classic() +
+  labs(x = "Scientific Name", y = "Counts", fill = "Plot") +
+  theme(
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    strip.background = element_blank(),
+    strip.text = element_text(size = 14, face = "bold")
+  )
+
+
+ggplot(dt_plants, aes(x = Plot, fill = Form)) +
+  geom_bar(stat = "count", position = "stack") +
+  labs(title = "Number of plant species in each plot by form", x = "Plot", y = "Proportion") +
+  scale_fill_manual(values = c("#9dc183", "#cbd394", "#6f8817", "#3e4d34")) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+        axis.title.x = element_blank(),
+        legend.title = element_blank(),
+        legend.key.size = unit(0.5, "cm"),
+        strip.text = element_text(size = 9, face = "bold"),
+        axis.text.y = element_text(size = 8),
+        axis.title.y = element_text(size = 12, vjust = 0.5, angle = 90))
+
+
+ggplot(dt_plants, aes(x = Plot, y = Scientific_Name, color = Form)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("blue", "green", "orange", "purple")) +
+  labs(title = "Presence of plant species in different plots",
+       x = "Plot",
+       y = "Scientific Name",
+       color = "Form") +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 8),
+        axis.title = element_text(size = 12, face = "bold"))
 

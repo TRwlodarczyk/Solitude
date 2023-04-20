@@ -83,8 +83,21 @@ dt_plants_summary <- dt_plants_trimmed %>%
   pivot_wider(names_from = Plot, values_from = Value) %>%
   arrange(Concentration)
 
+# Round values to one digit after the comma
+#dt_plants_summary[, 3:6] <- round(dt_plants_summary[, 3:6], 1)
 
-write.csv(dt_plants_summary, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/dt_plants_summary.csv", row.names=FALSE)
+dt_plants_summary <- dt_plants_summary %>%
+  mutate(across(where(is.numeric), 
+                ~ ifelse(. > 10, round(., 0), round(., 1))))
+
+
+write.csv(dt_plants_summary, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/dt_plants_summary.csv")
+dt_summary_new <- read_csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/dt_plants_summary.csv")
+tab_df(dt_summary_new, file="dt_plants_summary_new.doc", digits = 1)
+
+tab_df(dt_plants_summary, file="dt_plants_summary_04.16.doc", digits = 1)
+
+
 dt_summary_new <- read_csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/Table/dt_plants_summary2.csv")
 
 library(sjPlot)
