@@ -162,6 +162,8 @@ model_all <- lm(Substrate_RT ~ Total_Weight, data = dt_plants_ICP)
 rsq <- summary(model)$r.squared
 cat("R-squared value:", rsq, "\n\n")
 
+
+
 rsq <- summary(model2)$r.squared
 cat("R-squared value:", rsq, "\n\n")
 

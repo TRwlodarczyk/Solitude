@@ -299,6 +299,33 @@ Zn <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Zn_concentration, FUN = medi
 
 Zn
 
+Cd <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cd_concentration, FUN = median),
+                             y = Cd_concentration, CESM_Name=CESM_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.4, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 23, 25)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 10, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  #geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 90), breaks = seq(0, 90, by = 15)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Cd (mg/kg)")
+
+Cd
+
 
 
 
@@ -315,6 +342,15 @@ ggplot(dt_plants2, aes(x = Plot, y = reorder(CESM_Name, table(CESM_Name)[CESM_Na
         axis.title.y = element_blank(),
         axis.text.y = element_text(size=14, face="italic"),
         strip.text = element_text(size = 14, face = "bold"))
+
+
+
+
+
+
+
+
+
 
 
 
