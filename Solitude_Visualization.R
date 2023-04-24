@@ -28,15 +28,15 @@ dt<-read.delim(url(urlfile))
 
 
 #replace ND with 0
-
-tr <- matrix(data = NA, ncol = ncol(dt[,c(1:46)]), nrow=nrow(dt))
+{
+tr <- matrix(data = NA, ncol = ncol(dt[,c(1:46)]), nrow=nrow(dt)) # select all columns 1:46
 colnames(tr) <- colnames(dt[,c(1:46)])
-for (i in 12:46)
+for (i in 12:46) # select when the concentrations start
 {
   tr[,c(i)] <- gsub(".*ND.*", 0, dt[,i])
 }
 
-for(i in 1:11)
+for(i in 1:11) # select columns that need to stay the same 1:11 include character and double (weight)
 {
   tr[,c(i)] <- dt[,c(i)]
 }
@@ -46,7 +46,7 @@ tr
 tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
 tr[,12:46] <- sapply(tr[,12:46],as.numeric) # Change a character to numeric (double)
 typeof(tr$Cu_concentration) # confirm the value is no longer a character
-
+}
 #subset data to remove quality control samples
 
 dt_plants <- subset(tr, Scientific_Name != 'QA_Sample')

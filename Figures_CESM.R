@@ -15,7 +15,12 @@ library (readr) #to read URL
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/Boxplots")
 dt_plants <-read_csv("dt_plants.csv")
-dt_plants2 <-read_csv("dt_plants2.csv") # this one includes the species number
+#dt_plants2 <-read_csv("dt_plants2.csv") # this one includes the species number
+dt_plants2 <-read_csv("Plants_new_LOD_nounc2.csv")
+dt_soil_new <- read.delim("Soil_new_trim.txt") # this datase has added T and S column and P1.S P1.T etc
+
+
+
 
 Cu <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cu_concentration, FUN = median),
                             y = Cu_concentration, CESM_Name=CESM_Name)) +
@@ -28,7 +33,7 @@ Cu <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cu_concentration, FUN = medi
   geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
   coord_flip() +
   scale_x_discrete(guide = guide_axis(angle = 0)) +
-  scale_y_continuous(limits = c(0, 600), breaks = seq(0, 800, by = 50)) +
+  scale_y_continuous(limits = c(0, 600), breaks = seq(0, 600, by = 50)) +
   theme_classic() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
@@ -404,4 +409,222 @@ ggplot(dt_plants, aes(x = Plot, y = Scientific_Name, color = Form)) +
         axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 8),
         axis.title = element_text(size = 12, face = "bold"))
+
+#################################
+
+#SOIL figures
+#########################
+
+
+
+
+#mean(dt_soil_new$Cu_Concentration[dt_soil_new$Plot2 == "P1"], na.rm = TRUE) this is to check if tidy grouping worked
+
+
+#sd(dt_soil_new$Cu_Concentration[dt_soil_new$Plot2 == "P2"], na.rm = TRUE)
+
+
+dt_soil_new$As_Concentration[dt_soil_new$As_Concentration == 0] <- 0.5/2
+dt_soil_new$Ca_Concentration[dt_soil_new$Ca_Concentration == 0] <- 20/2
+dt_soil_new$Cd_Concentration[dt_soil_new$Cd_Concentration == 0] <- 0.8/2
+dt_soil_new$Cl_Concentration[dt_soil_new$Cl_Concentration == 0] <- 220/2
+dt_soil_new$Cr_Concentration[dt_soil_new$Cr_Concentration == 0] <- 5/2
+dt_soil_new$Cu_Concentration[dt_soil_new$Cu_Concentration == 0] <- 1.5/2
+dt_soil_new$Fe_Concentration[dt_soil_new$Fe_Concentration == 0] <- 12/2
+dt_soil_new$Mn_Concentration[dt_soil_new$Mn_Concentration == 0] <- 4/2
+dt_soil_new$Ni_Concentration[dt_soil_new$Ni_Concentration == 0] <- 3/2
+dt_soil_new$Pb_Concentration[dt_soil_new$Pb_Concentration == 0] <- 0.5/2
+dt_soil_new$Re_Concentration[dt_soil_new$Re_Concentration == 0] <- 1/2
+dt_soil_new$Se_Concentration[dt_soil_new$Se_Concentration == 0] <- 0.4/2
+dt_soil_new$Ti_Concentration[dt_soil_new$Ti_Concentration == 0] <- 5/2
+dt_soil_new$Zn_Concentration[dt_soil_new$Zn_Concentration == 0] <- 1/2
+dt_soil_new$Hg_Concentration[dt_soil_new$Hg_Concentration == 0] <- 0.5/2
+dt_soil_new$Tl_Concentration[dt_soil_new$Tl_Concentration == 0] <- 1/2
+dt_soil_new$Co_Concentration[dt_soil_new$Co_Concentration == 0] <- 1/2
+
+
+
+#write.table(dt_soil_new, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Newest Data/Soil_new_trim_LOD.csv', sep=",", row.names = F)
+
+
+
+library(tidyverse)
+
+dt_soil_new_summary_Cu <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Cu_Concentration), SD = sd(Cu_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Cu_soil <- ggplot(dt_soil_new_summary_Cu, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+ # scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Cu (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+
+Cu_soil
+
+dt_soil_new_summary_Mn <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Mn_Concentration), SD = sd(Mn_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Mn_soil <- ggplot(dt_soil_new_summary_Mn, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Mn (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Mn_soil
+
+
+dt_soil_new_summary_Pb <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Pb_Concentration), SD = sd(Pb_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Pb_soil <- ggplot(dt_soil_new_summary_Pb, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Pb (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Pb_soil
+
+
+dt_soil_new_summary_Ti <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Ti_Concentration), SD = sd(Ti_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Ti_soil <- ggplot(dt_soil_new_summary_Ti, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Ti (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Ti_soil
+
+dt_soil_new_summary_Cr <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Cr_Concentration), SD = sd(Cr_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Cr_soil <- ggplot(dt_soil_new_summary_Cr, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Cr (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Cr_soil
+
+
+dt_soil_new_summary_Fe <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Fe_Concentration), SD = sd(Fe_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Fe_soil <- ggplot(dt_soil_new_summary_Fe, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Fe (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Fe_soil
+
+dt_soil_new_summary_Ca <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Ca_Concentration), SD = sd(Ca_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Ca_soil <- ggplot(dt_soil_new_summary_Ca, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Ca (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Ca_soil
+
+
+dt_soil_new_summary_As <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(As_Concentration), SD = sd(As_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+As_soil <- ggplot(dt_soil_new_summary_As, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Re (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+As_soil
+
+dt_soil_new_summary_Se <- dt_soil_new %>%
+  group_by(Plot2, Layer) %>%
+  summarize(Mean = mean(Se_Concentration), SD = sd(Se_Concentration)/sqrt(n())) %>%
+  ungroup()
+
+Se_soil <- ggplot(dt_soil_new_summary_Se, aes(x = forcats::fct_rev(Layer), y = Mean, fill = Layer)) + #forcats switch the position of S and T as they are displayed
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(Plot2~., scales = "free_y") + # facet_wrap would do 4 plots, facet_grid do all on one facet_wrap(~ Plot2, scales = "free_y")
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.2) +
+  coord_flip() +
+  #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
+  labs(x = "", y = "Se (mg/kg)") +
+  scale_fill_manual(values = c("#0070C0", "#E69F00")) +
+  theme_bw()
+Se_soil
+
+
+
+library(ggplot2)
+library(ggpubr)
+
+# Assuming you already have the six plots as ggplot objects named Cu_soil, Mn_soil, Pb_soil, Ti_soil, Cr_soil, Fe_soil
+
+ggarrange(Cu_soil, Mn_soil, Pb_soil, Ti_soil, Cr_soil, Fe_soil, Ca_soil, As_soil, Se_soil,
+          ncol = 3, nrow = 3, 
+          common.legend = TRUE, legend = "bottom")
 
