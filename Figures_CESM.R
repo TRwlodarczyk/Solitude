@@ -86,7 +86,7 @@ Ca <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Ca_concentration, FUN = medi
   scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   geom_hline(yintercept = 15000, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
-  geom_hline(yintercept = 40000, linetype = "dotdash", color = "#454545", size = 1.2) +
+  #geom_hline(yintercept = 40000, linetype = "dotdash", color = "#454545", size = 1.2) +
   coord_flip() +
   scale_x_discrete(guide = guide_axis(angle = 0)) +
   scale_y_continuous(limits = c(0, 55000), breaks = seq(0, 55000, by = 5000)) +
@@ -395,6 +395,22 @@ ggplot(dt_plants, aes(x = Plot, fill = Form)) +
         strip.text = element_text(size = 9, face = "bold"),
         axis.text.y = element_text(size = 8),
         axis.title.y = element_text(size = 12, vjust = 0.5, angle = 90))
+
+
+library(dplyr)
+
+# Group the data by Scientific_Name and Plot, and count the number of rows in each group
+species_per_plot <- dt_plants %>% 
+  group_by(Scientific_Name, Plot) %>% 
+  summarise(num_species = n())
+
+# Group by plot only - i.e. how many plants collected from each plot
+species_per_plot <- dt_plants %>% 
+  group_by(Plot) %>% 
+  summarise(num_species = n())
+
+
+
 
 
 ggplot(dt_plants, aes(x = Plot, y = Scientific_Name, color = Form)) +

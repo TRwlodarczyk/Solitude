@@ -12,7 +12,7 @@ library(plotly)
 library(heatmaply)
 library(ggcorrplot)
 library(corrplot)
-
+library (readr)
 
 #dt_plants <- read.csv("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/GitHub/Solitude/Tomasz.csv")
 
@@ -23,7 +23,7 @@ dt_plants<-read_csv(url(urlfile))
 ui <- fluidPage(titlePanel("Solitude Plants & Soil"),
                 
           
- tags$img(src="CESMlogo.png", align = "right",height='100px',width='400px', deleteFile=FALSE),                
+ tags$img(src="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/CESMlogo.png", align = "right",height='100px',width='400px', deleteFile=FALSE),                
                 
   theme = bs_theme(
     bg = "#075773", 
@@ -38,9 +38,20 @@ ui <- fluidPage(titlePanel("Solitude Plants & Soil"),
   # Define main panel for displaying plots and tables.
   mainPanel(
     navlistPanel(
-      "Plots & Tables",
+      "Explore the data:",
       id = "tabs",
-      selected = "Plots",
+      selected = "Figures",
+      
+      tabPanel("Figures", 
+               radioButtons("figure_select", "Select a figure:",
+                            choices = c("Species Distribution" = "species_dist",
+                                        "Study Area" = "study_map",
+                                        "Soil variability" = "soil_box"),
+                            selected = "study_map"),
+               uiOutput("figure_data")
+      ),
+      
+      
       tabPanel(
         "Plots",
         conditionalPanel(
@@ -64,6 +75,13 @@ ui <- fluidPage(titlePanel("Solitude Plants & Soil"),
                 radioButtons("concentration_var", "Select a variable:",
                              choices = c("Copper concentration" = "Cu_concentration",
                                          "Selenium concentration" = "Se_concentration",
+                                         "Cadmium concentration" = "Cd_concentration",
+                                         "Manganese concentration" = "Mn_concentration",
+                                         "Zinc concentration" = "Zn_concentration",
+                                         "Arsenic concentration" = "As_concentration",
+                                         "Chromium concentration" = "Cr_concentration",
+                                         "Iron concentration" = "Fe_concentration",
+                                         "Calcium concentration" = "Ca_concentration",
                                          "Rhenium concentration" = "Re_concentration"))
               )
             ),
@@ -102,6 +120,18 @@ server <- function(input, output) {
   })
     
     
+  
+  # Render the table data
+  output$figure_data <- renderUI({
+    if (input$figure_select == "soil_box") {
+      img(src="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/soil_box_4.5.23.png", align = "right",height='600px',width='600px', deleteFile=FALSE)
+    } else if (input$figure_select == "species_dist") {
+      img(src="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/Specied_Dist_Plots-01.png", align = "right",height='600px',width='600px', deleteFile=FALSE)
+    } else if (input$figure_select == "study_map") {
+      img(src="https://raw.githubusercontent.com/TRwlodarczyk/Solitude/master/Solitude_Layout-01.png", align = "right",height='600px',width='600px', deleteFile=FALSE)
+    }
+  })
+  
 #Define function to create correlation plot - THIS DOES NOT WORK
 #  create_corr_plot <- function() {
 #    heatmaply_cor(
@@ -113,7 +143,8 @@ server <- function(input, output) {
 #    )
 #  }
  
-  # Define function to create correlation plot - THIS ONE WORKS
+
+   #Define function to create correlation plot - THIS ONE WORKS
   create_corr_plot <- function() {
     ggcorrplot(cor(dt_plants[,5:17]), 
                title = "Concentrations of elements in plants", 
@@ -147,10 +178,41 @@ server <- function(input, output) {
     } else if (input$concentration_var == "Se_concentration") {
       dt_subset <- dt_plants
       ylab <- "Selenium concentration"
+      
+    } else if (input$concentration_var == "Cd_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Cadmium concentration"
+      
+    } else if (input$concentration_var == "Mn_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Manganese concentration"
+      
+    } else if (input$concentration_var == "Zn_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Zinc concentration"
+      
+    } else if (input$concentration_var == "As_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Arsenic concentration"
+      
+    } else if (input$concentration_var == "Cr_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Chromium concentration"
+      
+    } else if (input$concentration_var == "Fe_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Iron concentration"
+      
+    } else if (input$concentration_var == "Ca_concentration") {
+      dt_subset <- dt_plants
+      ylab <- "Calcium concentration"
+      
     } else if (input$concentration_var == "Re_concentration") {
       dt_subset <- dt_plants
       ylab <- "Rhenium concentration"
-    }
+    } 
+    
+    
     
 #    ggplot(dt_subset, aes(y = get(input$concentration_var))) +
 #      geom_boxplot() +
@@ -203,7 +265,7 @@ ggplot(dt_subset, aes(x = reorder(Scientific_Name, !!sym(input$concentration_var
     } else {
       create_barplot()
     }
-  }, height = 600, width = 800)
+  }, height = 400, width = 600)
   
 
 }

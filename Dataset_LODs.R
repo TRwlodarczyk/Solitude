@@ -22,6 +22,8 @@ dt<-read.delim(url(urlfile))
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/Boxplots")
 soil_new_LOD <-read_csv("Soil_new_trim_LOD.csv")
+dt_soil_new1 <- read_csv("Soil_New_4.25_CESM2.csv") # this is the newest dataset with LODs and uncertainities
+
 
 #replace ND with 0
 {
@@ -181,5 +183,33 @@ dt_soil_summary_all <- dt_soil_summary_all %>%
   mutate(across(where(is.numeric), 
                 ~ ifelse(. > 10, round(., 0), round(., 2))))
 
-write.table(dt_soil_summary_all, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Newest Data/Soil_new_summary_all.csv', sep=",", row.names = F)
+#write.table(dt_soil_summary_all, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Newest Data/Soil_new_summary_all.csv', sep=",", row.names = F)
 
+
+
+
+
+# Soil dataset for CESM, LODS, uncertainities, full info
+
+
+
+dt_soil_new1$As_Concentration[dt_soil_new1$As_Concentration == 0] <- 0.5/2
+dt_soil_new1$Ca_Concentration[dt_soil_new1$Ca_Concentration == 0] <- 20/2
+dt_soil_new1$Cd_Concentration[dt_soil_new1$Cd_Concentration == 0] <- 0.8/2
+dt_soil_new1$Cl_Concentration[dt_soil_new1$Cl_Concentration == 0] <- 220/2
+dt_soil_new1$Cr_Concentration[dt_soil_new1$Cr_Concentration == 0] <- 5/2
+dt_soil_new1$Cu_Concentration[dt_soil_new1$Cu_Concentration == 0] <- 1.5/2
+dt_soil_new1$Fe_Concentration[dt_soil_new1$Fe_Concentration == 0] <- 12/2
+dt_soil_new1$Mn_Concentration[dt_soil_new1$Mn_Concentration == 0] <- 4/2
+dt_soil_new1$Ni_Concentration[dt_soil_new1$Ni_Concentration == 0] <- 3/2
+dt_soil_new1$Pb_Concentration[dt_soil_new1$Pb_Concentration == 0] <- 0.5/2
+dt_soil_new1$Re_Concentration[dt_soil_new1$Re_Concentration == 0] <- 1/2
+dt_soil_new1$Se_Concentration[dt_soil_new1$Se_Concentration == 0] <- 0.4/2
+dt_soil_new1$Ti_Concentration[dt_soil_new1$Ti_Concentration == 0] <- 5/2
+dt_soil_new1$Zn_Concentration[dt_soil_new1$Zn_Concentration == 0] <- 1/2
+dt_soil_new1$Hg_Concentration[dt_soil_new1$Hg_Concentration == 0] <- 0.5/2
+dt_soil_new1$Tl_Concentration[dt_soil_new1$Tl_Concentration == 0] <- 1/2
+dt_soil_new1$Co_Concentration[dt_soil_new1$Co_Concentration == 0] <- 1/2
+
+
+write.table(dt_soil_new1, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Newest Data/Soil/Soil_CESM_final.csv', sep=",", row.names = F)
