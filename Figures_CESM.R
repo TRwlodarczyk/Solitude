@@ -610,7 +610,7 @@ As_soil <- ggplot(dt_soil_new_summary_As, aes(x = forcats::fct_rev(Layer), y = M
                 width = 0.2) +
   coord_flip() +
   #scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
-  labs(x = "", y = "Re (mg/kg)") +
+  labs(x = "", y = "As (mg/kg)") +
   scale_fill_manual(values = c("#0070C0", "#E69F00")) +
   theme_bw()
 As_soil
@@ -643,4 +643,69 @@ library(ggpubr)
 ggarrange(Cu_soil, Mn_soil, Pb_soil, Ti_soil, Cr_soil, Fe_soil, Ca_soil, As_soil, Se_soil,
           ncol = 3, nrow = 3, 
           common.legend = TRUE, legend = "bottom")
+
+
+
+
+#stats
+
+shapiro.test(dt_soil_new_P1$Fe_Concentration)
+
+dt_soil_new_P6 <- subset(dt_soil_new, Plot2=="P6")
+
+dt_soil_new_P1 <- subset(dt_soil_new, Plot2=="P1")
+result <- wilcox.test(dt_soil_new_P1$Cu_Concentration ~ dt_soil_new_P1$Layer, paired = FALSE, exact = FALSE)
+p_value <- result$p.value
+
+dt_soil_new_P6 <- subset(dt_soil_new, Plot2=="P6")
+result <- wilcox.test(dt_soil_new_P6$Cu_Concentration ~ dt_soil_new_P6$Layer, paired = FALSE, exact = FALSE)
+p_value <- result$p.value
+
+
+
+result <- t.test(dt_soil_new_P1$Fe_Concentration ~ dt_soil_new_P1$Layer)
+p_value <- result$p.value
+
+library(dplyr)
+library(tidyr)
+
+# Define the concentration variables
+concentration_vars <- c("Cu_Concentration", "Mn_Concentration", "Pb_Concentration",
+                        "Ti_Concentration", "Cr_Concentration", "Fe_Concentration",
+                        "Ca_Concentration", "As_Concentration", "Se_Concentration")
+
+# Define the plot names
+plot_names <- c("P1", "P2", "P5", "P6")
+
+# Perform Wilcoxon signed-rank test for each combination
+results <- list()  # Store the results in a list
+
+for (plot in plot_names) {
+  dt_plot <- subset(dt_soil_new, Plot2 == plot)  # Subset the data for the current plot
+  
+  for (concentration_var in concentration_vars) {
+    result <- wilcox.test(dt_plot[[concentration_var]] ~ dt_plot$Layer, paired = FALSE, exact = FALSE)
+    p_value <- result$p.value
+    
+    # Store the results in the list
+    results[[paste(plot, concentration_var, sep = "_")]] <- p_value
+  }
+}
+
+# Create a data frame to store the results
+result_table <- expand.grid(Plot = plot_names, Concentration = concentration_vars)
+result_table$P_value <- NA
+
+# Fill in the P_values in the table
+for (i in 1:nrow(result_table)) {
+  plot <- result_table$Plot[i]
+  concentration_var <- result_table$Concentration[i]
+  result_key <- paste(plot, concentration_var, sep = "_")
+  result_table$P_value[i] <- results[[result_key]]
+}
+
+# Print the result table
+print(result_table)
+
+
 
