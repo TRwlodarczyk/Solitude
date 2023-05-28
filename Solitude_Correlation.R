@@ -558,8 +558,463 @@ cat("  p-value:", t_test$p.value, "\n")
 
 }
 
+#GLMs Cu #model changes if you have LODs or not, AIC is lower when LODs are removed. 
+{
+  
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+
+model1 <- glm(Cu_ICP ~ Cu_concentration, data = dt)
+summary(model1)
+model2 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt)
+summary(model2)
+model3 <- glm(Cu_ICP ~ Cu_concentration + Substrate_RT, data = dt)
+summary(model3)
+
+# Best AIC value for model4!!
+# Provide starting values for the gamma glm model
+start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
+model4 <- glm(Cu_ICP ~ Cu_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+summary(model4)
+model5 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model5)
+model6 <- glm(Cu_ICP ~ Cu_concentration, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model6)
+model7 <- glm(Cu_ICP ~ Cu_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model7)
+
+
+# Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
+Predicted_Cu_ICP = 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT) 
+dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+
+#Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+dt$Predicted_Cu_ICP2 <- 17.03270 + (1.45362* dt$Cu_concentration) + (-11.13508* dt$Total_Weight)
+
+cor.test(dt$Cu_ICP, dt$Cu_concentration, method="spearman") # rho = 0.9131926, p.val < 2.2e-16
+cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.9433337, p.val < 2.2e-16
+cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP2, method="spearman") # rho = 0.9300852, p.val < 2.2e-16
+
+library(psych)
+dt_ICC1 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP")]
+
+ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+
+
+dt_ICC2 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP2")]
+ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
 
 
 
-typeof(dt$Total_Weight)
 
+
+#Check pvalue for bland altman of new predicted variables vs ICP
+
+# Calculate the average of measurements
+average1 <- (dt$Predicted_Cu_ICP + dt$Cu_ICP) / 2
+
+# Calculate the difference (error)
+difference1 <- dt$Predicted_Cu_ICP - dt$Cu_ICP
+
+# Create a data frame with the variables
+df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
+
+# Calculate the mean difference and standard deviation
+mean_diff <- mean(difference1)
+sd_value <- sd(difference1)
+
+# Define the plot
+ggplot(df, aes(x = average, y = difference, shape = Form, color = Total_Weight)) +
+  geom_point(size = 4, stroke=1) +  # Add points with specified size
+  geom_hline(aes(yintercept = mean_diff), color="#7D7CAF", linetype = "dashed", size = 1.5) +  # Add dashed line at the mean difference
+  geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="#AFB07D", linetype = "dashed", size = 1.5) +  # Add upper limit line
+  geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="#AFB07D",linetype = "dashed", size = 1.5) +  # Add lower limit line
+  labs(x = "Average", y = "Difference", title = "Bland-Altman Plot Cu") +  # Set axis labels and title
+  scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
+  scale_y_continuous(limits = c(-200, 100), breaks = seq(-200, 100, by = 50), expand = c(0, 0)) + # Set y-axis limits
+  theme_minimal() +  # Use a minimal theme
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+    axis.title = element_text(size = 20),  # Customize axis labels
+    axis.text.x = element_text(size = 16),
+    axis.title.x = element_text(size = 20),
+    axis.text.y = element_text(size = 16),
+    axis.title.y = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.position = "top"  # Position the legend at the top
+  ) +
+  guides(
+    shape = guide_legend(title = "Form", override.aes = list(size = 5))
+  )  # Add legend for shape aesthetic with specified size
+
+# Perform a one-sample t-test
+t_test <- t.test(difference1, mu = 0)
+
+# Print the results
+cat("Mean Difference:", mean_diff, "\n")
+cat("One-sample t-test:\n")
+cat("  t-value:", t_test$statistic, "\n")
+cat("  p-value:", t_test$p.value, "\n")
+
+# Calculate mean difference and standard deviation of the differences
+mean_diff <- mean(difference)
+sd_diff <- sd(difference)
+
+# Calculate confidence interval for the mean difference
+n <- length(difference)
+se_diff <- sd_diff / sqrt(n)
+t_value <- qt(0.975, df = n - 1)  # 95% confidence interval
+ci_diff <- mean_diff + c(-1, 1) * t_value * se_di
+
+
+
+dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans", "Nultuma (Prosopis) velutina", "Tamarix chinesis", "Allionia incarnata"),] 
+
+dt_Cu <- dt_selected[, c(1:11, 58, 69)] #69 is the Predicted_Cu_ICP
+melted_dt_Cu <- melt(dt_Cu, measure.vars = c("Cu_ICP", "Predicted_Cu_ICP"),
+                     variable.name = "Method", value.name = "Cu_value")
+
+XG <- subset(melted_dt_Cu, Group=="G36")
+result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE)
+print(result) # using Predicted_Cu_ICP, there's now no significant differences
+
+AI <- subset(melted_dt_Cu, Group=="G3")
+result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE)
+print(result) # using Predicted_Cu_ICP there's now no significant difference
+
+
+
+Cu <- ggplot(melted_dt_Cu, aes(x = reorder(Scientific_Name, value, FUN = median),
+                               y = value, fill = variable)) +
+  geom_boxplot(position = position_dodge(width = 0.9)) +
+  geom_point(size = 1.9, stroke = 1, aes(color = variable, fill = variable),
+             position = position_dodge(width = 0.8)) +
+  scale_fill_manual(values = c("#068DA9", "#643A6B")) +
+  scale_color_manual(values = c("#34495E", "#B0A4A4")) +
+  labs(x = "Scientific Name", y = "Cu Value", fill = "Variable") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(2, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=20, face = "bold"))+
+  coord_flip() +
+  theme(legend.position = "bottom")
+
+Cu
+
+
+#anova(model, test='Chisq') tis is a test to check if there's a difference between models I guess. If not, there should be another test to check differences between models. 
+
+}
+
+#GLMs Fe 
+
+{
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+
+  model1 <- glm(Fe_ICP ~ Fe_concentration, data = dt)
+  summary(model1)
+  model2 <- glm(Fe_ICP ~ Fe_concentration + Total_Weight, data = dt)
+  summary(model2)
+  model3 <- glm(Fe_ICP ~ Fe_concentration + Substrate_RT, data = dt)
+  summary(model3)
+  
+  # Best AIC value for model4!!
+  # Provide starting values for the gamma glm model
+  start_vals <- c(coeff_Fe_concentration = 0, coeff_intercept = 18.4)
+  model4 <- glm(Fe_ICP ~ Fe_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  summary(model4)
+  model5 <- glm(Fe_ICP ~ Fe_concentration + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model5)
+  model6 <- glm(Fe_ICP ~ Fe_concentration, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model6)
+  model7 <- glm(Fe_ICP ~ Fe_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model7)
+  
+
+  # Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
+  Predicted_Fe_ICP = 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT) 
+  dt$Predicted_Fe_ICP <- 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT)
+  
+  #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+  dt$Predicted_Fe_ICP2 <- 17.03270 + (1.45362* dt$Fe_concentration) + (-11.13508* dt$Total_Weight)
+  
+  cor.test(dt$Fe_ICP, dt$Fe_concentration, method="spearman") # rho = 0.9131926, p.val < 2.2e-16
+  cor.test(dt$Fe_ICP, dt$Predicted_Fe_ICP, method="spearman") # rho = 0.9433337, p.val < 2.2e-16
+  cor.test(dt$Fe_ICP, dt$Predicted_Fe_ICP2, method="spearman") # rho = 0.9300852, p.val < 2.2e-16
+
+  
+  library(psych)
+  
+  dt_ICC <- dt[, c("Fe_ICP", "Fe_concentration")]
+  ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  
+  dt_ICC1 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  
+  dt_ICC2 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP2")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  
+  
+  
+  
+  
+  #Check pvalue for bland altman of new predicted variables vs ICP
+  
+  # Calculate the average of measurements
+  average1 <- (dt$Predicted_Fe_ICP + dt$Fe_ICP) / 2
+  
+  # Calculate the difference (error)
+  difference1 <- dt$Predicted_Fe_ICP - dt$Fe_ICP
+  
+  # Create a data frame with the variables
+  df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
+  
+  # Calculate the mean difference and standard deviation
+  mean_diff <- mean(difference1)
+  sd_value <- sd(difference1)
+  
+  # Define the plot
+  ggplot(df, aes(x = average, y = difference, shape = Form, color = Total_Weight)) +
+    geom_point(size = 4, stroke=1) +  # Add points with specified size
+    geom_hline(aes(yintercept = mean_diff), color="#7D7CAF", linetype = "dashed", size = 1.5) +  # Add dashed line at the mean difference
+    geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="#AFB07D", linetype = "dashed", size = 1.5) +  # Add upper limit line
+    geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="#AFB07D",linetype = "dashed", size = 1.5) +  # Add lower limit line
+    labs(x = "Average", y = "Difference", title = "Bland-Altman Plot Cu") +  # Set axis labels and title
+    scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-200, 100), breaks = seq(-200, 100, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    theme_minimal() +  # Use a minimal theme
+    theme(
+      plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+      axis.title = element_text(size = 20),  # Customize axis labels
+      axis.text.x = element_text(size = 16),
+      axis.title.x = element_text(size = 20),
+      axis.text.y = element_text(size = 16),
+      axis.title.y = element_text(size = 20),
+      legend.text = element_text(size = 16),
+      legend.title = element_text(size = 16, face = "bold"),
+      legend.position = "top"  # Position the legend at the top
+    ) +
+    guides(
+      shape = guide_legend(title = "Form", override.aes = list(size = 5))
+    )  # Add legend for shape aesthetic with specified size
+  
+  # Perform a one-sample t-test
+  t_test <- t.test(difference1, mu = 0)
+  
+  # Print the results
+  cat("Mean Difference:", mean_diff, "\n")
+  cat("One-sample t-test:\n")
+  cat("  t-value:", t_test$statistic, "\n")
+  cat("  p-value:", t_test$p.value, "\n")
+  
+  # Calculate mean difference and standard deviation of the differences
+  mean_diff <- mean(difference)
+  sd_diff <- sd(difference)
+  
+  # Calculate confidence interval for the mean difference
+  n <- length(difference)
+  se_diff <- sd_diff / sqrt(n)
+  t_value <- qt(0.975, df = n - 1)  # 95% confidence interval
+  ci_diff <- mean_diff + c(-1, 1) * t_value * se_di
+  
+  
+  
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans", "Nultuma (Prosopis) velutina", "Tamarix chinesis", "Allionia incarnata"),] 
+  
+  dt_Cu <- dt_selected[, c(1:11, 58, 69)] #69 is the Predicted_Fe_ICP
+  melted_dt_Cu <- melt(dt_Cu, measure.vars = c("Fe_ICP", "Predicted_Fe_ICP"),
+                       variable.name = "Method", value.name = "Cu_value")
+  
+  XG <- subset(melted_dt_Cu, Group=="G36")
+  result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE)
+  print(result) # using Predicted_Fe_ICP, there's now no significant differences
+  
+  AI <- subset(melted_dt_Cu, Group=="G3")
+  result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE)
+  print(result) # using Predicted_Fe_ICP there's now no significant difference
+  
+  
+  
+  Cu <- ggplot(melted_dt_Cu, aes(x = reorder(Scientific_Name, value, FUN = median),
+                                 y = value, fill = variable)) +
+    geom_boxplot(position = position_dodge(width = 0.9)) +
+    geom_point(size = 1.9, stroke = 1, aes(color = variable, fill = variable),
+               position = position_dodge(width = 0.8)) +
+    scale_fill_manual(values = c("#068DA9", "#643A6B")) +
+    scale_color_manual(values = c("#34495E", "#B0A4A4")) +
+    labs(x = "Scientific Name", y = "Cu Value", fill = "Variable") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(size=14),
+          axis.title.x = element_text(size = 19),
+          axis.text.y = element_text(size=14, face="italic"),
+          axis.title.y = element_blank(),
+          legend.key.size = unit(2, "lines"),
+          legend.text = element_text(size = 13.5), 
+          legend.title = element_text(size=20, face = "bold"))+
+    coord_flip() +
+    theme(legend.position = "bottom")
+  
+  Cu
+  
+}
+
+#GLMs Zn 
+
+{
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Zn_concentration != 0.3, ] # To remove LODs
+  
+  shapiro.test(dt$Zn_concentration)
+  shapiro.test(dt$Zn_ICP)
+  plot(dt$Zn_concentration~dt$Zn_ICP)
+  cor.test(dt$Zn_ICP, dt$Zn_concentration, method="spearman") # rho = 0.5615571, p.val = 3.905e-09
+
+  
+  model1 <- glm(Zn_ICP ~ Zn_concentration, data = dt)
+  summary(model1)
+  model2 <- glm(Zn_ICP ~ Zn_concentration + Total_Weight, data = dt)
+  summary(model2)
+  model3 <- glm(Zn_ICP ~ Zn_concentration + Substrate_RT, data = dt)
+  summary(model3)
+  
+  # Best AIC value for model4!!
+  # Provide starting values for the gamma glm model
+  start_vals <- c(coeff_Zn_concentration = 0, coeff_intercept = 37)
+  model4 <- glm(Zn_ICP ~ Zn_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  summary(model4)
+  model5 <- glm(Zn_ICP ~ Zn_concentration + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model5)
+  model6 <- glm(Zn_ICP ~ Zn_concentration, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model6)
+  model7 <- glm(Zn_ICP ~ Zn_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model7)
+  
+  
+  # Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
+  dt$Predicted_Zn_ICP <- 50.8422 + (0.9560* dt$Zn_concentration) + (-473.9784* dt$Substrate_RT)
+  
+  #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+  dt$Predicted_Zn_ICP2 <- 33.6939 + (0.9314* dt$Zn_concentration) + (-16.8131* dt$Total_Weight)
+  
+  cor.test(dt$Zn_ICP, dt$Zn_concentration, method="spearman") # rho = 0.5615571, p.val = 3.905e-09
+  cor.test(dt$Zn_ICP, dt$Predicted_Zn_ICP, method="spearman") # rho = 0.787104, p.val < 2.2e-16
+  cor.test(dt$Zn_ICP, dt$Predicted_Zn_ICP2, method="spearman") # rho = 0.7381209, p.val < 2.2e-16 
+  
+  
+  library(psych)
+  
+  dt_ICC <- dt[, c("Zn_ICP", "Zn_concentration")]
+  ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  
+  dt_ICC1 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  
+  dt_ICC2 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP2")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  
+  
+  
+  
+  #One sample t-test for pxrf ICP
+  average <- (dt$Zn_ICP + dt$Zn_concentration) / 2
+  difference <- dt$Zn_ICP - dt$Zn_concentration
+  t_test <- t.test(difference1, mu = 0)
+
+  #Check pvalue for bland altman of new predicted variables vs ICP
+  average1 <- (dt$Predicted_Zn_ICP + dt$Zn_ICP) / 2
+  difference1 <- dt$Predicted_Zn_ICP - dt$Zn_ICP
+  df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
+  mean_diff <- mean(difference1)
+  sd_value <- sd(difference1)
+  # Define the plot
+  ggplot(df, aes(x = average, y = difference, shape = Form, color = Total_Weight)) +
+    geom_point(size = 4, stroke=1) +  # Add points with specified size
+    geom_hline(aes(yintercept = mean_diff), color="#7D7CAF", linetype = "dashed", size = 1.5) +  # Add dashed line at the mean difference
+    geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="#AFB07D", linetype = "dashed", size = 1.5) +  # Add upper limit line
+    geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="#AFB07D",linetype = "dashed", size = 1.5) +  # Add lower limit line
+    labs(x = "Average", y = "Difference", title = "Bland-Altman Plot Cu") +  # Set axis labels and title
+    scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-200, 100), breaks = seq(-200, 100, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    theme_minimal() +  # Use a minimal theme
+    theme(
+      plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+      axis.title = element_text(size = 20),  # Customize axis labels
+      axis.text.x = element_text(size = 16),
+      axis.title.x = element_text(size = 20),
+      axis.text.y = element_text(size = 16),
+      axis.title.y = element_text(size = 20),
+      legend.text = element_text(size = 16),
+      legend.title = element_text(size = 16, face = "bold"),
+      legend.position = "top"  # Position the legend at the top
+    ) +
+    guides(
+      shape = guide_legend(title = "Form", override.aes = list(size = 5))
+    )  # Add legend for shape aesthetic with specified size
+  
+  # Perform a one-sample t-test
+  t.test(difference1, mu = 0)
+  
+# testing significance between species when no model is applied. Only X.Gracile and Nultuma and B. perennans have enough datapoints for the analysis.
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans", "Nultuma (Prosopis) velutina", "Tamarix chinesis", "Allionia incarnata"),] 
+  
+  dt_Zn <- dt_selected[, c(1:11, 32, 59)] #59 is the Zn_ICP
+  dt_Zn <- dt_selected[, c(1:11, 59, 69)] #59 is the Zn_ICP, 69 is Predicted
+  melted_dt_Zn <- melt(dt_Zn, measure.vars = c("Zn_ICP", "Zn_concentration"),
+                       variable.name = "Method", value.name = "Zn_value")  
+  
+  melted_dt_Zn <- melt(dt_Zn, measure.vars = c("Zn_ICP", "Predicted_Zn_ICP"),
+                       variable.name = "Method", value.name = "Cu_value")
+  
+  XG <- subset(melted_dt_Zn, Group=="G36")
+  result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE) # significant difference without model
+  PV <- subset(melted_dt_Zn, Group=="G8")
+  result <- wilcox.test(PV$value ~ PV$variable, paired = TRUE) # not significant difference without model
+  BP <- subset(melted_dt_Zn, Group=="G37")
+  result <- wilcox.test(BP$value ~ BP$variable, paired = TRUE) # not significant difference without model ERROR
+  PC <- subset(melted_dt_Zn, Group=="G39")
+  result <- wilcox.test(PC$value ~ PC$variable, paired = TRUE) # not significant difference without model ERROR
+  
+  
+  
+  melted_dt_Zn <- melt(dt_Zn, measure.vars = c("Zn_ICP", "Predicted_Zn_ICP"),
+                       variable.name = "Method", value.name = "Cu_value")
+  
+  XG <- subset(melted_dt_Cu, Group=="G36")
+  result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE)
+  print(result) # using Predicted_Zn_ICP, there's now no significant differences
+  
+  AI <- subset(melted_dt_Cu, Group=="G3")
+  result <- wilcox.test(XG$value ~ XG$variable, paired = TRUE)
+  print(result) # using Predicted_Zn_ICP there's now no significant difference
+  
+  
+  
+  Zn <- ggplot(melted_dt_Zn, aes(x = reorder(Scientific_Name, value, FUN = median),
+                                 y = value, fill = variable)) +
+    geom_boxplot(position = position_dodge(width = 0.9)) +
+    geom_point(size = 1.9, stroke = 1, aes(color = variable, fill = variable),
+               position = position_dodge(width = 0.8)) +
+    scale_fill_manual(values = c("#068DA9", "#643A6B")) +
+    scale_color_manual(values = c("#34495E", "#B0A4A4")) +
+    labs(x = "Scientific Name", y = "Cu Value", fill = "Variable") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(size=14),
+          axis.title.x = element_text(size = 19),
+          axis.text.y = element_text(size=14, face="italic"),
+          axis.title.y = element_blank(),
+          legend.key.size = unit(2, "lines"),
+          legend.text = element_text(size = 13.5), 
+          legend.title = element_text(size=20, face = "bold"))+
+    coord_flip() +
+    theme(legend.position = "bottom")
+  
+  Zn
+  
+}
+
+#GLMs Se 
