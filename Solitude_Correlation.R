@@ -1639,13 +1639,14 @@ Cu
   
   # Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
   dt$Predicted_Cr_ICP <- 0.60775 + (0.01228* dt$Cr_concentration) + (-5.78566* dt$Substrate_RT)
+  dt$Predicted_Cr_ICP2 <- 0.39856 + (0.02* dt$Cr_concentration) + (-0.26371* dt$Total_Weight)
   
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   #dt$Predicted_Cr_ICP2 <- 40.6027 + (1.0494* dt$Cr_concentration) + (-20.5045* dt$Total_Weight) # but intercept is not significant, I wouldnt use this
   
-  cor.test(dt$Cr_ICP, dt$Cr_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
-  cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP, method="spearman") # rho = 0.8058756 , p.val < 2.2e-16
-  cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP2, method="spearman") # rho = 0.8096198 , p.val < 2.2e-16 
+  cor.test(dt$Cr_ICP, dt$Cr_concentration, method="spearman") # rho = 
+  cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP, method="spearman") # rho = 
+  cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP2, method="spearman") # rho = 
   
   
   library(psych)
@@ -1671,6 +1672,10 @@ Cu
   average1 <- (dt$Predicted_Cr_ICP + dt$Cr_ICP) / 2
   difference1 <- dt$Predicted_Cr_ICP - dt$Cr_ICP
   t_test <- t.test(difference1, mu = 0) # p > 0.05 not sig different from 0
+  
+  average2 <- (dt$Predicted_Cr_ICP2 + dt$Cr_ICP) / 2
+  difference2 <- dt$Predicted_Cr_ICP2 - dt$Cr_ICP
+  t_test <- t.test(difference2, mu = 0) # p > 0.05 not sig different from 0
   
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
   mean_diff <- mean(difference1)
@@ -1777,12 +1782,12 @@ Cu
   
 }
 
-### Aplying new model to pXRF data ###
-
+### Aplying new model to pXRF data ### Update to the latest one
 {
-#setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
-#dt <- read.delim("Solitude_Complete_List_5.17.23.txt")
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
+dt <- read.delim("Solitude_Complete_List_5.17.23.txt")
 #dt <- subset(dt, Scientific_Name != 'QA_Sample')
+
 
 #removing LODs
 {
@@ -1873,7 +1878,6 @@ Cu
 }
 
 # Factor analysis # it is in the Guarino 2019, "Identification of native-metal toleran plant species in situ"
-
 {
 library(psych)
 metal_vars <- c("Cu_concentration", "Fe_concentration", "Zn_concentration", "Mn_concentration")
@@ -1888,7 +1892,6 @@ print(factor_result)
 
 
 #Re correl
-
 {
 dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
   
@@ -1908,19 +1911,77 @@ dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
     
     #transform to dataframe
     tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
-    tr[,14:59] <- sapply(tr[,14:59],as.numeric) # Change a character to numeric (double)
+    tr[,14:59] <- sapply(tr[,14:59],as.numeric)# Change a character to numeric (double)
+    tr[,9] <- sapply(tr[,9],as.numeric)
     typeof(tr$Cu_concentration) # confirm the value is no longer a character
 }
 
-cor.test(tr$Re_concentration, tr$Re_ICP, method="spearman")
+
+model7 <- glm(Re_ICP ~ Re_concentration + Substrate_RT, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50)) # RT not significant
+summary(model7)
+model5 <- glm(Re_ICP ~ Re_concentration + Total_Weight, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model5)
+
+
+tr$Predicted_Re_ICP <- 3.84146 + (0.91141* tr$Re_concentration) + (-33.18455* tr$Substrate_RT)
+#Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+tr$Predicted_Re_ICP2 <- 4.29996 + (0.93425* tr$Re_concentration) + (-3.64517* tr$Total_Weight)
+
+
+cor.test(tr$Re_ICP, tr$Re_concentration, method="spearman")
+cor.test(tr$Re_ICP, tr$Predicted_Re_ICP, method="spearman")
+cor.test(tr$Re_ICP, tr$Predicted_Re_ICP2, method="spearman")
+
 library(psych)
 
-dt_ICC <- dt[, c("Re_ICP", "Re_concentration")]
-ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
-difference <- dt$Re_ICP - dt$Re_concentration
-t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
-model7 <- glm(Re_ICP ~ Re_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50)) # RT not significant
-summary(model7)
+tr_ICC <- tr[, c("Re_ICP", "Re_concentration")]
+ICC(tr_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+tr_ICC2 <- tr[, c("Re_ICP", "Predicted_Re_ICP")]
+ICC(tr_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+tr_ICC3 <- tr[, c("Re_ICP", "Predicted_Re_ICP2")]
+ICC(tr_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
 
+difference <- tr$Re_ICP - tr$Re_concentration
+t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
+
+difference1 <- tr$Re_ICP - tr$Predicted_Re_ICP
+t_test <- t.test(difference1, mu = 0) #p < 0.05 signif different from 0
+
+difference2 <- tr$Re_ICP - tr$Predicted_Re_ICP2
+t_test <- t.test(difference2, mu = 0) #p < 0.05 signif different from 0
 }
+
+#Model test
+{dft <- read.delim("Model_Test_3_replicates.txt")
+
+dft$Predicted_Cu_ICP <- 28.88747 + (1.41673* dft$Cu_concentration) + (-316.95475* dft$Substrate_RT)
+
+## Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+dft$Predicted_Cu_ICP2 <- 17.03270 + (1.45362* dft$Cu_concentration) + (-11.13508* dft$Total_Weight)
+
+write.table(dft, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Model_test_3reps.csv', sep=",", row.names = F)
+}
+
+
+#RMSE error between diff elements
+
+{
+  
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+  
+  library(caret)
+  
+rmse <- RMSE(dt$Cu_concentration, dt$Cu_ICP)
+rmse
+
+rmse2 <- RMSE(dt$Predicted_Cu_ICP2, dt$Cu_ICP)
+rmse2
+  
+rmse <- RMSE(dt$Predicted_Fe_ICP, dt$Fe_ICP)
+rmse
+  
+}
+
+
 
