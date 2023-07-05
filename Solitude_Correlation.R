@@ -179,6 +179,7 @@ Cu <- ggplot(dt, aes(x = reorder(Scientific_Name, Cu_ICP, FUN = median),
   scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
   geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
   geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 1.2) +
   coord_flip() +
   scale_x_discrete(guide = guide_axis(angle = 0)) +
   scale_y_continuous(limits = c(0, 800), breaks = seq(0, 800, by = 50)) +
@@ -761,7 +762,79 @@ Cu <- ggplot(melted_dt_Cu, aes(x = reorder(Scientific_Name, value, FUN = median)
 Cu
 
 
+#Boxplots with predicted 
+
+
+Cu <- ggplot(dt, aes(x = reorder(Scientific_Name, Predicted_Cu_ICP, FUN = median),
+                     y = Predicted_Cu_ICP, Sceintific_Name=Scientific_Name)) +
+  geom_boxplot() +
+  geom_point(size = 1.7, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 22, 3)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
+  geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
+  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
+  geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 1.2) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 800), breaks = seq(0, 800, by = 50)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Cu (mg/kg)")
+Cu
 #anova(model, test='Chisq') tis is a test to check if there's a difference between models I guess. If not, there should be another test to check differences between models. 
+
+
+
+#ICC and one sample when mass is <0.4 (n=27)
+
+dt04 <-  dt[dt$Total_Weight < 0.4, ]
+cor.test(dt06$Cu_ICP, dt06$Cu_concentration, method="spearman") #0.878
+library(psych)
+dt_ICC <- dt04[, c("Cu_ICP", "Cu_concentration")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #0.78
+difference <- dt04$Cu_ICP - dt04$Cu_concentration
+t.test(difference, mu = 0) #p < 0.05 signif different from 0. t = 5.26
+
+#ICC and one sample when mass 04to06 (n=15)
+
+dt04to06 <- dt[dt$Total_Weight > 0.4 & dt$Total_Weight < 0.6, ]
+cor.test(dt04to06$Cu_ICP, dt04to06$Cu_concentration, method="spearman")  #rho 0.878
+library(psych)
+dt_ICC <- dt04to06[, c("Cu_ICP", "Cu_concentration")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #0.89
+difference <- dt04to06$Cu_ICP - dt04to06$Cu_concentration #pval 0.02992, t = 2.416
+t.test(difference, mu = 0) #p =0.029 , t=2.416
+
+#ICC and one sample when mass is 06 to 08 (n=29)
+dt06to08 <- dt[dt$Total_Weight > 0.6 & dt$Total_Weight < 0.8, ]
+cor.test(dt06to08$Cu_ICP, dt06to08$Cu_concentration, method="spearman") #0.86594
+library(psych)
+dt_ICC <- dt06to08[, c("Cu_ICP", "Cu_concentration")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) # 0.87
+difference <- dt06to08$Cu_ICP - dt06to08$Cu_concentration
+t.test(difference, mu = 0) #p < 0.05, t = 5.779
+
+#ICC and one sample when mass is >0.8 (n=26)
+dt08 <- dt[dt$Total_Weight > 0.8,]
+cor.test(dt08$Cu_ICP, dt08$Cu_concentration, method="spearman") #0.966
+library(psych)
+dt_ICC <- dt08[, c("Cu_ICP", "Cu_concentration")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.86
+difference <- dt08$Cu_ICP - dt08$Cu_concentration
+t.test(difference, mu = 0) #p < 0.05 t=4.69
+
+
+
 
 }
 

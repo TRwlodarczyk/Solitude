@@ -20,6 +20,9 @@ ggplot(data=dt, aes(x=Wavelength)) +
   geom_line(aes(y=mining00005.asd), color="green") +
   geom_line(aes(y=mining00004.asd), color="purple")+
   geom_line(aes(y=mining00007.asd), color="red") +
+  scale_x_continuous(limits = c(350, 2500), breaks = c(seq(350, 2500, by = 175),2500)) +
+  scale_y_continuous(limits = c(0, 0.95), breaks = seq(0, 0.95, by = 0.05)) +
+  geom_vline(xintercept = 700, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
   theme_classic() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
@@ -33,3 +36,5 @@ ggplot(data=dt, aes(x=Wavelength)) +
          shape = guide_legend(override.aes = list(size = 3.5))) +
   ylab("Reflectance")+
   xlab("Wavelength")
+
+
