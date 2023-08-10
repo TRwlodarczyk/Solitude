@@ -307,8 +307,8 @@ Cu_AllPlots
 #    panel.grid.minor = element_blank())
 #dev.off()
 
-
-
+#Plots
+{
 Cu_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cu_concentration, FUN = median),
                                     y = Cu_concentration, group=Scientific_Name)) +
   geom_boxplot()+
@@ -604,6 +604,9 @@ Cd_AllPlots<- ggplot(dt_plants, aes(x = reorder(Scientific_Name, Cd_concentratio
   #ylab(expression(paste("Rhenium Concentration (", "ppm", ")")))
   ylab('Cadmium concentration (ppm)')
 Cd_AllPlots
+
+}
+
 
 ####### COrrelation both plants on plot 6 (35 datapoints)
 subset_plants <- dt_plants[dt_plants$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens"),]

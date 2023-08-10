@@ -1855,6 +1855,104 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
 }
 
+#GLMs Ti # not significant coeficients
+{
+  dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
+  
+  {
+    tr <- matrix(data = NA, ncol = ncol(dt[,c(1:59)]), nrow=nrow(dt)) # select all columns 1:46
+    colnames(tr) <- colnames(dt[,c(1:59)])
+    for (i in 14:48) # select when the concentrations start
+    {
+      tr[,c(i)] <- gsub(".*ND.*", 0, dt[,i])
+    }
+    
+    for(i in c(1:13, 49:59)) # select columns that need to stay the same 1:11 include character and double (weight)
+    {
+      tr[,c(i)] <- dt[,c(i)]
+    }
+ 
+  }
+    #transform to dataframe
+    tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
+    tr[,14:59] <- sapply(tr[,14:59],as.numeric)# Change a character to numeric (double)
+    tr[,9] <- sapply(tr[,9],as.numeric)
+    typeof(tr$Cu_concentration) # confirm the value is no longer a character
+
+  dt <- tr
+  
+  shapiro.test(dt$Ti_concentration)
+  shapiro.test(dt$Ti_ICP)
+
+  plot(dt$Ti_concentration~dt$Ti_ICP)
+  plot(density(dt$Ti_ICP))
+  cor.test(dt$Ti_ICP, dt$Ti_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
+  
+  
+  model1 <- glm(Ti_ICP ~ Ti_concentration, data = dt)
+  summary(model1)
+  model2 <- glm(Ti_ICP ~ Ti_concentration + Total_Weight, data = dt)
+  summary(model2)
+  model3 <- glm(Ti_ICP ~ Ti_concentration + Substrate_RT, data = dt)
+  summary(model3)
+  
+  # Best AIC value for model4!!
+  # Provide starting values for the gamma glm model
+  start_vals <- c(coeff_Ti_concentration = 0, coeff_intercept = 37)
+  model4 <- glm(Ti_ICP ~ Ti_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  summary(model4)
+  model5 <- glm(Ti_ICP ~ Ti_concentration + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model5)
+  model6 <- glm(Ti_ICP ~ Ti_concentration, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model6)
+  model7 <- glm(Ti_ICP ~ Ti_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model7)
+  
+  
+  # Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
+  dt$Predicted_Ti_ICP <- -8.80946 + (0.46543* dt$Ti_concentration) + (162.79067* dt$Substrate_RT)
+  dt$Predicted_Ti_ICP2 <- 4.0911 + (0.3378* dt$Ti_concentration) + (-0.2289* dt$Total_Weight)
+  
+  #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+  #dt$Predicted_Cr_ICP2 <- 40.6027 + (1.0494* dt$Cr_concentration) + (-20.5045* dt$Total_Weight) # but intercept is not significant, I wouldnt use this
+  
+  cor.test(dt$Ti_ICP, dt$Ti_concentration, method="spearman") # rho = 
+  cor.test(dt$Ti_ICP, dt$Predicted_Ti_ICP, method="spearman") # rho = 0.62
+  cor.test(dt$Ti_ICP, dt$Predicted_Ti_ICP2, method="spearman") # rho = 0.775
+  
+  
+  library(psych)
+  
+  dt_ICC <- dt[, c("Ti_ICP", "Ti_concentration")]
+  ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.83
+  
+  dt_ICC1 <- dt[, c("Ti_ICP", "Predicted_Ti_ICP")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  
+  dt_ICC2 <- dt[, c("Ti_ICP", "Predicted_Ti_ICP2")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  
+  
+  
+  
+  #One sample t-test for pxrf ICP
+  average <- (dt$Ti_ICP + dt$Ti_concentration) / 2
+  difference <- dt$Ti_ICP - dt$Ti_concentration
+  t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
+  
+  #Check pvalue for bland altman of new predicted variables vs ICP
+  average1 <- (dt$Predicted_Ti_ICP + dt$Ti_ICP) / 2
+  difference1 <- dt$Predicted_Ti_ICP - dt$Ti_ICP
+  t_test <- t.test(difference1, mu = 0) # p > 0.05 not sig different from 0
+  
+  average2 <- (dt$Predicted_Ti_ICP2 + dt$Ti_ICP) / 2
+  difference2 <- dt$Predicted_Ti_ICP2 - dt$Ti_ICP
+  t_test <- t.test(difference2, mu = 0) # p > 0.05 not sig different from 0
+  
+  
+}
+
+
 ### Aplying new model to pXRF data ### Update to the latest one
 {
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
@@ -2106,8 +2204,13 @@ dt <- subset(dt, Scientific_Name != 'QA_Sample')
 
 #write.table(tr, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/SLT_pXRF_Final_06.06.23.csv', sep=",", row.names = F)
 dt <- read.delim("SLT_pXRF_Final_06.06.23.txt")
-dt <- subset(dt, Site=="TAILINGS")
 
+
+dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+
+
+
+dt <- subset(dt, Site=="TAILINGS")
 dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
 hist(dt$Cu_concentration, breaks=50)
 

@@ -20,7 +20,7 @@ dt_plants2 <-read_csv("Plants_new_LOD_nounc2.csv")
 dt_soil_new <- read.delim("Soil_new_trim.txt") # this datase has added T and S column and P1.S P1.T etc
 
 
-
+{
 
 Cu <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cu_concentration, FUN = median),
                             y = Cu_concentration, CESM_Name=CESM_Name)) +
@@ -331,7 +331,7 @@ Cd <- ggplot(dt_plants2, aes(x = reorder(CESM_Name, Cd_concentration, FUN = medi
 
 Cd
 
-
+}
 
 
 # Counts across different pltos
