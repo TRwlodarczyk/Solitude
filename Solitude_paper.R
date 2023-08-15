@@ -3,6 +3,7 @@
 # twlodarczyk@arizona.edu
 # 2023-07-28
 
+#Libraries
 {
   library(ggplot2)
   library(dplyr)
@@ -67,94 +68,8 @@ dt <- dt[complete.cases(dt), ]
 
 dt <- tr
 
-#geomtile
-
-#dt <- dt[dt$Site == "TAILINGS" & dt$Scientific_Name == "Xanthisma gracile", ]
-
-
-# Load required libraries
-library(ggplot2)
-library(reshape2)
-
-cols_to_include <- c(6, seq(18, 47, by = 2))
-dt_subset <- dt[, cols_to_include]
-
-# Step 2: Remove columns 14, 16, 44, and 46
-cols_to_remove <- c(14, 16, 44, 46)
-dt_subset <- dt_subset[, -cols_to_remove]
-
-dt_melted <- melt(dt_subset, id.vars = "Sample_Name")
-
-# Step 8: Create the heatmap using geom_tile
-ggplot(dt_melted, aes(x = variable, y = Sample_Name, fill = value)) +
-  geom_tile(color = "white", width = 0.7, height = 0.7) +
-  scale_fill_gradient2(midpoint = 0, name = "Standardized Concentration") +
-  labs(title = "Element Concentrations Heatmap (Individual Samples and Standardized)",
-       x = "Element",
-       y = "Sample",
-       fill = "Standardized Concentration") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        axis.text.y = element_text(size = 8),
-        axis.title.y = element_blank())
-
-
-
-
-
-
-
-# Load required libraries
-library(ggplot2)
-library(reshape2)
-
-# Step 1: Subset the data frame to include only relevant columns (element concentrations)
-cols_to_include <- c(6, seq(18, 41, by = 2))
-dt_subset <- dt[, cols_to_include]
-
-# Step 2: Remove columns 14, 16, 28, 26, and 38
-cols_to_remove <- c(6,7,12) # now it removes from dt_subset
-dt_subset <- dt_subset[, -cols_to_remove]
-
-# Step 2: Rescale the numeric columns to a range of 0 to 1
-rescale_0_to_1 <- function(x) {
-  if (is.numeric(x)) {
-    return((x - min(x)) / (max(x) - min(x)))
-  } else {
-    return(x)
-  }
-}
-dt_subset_rescaled <- as.data.frame(lapply(dt_subset, rescale_0_to_1))
-
-# Step 3: Melt the data frame to long format
-dt_melted <- melt(dt_subset_rescaled)
-dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
-dt_melted$Sample_Scientific_Name <- paste(dt$Sample_Name, dt$Scientific_Name, sep = " - ")
-
-# Step 4: Create the heatmap using geom_tile
-ggplot(dt_melted, aes(x = variable, y = Sample_Name, fill = value)) +
-  geom_tile(color = "white", width = 0.7, height = 0.7) +
-  scale_fill_gradient(low = "blue", high = "red", name = "Rescaled Concentration") +
-  labs(title = "Element Concentrations Heatmap (Rescaled to 0-1 for Each Element)",
-       x = "Element", 
-       y = "Sample",
-       fill = "Rescaled Concentration") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(),
-        axis.text.y = element_text(size = 8),
-        axis.title.y = element_blank())
-
-
-
-
-
-
-
-
-
-# New code to include Scientific Names
-
-
+# Old code to include Scientific Names and Sample Names - Heatmap
+{
 # Load required libraries
 library(ggplot2)
 library(reshape2)
@@ -206,30 +121,7 @@ ggplot(dt_melted, aes(x = variable, y = Sample_Scientific_Factor, fill = value))
   )
 
 
-
-
-
-
-
-
-# Avaraged
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 # Count how many samples per plot
 
@@ -238,8 +130,6 @@ species_to_modify <- c("Boechera perennans", "Pseudognaphalium canescens", "Isoc
 for (species in species_to_modify) {
   dt <- dt[!(dt$Scientific_Name == species & dt$Type_of_Sample == "stem"), ]
 }
-
-
 
 
 ggplot(dt, aes(x = Plot, y = reorder(Scientific_Name, table(Scientific_Name)[Scientific_Name]), group = Form)) +
@@ -476,7 +366,7 @@ dt <- dt[dt$Type_of_Sample != "root", ]
   tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
   tr[,17:47] <- sapply(tr[,17:47],as.numeric) # Change a character to numeric (double)
   typeof(tr$Cu_concentration) # confirm the value is no longer a character
-}
+} # not necessary here
 dt <- tr
 
 sum(dt$Zn_concentration == 0, na.rm = TRUE) # 67/224 = 0.32
@@ -485,6 +375,8 @@ sum(dt$Se_concentration == 0, na.rm = TRUE) # 49/224 = 0.218
 sum(dt$Re_concentration == 0, na.rm = TRUE) # 176/224 = 0.785
 sum(dt$Cu_concentration == 0, na.rm = TRUE) #58 /224 = 0.258
 sum(dt$Predicted_Zn_ICP < 20, na.rm = TRUE)  #84 224 = 0.375
+sum(dt$Re_concentration == 0, na.rm = TRUE)  #
+sum(dt$Mn_concentration == 0, na.rm = TRUE)  #
 
 sum(dt$Predicted_Mn_ICP < 20, na.rm = TRUE) #115/224 = 0.513
 sum(dt$Predicted_Mn_ICP < 10, na.rm = TRUE) #115/224 = 0.513
@@ -493,26 +385,33 @@ sum(dt$Fe_concentration > 500, na.rm = TRUE) #25/224 = 0.111
 sum(dt$Predicted_Se_ICP > 30, na.rm = TRUE) #3/224 = 0.0133
 sum(dt$Predicted_Se_ICP > 5, na.rm = TRUE) #32/224 = 0.14
 
+dt$Predicted_Cr_ICP[dt$Predicted_Cr_ICP == 1] <- 0
+sum(dt$Predicted_Cr_ICP < 0.5, na.rm = TRUE) #183/224 = 0.82
+sum(dt$Predicted_Re_ICP > 5, na.rm = TRUE) #29/224 = 0.1294
+
+
+
 
 #write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final/Solitude_Plants_Final_08.23_Cu_Pred.csv', sep=",", row.names = F)
 
 
 
-
+# Heatmap 
+{
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
-dt <- read.delim("SLT_heatmap.txt")
+dt <- read.delim("SLT_heatmap_plants.txt")
 
 
 library(dplyr)
+library(reshape2)
+library(ggplot2)
+
 dt_removed_cols <- dt %>%
-  select(-c(2, 3, 4, 5, 6))
+  select(-c(2, 3, 4, 5, 6, 11, 16))
+
 dt_grouped <- dt_removed_cols %>%
   group_by(Scientific_Name) %>%
-  summarize(across(Ca:Ti, mean))
-
-
-
-
+  summarize(across(Cu:Se, median))
 
 rescale_0_to_1 <- function(x) {
   if (is.numeric(x)) {
@@ -523,18 +422,28 @@ rescale_0_to_1 <- function(x) {
 }
 dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
 
-# Step 3: Melt the data frame to long format
-dt_melted <- melt(dt_subset_rescaled)
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Scientific_Name")
 dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
-dt_melted$Sample_Scientific_Name <- paste(dt_grouped$Scientific_Name)
 
-# Step 4: Create a new factor variable for Sample_Scientific_Name
-dt_melted$Sample_Scientific_Factor <- factor(
-  dt_melted$Sample_Scientific_Name,
-  levels = unique(dt_melted$Sample_Scientific_Name)
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Scientific_Name <- factor(
+  dt_melted$Scientific_Name,
+  levels = dt_grouped_sorted$Scientific_Name
 )
 
-ggplot(dt_melted, aes(x = variable, y = reorder(Sample_Scientific_Factor, -value), fill = value)) +
+# Define the desired order of elements
+element_order <- c("Cu", "Fe", "Mn", "Zn", "As", "Cr", "Re", "Se")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using geom_tile with the sorted and melted data
+ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, match(Scientific_Name, dt_grouped_sorted$Scientific_Name)), fill = value)) +
   geom_tile(color = "white", width = 0.7, height = 0.7) +
   scale_fill_gradient(low = "#C5DFF8", high = "#4A55A2", name = "Rescaled Concentration") +
   labs(
@@ -550,10 +459,121 @@ ggplot(dt_melted, aes(x = variable, y = reorder(Sample_Scientific_Factor, -value
     axis.title.y = element_blank()
   )
 
+# Create the heatmap using geom_tile with the sorted and melted data
+ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, -value), fill = value)) +
+  geom_tile(color = "white", width = 0.7, height = 0.7) +
+  scale_fill_gradient(low = "#C5DFF8", high = "#4A55A2", name = "Rescaled Concentration") +
+  labs(
+    title = "Element Concentrations Heatmap (Rescaled to 0-1 for Each Element)",
+    x = "Element",
+    y = "Sample and Scientific Name",
+    fill = "Rescaled Concentration"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(),
+    axis.text.y = element_text(size = 8),
+    axis.title.y = element_blank()
+  )
+}
+
+
+#Correlation between elements in plants
+{
+library(car)
+shapiro.test(dt$Fe)
+shapiro.test(dt$Zn) # non normal
+shapiro.test(dt$Mn) # non normal
+shapiro.test(dt$Se) # non normal
+shapiro.test(dt$Cr) # non normal
+shapiro.test(dt$Re) # non normal
+cor.test(dt$Cu, dt$Fe, method="spearman") 
+cor.test(dt$Cu, dt$Zn, method="spearman") #0.3
+cor.test(dt$Cu, dt$Mn, method="spearman") #0.35
+cor.test(dt$Cu, dt$Cr, method="spearman") #0.18
+cor.test(dt$Cu, dt$Se, method="spearman") #0.33
+cor.test(dt$Cu, dt$Re, method="spearman") #0.19
+leveneTest(dt$Cu, dt$Fe) # <0.05, variances are heterogeneous (unequal) (violation of ANOVA). homogeneity of variances (also known as homoscedasticity)
+
+
+cor.test(dt$As, dt$Fe, method="spearman") #0.389
+cor.test(dt$As, dt$Cr, method="spearman") # 0.32435
+cor.test(dt$As, dt$Zn, method="spearman") # -0.27
+cor.test(dt$As, dt$Se, method="spearman") # -0.201
+cor.test(dt$As, dt$Mn, method="spearman") # -0.341
+cor.test(dt$As, dt$Re, method="spearman") #-0.273
 
 
 
+cor.test(dt$Fe, dt$Cr, method="spearman") # 0.3557
+cor.test(dt$Fe, dt$Zn, method="spearman") # 0.05 pval 0.37
+cor.test(dt$Fe, dt$Se, method="spearman") # 0.018 pval 0.7838
+cor.test(dt$Fe, dt$Mn, method="spearman") # 0.159 pval 0.016
+cor.test(dt$Fe, dt$Re, method="spearman") # 0.008 pval 0.899
+
+
+cor.test(dt$Cr, dt$Zn, method="spearman") # no correl
+cor.test(dt$Cr, dt$Se, method="spearman") # no
+cor.test(dt$Cr, dt$Mn, method="spearman") # no
+cor.test(dt$Cr, dt$Re, method="spearman") # no
+
+cor.test(dt$Zn, dt$Se, method="spearman") # 0.2 pval 0.0025
+cor.test(dt$Zn, dt$Mn, method="spearman") # 0.289 
+cor.test(dt$Zn, dt$Re, method="spearman") # 0.21 pval 0.00126
+
+cor.test(dt$Se, dt$Mn, method="spearman") # 0.407 
+cor.test(dt$Se, dt$Re, method="spearman") # 0.3731
+cor.test(dt$Re, dt$Mn, method="spearman") # 0.498
+
+}
 
 
 
+#Factor analysis
+{
+  
+  
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final")
+  dt <- read.delim("SLT_Combined_ICP_Soil_Plants_08.05.23.txt")
+
+  library(factoextra)
+  library(FactoMineR)
+  
+  # Select relevant columns from your dataset
+  selected_cols <- dt[, 7:44]
+  
+  # Perform EFA
+  efa_result <- factanal(selected_cols, factors = 5, rotation = "varimax")
+  
+  # Display factor loadings
+  print(efa_result$loadings)
+  
+  library(lavaan)
+  
+  # Create a model specification
+  model <- '
+  # Define latent factors
+  f1 =~ Cu_Plant + Cu_Soil + C
+  f2 =~ pH + EC + Mo_Soil
+
+  # Define relationships
+  f1 ~ f2
+'
+  
+  # Fit the model
+  cfa_result <- sem(model, data = dt)
+  
+  # Display results
+  summary(cfa_result)
+  
+  
+  
+  
+  
+  
+  
+  }
+
+
+#Boxplots
 

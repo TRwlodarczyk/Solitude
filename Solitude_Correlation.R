@@ -359,11 +359,11 @@ dt <- subset(dt, Form=="Shrub")
 
 
 
-  ggplot(dt, aes(x = Total_Weight, y = Cu_Error, shape = Form, color = Substrate_RT)) +
+a <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, shape = Form, color = Substrate_RT)) +
     geom_point(size = 4, stroke=1) +  # Add points with specified size
     labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
     scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
-    #scale_y_continuous(limits = c(-200, 100), breaks = seq(-200, 100, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
     theme_minimal() +  # Use a minimal theme
     theme(
       plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
@@ -380,60 +380,83 @@ dt <- subset(dt, Form=="Shrub")
       shape = guide_legend(title = "Form", override.aes = list(size = 5))
     )  # Add legend for shape aesthetic with specified size
   
+  sum(dt$Cu_Error > 50, na.rm = TRUE) # 34/98 = 34.6% 
+  sum(dt$Cu_Error < 25, na.rm = TRUE) # 26/98 = 26.5%
+  sum(dt$Cu_Error > 70, na.rm = TRUE) # 8/98 = 8.16%
+  
+  sum(dt$Cu_Error2 > 50, na.rm = TRUE) # 13/98 = 13.26%
+  sum(dt$Cu_Error2 < 25, na.rm = TRUE) # 34/98 = 34.69%
+  sum(dt$Cu_Error2 > 70, na.rm = TRUE) # 2/98 = 2%
   
   cor.test(dt$Cu_Error, dt$Total_Weight, method="spearman")
   cor.test(dt$Cu_Error, dt$Substrate_RT, method="spearman")  
   
   
-Cu_corr <- ggplot(dt, aes(x = Total_Weight, y = Cu_Error)) +
-  geom_point(size = 1.7, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
-  scale_shape_manual(values = c(21, 24, 23, 25)) +
-  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  theme_classic() +
-  ylab("Percent Error")
-Cu_corr
-
-
-Cu_corr2 <- ggplot(dt, aes(x = Substrate_RT, y = Cu_Error)) +
-  geom_point(size = 1.7, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
-  scale_shape_manual(values = c(21, 24, 23, 25)) +
-  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  theme_classic() +
-  ylab("Percent Error")
-Cu_corr2
-
-
-
-RT_Weight <- ggplot(dt, aes(x = Substrate_RT, y = Total_Weight)) +
-  geom_point(size = 1.7, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
-  scale_shape_manual(values = c(21, 24, 23, 25)) +
-  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  theme_classic() +
-  ylab("Total Weight")
-RT_Weight
-
-
-cor.test(dt$Cu_Error, dt$Total_Weight, method="spearman")
-cor.test(dt$Cu_Error, dt$Substrate_RT, method="spearman")
-cor.test(dt$Total_Weight, dt$Substrate_RT, method="spearman")
-#cor.test(dt$Cu_concentration, dt$Cu_ICP, method="spearman")
-#cor.test(dt$Fe_concentration, dt$Fe_ICP, method="spearman")
+  dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+  dt$Cu_Error2 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100)
+  
+b <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, shape = Form, color = Substrate_RT)) +
+    geom_point(size = 4, stroke=1) +  # Add points with specified size
+    labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
+    scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    theme_minimal() +  # Use a minimal theme
+    theme(
+      plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+      axis.title = element_text(size = 20),  # Customize axis labels
+      axis.text.x = element_text(size = 16),
+      axis.title.x = element_text(size = 20),
+      axis.text.y = element_text(size = 16),
+      axis.title.y = element_text(size = 20),
+      legend.text = element_text(size = 16),
+      legend.title = element_text(size = 16, face = "bold"),
+      legend.position = "top"  # Position the legend at the top
+    ) +
+    guides(
+      shape = guide_legend(title = "Form", override.aes = list(size = 5))
+    )  # Add legend for shape aesthetic with specified size
+  
+  cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")  
+  
+  library(ggpubr)
+  
+  ggarrange(a, b,
+            ncol = 2, nrow = 1, 
+            common.legend = TRUE, legend = "bottom")
+  
 
 
 
-P6 <- subset(dt, Plot=="P6")
 
-CorrCu <- ggplot(P6, aes(x = Cu_ICP, y = Cu_concentration)) +
-  geom_point(size = 1.7, stroke = 1, aes(color = Scientific_Name)) +
-  scale_shape_manual(values = c(21, 24, 23, 25)) +
-  #scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  #scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  theme_classic() +
-  ylab("Total Weight")
-CorrCu
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt$Fe_Error <- abs(((dt$Fe_ICP - dt$Fe_concentration) / dt$Fe_ICP) * 100)
+
+c <-   ggplot(dt, aes(x = Total_Weight, y = Fe_Error, shape = Form, color = Substrate_RT)) +
+  geom_point(size = 4, stroke=1) +  # Add points with specified size
+  labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
+  scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
+  #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+  theme_minimal() +  # Use a minimal theme
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+    axis.title = element_text(size = 20),  # Customize axis labels
+    axis.text.x = element_text(size = 16),
+    axis.title.x = element_text(size = 20),
+    axis.text.y = element_text(size = 16),
+    axis.title.y = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.position = "top"  # Position the legend at the top
+  ) +
+  guides(
+    shape = guide_legend(title = "Form", override.aes = list(size = 5))
+  )  # Add legend for shape aesthetic with specified size
+
+cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")  
+
+
 }
 
 #Bland Altman Cu + ICC
@@ -2287,4 +2310,19 @@ library(ggpubr)
 ggarrange(Cu, Se, Re, ncol = 1, nrow = 3, 
           common.legend = TRUE, legend = "bottom")
 
+}
+
+
+#Correlation heatmap for ICP only
+{
+library(corrplot)
+
+# Select the columns you want to include in the correlation heatmap
+selected_columns <- dt[, 49:67]
+
+# Calculate the correlation matrix
+cor_matrix <- cor(selected_columns)
+
+# Create a correlation heatmap using corrplot
+corrplot(cor_matrix, method = "color")
 }

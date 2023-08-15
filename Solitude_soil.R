@@ -649,3 +649,56 @@ dt_soil_summary3 <- dt_soil_summary_Re %>%
                 ~ ifelse(. > 10, round(., 0), round(., 1))))
 
 write.csv(dt_soil_summary3, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Soil_Table_Re.csv", row.names=FALSE)
+
+
+
+# New table: avarage across all plots. only Tailing and Control
+
+dt_soil_summary1 <- dt1 %>%
+  filter(Site %in% c("TAILINGS", "CONTROL")) %>%
+  pivot_longer(cols = 42:69, names_to = "Concentration", values_to = "Value") %>%
+  group_by(Concentration, Site) %>%
+  summarise(min = min(Value), 
+            max = max(Value), 
+            mean = mean(Value), 
+            median = median(Value), 
+            se = sd(Value) / sqrt(n()),  # Calculate standard error
+            .groups = "drop") %>%
+  pivot_wider(names_from = Site, values_from = c(min, max, mean, median, se), names_glue = "{Site}_{.value}") %>%
+  select(Concentration, contains("_")) %>%
+  pivot_longer(cols = -Concentration, names_to = "Site_Stat", values_to = "Value") %>%
+  separate(Site_Stat, into = c("Site", "Stat"), sep = "_") %>%
+  pivot_wider(names_from = Site, values_from = Value) %>%
+  arrange(Concentration)
+
+
+dt_soil_summary4 <- dt_soil_summary1 %>%
+  mutate(across(where(is.numeric), 
+                ~ ifelse(. > 10, round(., 0), round(., 1))))
+
+write.csv(dt_soil_summary1, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Soil_Table_Average.csv", row.names=FALSE)
+
+
+
+
+
+dt_soil_summary1 <- dt1 %>%
+  filter(Site %in% c("TAILINGS", "CONTROL")) %>%
+  pivot_longer(cols = 42:69, names_to = "Concentration", values_to = "Value") %>%
+  group_by(Concentration, Site) %>%
+  summarise(min = min(Value), 
+            max = max(Value), 
+            mean = mean(Value), 
+            median = median(Value), 
+            se = sd(Value) / sqrt(n())) %>%
+  pivot_wider(names_from = Site, values_from = c(min, max, mean, median, se), 
+              names_glue = "{Site}_{.value}") %>%
+  arrange(Concentration)
+
+
+
+dt_soil_summary5 <- dt_soil_summary1 %>%
+  mutate(across(where(is.numeric), 
+                ~ ifelse(. > 10, round(., 0), round(., 1))))
+
+write.csv(dt_soil_summary5, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Soil_Table_Average.csv", row.names=FALSE)
