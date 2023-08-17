@@ -64,6 +64,7 @@ shapiro.test(dt_T$Mn_ICP) # < 0.05 =  NO normally distributed -------------
 shapiro.test(dt_T$Fe_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt_T$Co_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt_T$Ni_ICP) # < 0.05 =  NO normally distributed -------------
+shapiro.test(dt_T$Cu_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt_T$Zn_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt_T$Ge_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt_T$As_ICP) # > 0.05 =  normally distributed
@@ -177,6 +178,11 @@ print(wilcox_result)
 anova_result <- aov(Cu_ICP ~ Plot, data = dt_T)
 tukey_result <- TukeyHSD(anova_result)
 print(tukey_result)
+
+anova_result <- aov(Cu_ICP ~ Plot, data = dt)
+tukey_result <- TukeyHSD(anova_result)
+print(tukey_result)
+
 # Zn
 anova_result <- aov(Zn_ICP ~ Plot, data = dt_T)
 tukey_result <- TukeyHSD(anova_result)
@@ -435,6 +441,11 @@ shapiro.test(dt$Pb_ICP) #sig
   anova_result <- aov(Cu_ICP ~ Plot, data = dt)
   tukey_result <- TukeyHSD(anova_result)
   print(tukey_result)
+  
+  anova_result <- aov(Cu_ICP ~ Site, data = dt)
+  tukey_result <- TukeyHSD(anova_result)
+  print(tukey_result)
+  
   # Zn
   wilcox_result <- pairwise.wilcox.test(dt$Zn_ICP, dt$Plot, p.adjust.method = "BH")
   print(wilcox_result)
@@ -702,3 +713,154 @@ dt_soil_summary5 <- dt_soil_summary1 %>%
                 ~ ifelse(. > 10, round(., 0), round(., 1))))
 
 write.csv(dt_soil_summary5, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Soil_Table_Average.csv", row.names=FALSE)
+
+
+# Boxplots soil
+{
+ ggplot(dt, aes(x = Site, y = Cu_ICP)) +
+    geom_boxplot(size = 1, stroke=1) +  # Add points with specified size
+    theme_minimal()  # Use a minimal theme
+  ggplot(dt, aes(x = Plot, y = Cu_ICP)) +
+    geom_boxplot(size = 1, stroke=1) +
+    geom_jitter(color="red", size=2)+# Add points with specified size
+    theme_minimal()  # Use a minimal theme
+  library(ggbeeswarm)
+  ggplot(dt, aes(x = Plot, y = Cu_ICP)) +
+    geom_violin()+
+    geom_point()
+
+
+  
+}
+
+{
+C2 <- subset(dt, Plot=="C2")
+P1 <- subset(dt, Plot=="P1")
+P6 <- subset(dt, Plot=="P6")
+P5 <- subset(dt, Plot=="P5")
+C1 <- subset(dt, Plot=="C1")
+P2 <- subset(dt, Plot=="P2")
+CTR <- subset(dt, Site=="CONTROL")
+TL <- subset(dt, Site=="TAILINGS")
+
+dt$Cu_ICP <- as.numeric(dt$Cu_ICP)
+t.test(C2$Cu_ICP, P1$Cu_ICP)
+t.test(P5$Cu_ICP, P1$Cu_ICP)
+pairwise.wilcox.test(C2$Cu_ICP, P1$Cu_ICP, p.adjust.method = "holm")
+
+typeof(C2$Cu_ICP)
+
+aP1 <- c(399.740, 882.564, 536.832,399.740, 882.564, 536.832)
+bC2 <- c(34.715, 244.826, 223.734, 34.715, 244.826, 223.734)
+pairwise.wilcox.test(aP1, bC2, p.adjust.method = "holm")
+wilcox.test(aP1, bC2, exact=FALSE, paired=FALSE)
+
+
+wilcox.test(C2$Cu_ICP, P1$Cu_ICP, exact=FALSE, paired=FALSE)
+wilcox.test(C1$Cu_ICP, P1$Cu_ICP, exact=FALSE)
+wilcox.test(P2$Cu_ICP, C1$Cu_ICP, exact=FALSE)
+wilcox.test(CTR$Cu_ICP, TL$Cu_ICP, exact=FALSE)
+
+pairwise.wilcox.test(C1$Cu_ICP, P1$Cu_ICP, p.adjust.method = "holm")
+pairwise.wilcox.test(C1$Cu_ICP, P1$Cu_ICP, p.adjust.method = "bonferroni")
+pairwise.wilcox.test(C1$Cu_ICP, P1$Cu_ICP, p.adjust.method = "BH")
+
+wilcox.test(dt$Cu_ICP ~ dt$Site, paired = FALSE, exact = FALSE)
+
+
+t.test(C2$Cu_ICP, P1$Cu_ICP) # two-sample t-test
+t.test(C2$Cu_ICP, P1$Cu_ICP, paired = TRUE) # dependent t-test
+t.test(aP1, bC2, paired = TRUE) # dependent t-test
+wilcox.test(C2$Cu_ICP, P1$Cu_ICP, mu = 0, paired = TRUE, alternative = "two.sided") # Wilcoxon Signed Rank Test for one-sample data
+wilcox.test(C2$Cu_ICP, P1$Cu_ICP, alternative = "two.sided") # Mann-Whitney U Test for two-sample data
+
+t.test(C1$Cu_ICP, P1$Cu_ICP, paired = TRUE) # dependent t-test
+wilcox.test(dt$Cu_ICP~ dt$Site, alternative = "two.sided")
+t.test(dt$Cu_ICP~dt$Site, paired = TRUE) # dependent t-test
+
+
+difference <- CTR$Cu_ICP - TL$Cu_ICP
+t_test <- t.test(difference, mu = 0)
+
+mean(CTR$Cu_ICP)#187.38
+mean(TL$Cu_ICP)#355.59
+sd(CTR$Cu_ICP)/sqrt(6) #34
+sd(TL$Cu_ICP)/sqrt(12) #34
+
+mean(P1$Cu_ICP) #606.37
+mean(P2$Cu_ICP) #283
+mean(P5$Cu_ICP) #190
+mean(P6$Cu_ICP) #343
+mean(C1$Cu_ICP) #207
+mean(C2$Cu_ICP) #168
+
+mean(TL$pH) #6.7
+sd(TL$pH)/sqrt(12) #0.45
+mean(CTR$pH) #7.51
+sd(CTR$pH)/sqrt(6) #0.4
+
+mean(TL$N) #0.012
+sd(TL$N)/sqrt(12) 
+mean(CTR$N) #0.105
+sd(CTR$N)/sqrt(6) #0.019
+
+mean(CTR$C) #1.54
+sd(CTR$C)/sqrt(6) #0.108
+
+
+mean(TL$S) #0.0465 
+sd(TL$S)/sqrt(12) #0.0156
+}
+#
+
+{unique_levels <- unique(dt$Plot)
+
+# Perform Wilcoxon rank sum tests for each pair of levels
+results <- list()
+for (i in 1:(length(unique_levels) - 1)) {
+  for (j in (i + 1):length(unique_levels)) {
+    level1 <- unique_levels[i]
+    level2 <- unique_levels[j]
+    subset1 <- dt$Cu_ICP[dt$Plot == level1]
+    subset2 <- dt$Cu_ICP[dt$Plot == level2]
+    
+    test_result <- wilcox.test(subset1, subset2, paired = FALSE, exact = FALSE)
+    result_name <- paste(level1, level2, sep = "_vs_")
+    results[[result_name]] <- test_result
+  }
+}
+
+# Print the results
+for (i in seq_along(results)) {
+  cat(names(results)[i], "\n")
+  print(results[[i]])
+  cat("\n")
+}
+}
+
+{library(boot)
+
+# Convert the Plot variable to a factor variable
+dt$Plot <- as.factor(dt$Plot)
+
+# Calculate the observed F-statistic
+observed_f_statistic <- f_statistic(dt, 1:length(dt$Plot))
+
+# Calculate the F-statistic function
+f_statistic <- function(data, indices) {
+  var_c2 <- var(data$Cu_ICP[data$Plot == "C2"][indices])
+  var_p1 <- var(data$Cu_ICP[data$Plot == "P1"][indices])
+  return(var_c2 / var_p1)
+}
+
+# Perform the bootstrap
+set.seed(123)  # for reproducibility
+bs_results <- boot(data = dt, statistic = f_statistic, R = 10000)
+
+# Calculate the p-value
+p_value <- mean(bs_results$t >= observed_f_statistic, na.rm = TRUE)
+
+# Print the results
+print(paste("p-value:", p_value))
+}
+)
