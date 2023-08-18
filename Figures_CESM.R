@@ -708,4 +708,11 @@ for (i in 1:nrow(result_table)) {
 print(result_table)
 
 
+#and all samples at tailings surfave vs tailings
+
+
+result <- wilcox.test(dt_soil_new$Cu_Concentration ~ dt_soil_new$Layer, paired = FALSE, exact = FALSE)
+p_value <- result$p.value
+length(dt_soil_new$Cu_Concentration) #24
+
 

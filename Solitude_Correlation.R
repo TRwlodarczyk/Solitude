@@ -685,6 +685,7 @@ ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass co
 difference <- dt$Cu_ICP - dt$Cu_concentration
 t_test <- t.test(difference, mu = 0)
 
+#wilcox.test(difference, mu = 0, paired = TRUE) # for no normal we should use Wilcoxon signed-rank test
 
 # Calculate the average of measurements
 average1 <- (dt$Predicted_Cu_ICP + dt$Cu_ICP) / 2
@@ -1240,6 +1241,7 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   average <- (dt$Se_ICP + dt$Se_concentration) / 2
   difference <- dt$Se_ICP - dt$Se_concentration
   t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
+  
   
   #Check pvalue for bland altman of new predicted variables vs ICP
   average1 <- (dt$Predicted_Se_ICP + dt$Se_ICP) / 2
@@ -2110,7 +2112,8 @@ dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
     typeof(tr$Cu_concentration) # confirm the value is no longer a character
 }
 
-
+shapiro.test(dt$Re_ICP)
+  
 model7 <- glm(Re_ICP ~ Re_concentration + Substrate_RT, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50)) # RT not significant
 summary(model7)
 model5 <- glm(Re_ICP ~ Re_concentration + Total_Weight, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
@@ -2143,6 +2146,11 @@ t_test <- t.test(difference1, mu = 0) #p < 0.05 signif different from 0
 
 difference2 <- tr$Re_ICP - tr$Predicted_Re_ICP2
 t_test <- t.test(difference2, mu = 0) #p < 0.05 signif different from 0
+
+
+wilcox.test(tr$Re_ICP,tr$Re_concentration, mu = 0, paired = TRUE) # for no normal we should use Wilcoxon signed-rank test
+
+
 }
 
 #Model test

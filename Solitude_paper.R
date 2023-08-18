@@ -15,6 +15,7 @@
   library(agricolae)
   library(tidyverse)
   library (readr) #to read URL
+  library(ggstatsplot)
 }
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final")
@@ -577,3 +578,44 @@ cor.test(dt$Re, dt$Mn, method="spearman") # 0.498
 
 #Boxplots
 
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- subset(dt, Site != 'CONTROL')
+
+dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans",
+                                            "Nultuma (Prosopis) velutina", "Tamarix chinensis", "Senegalia (Acacia) greggii","Isocoma acradenia"),]
+Cu <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Cu_ICP, FUN = median),
+                     y = Predicted_Cu_ICP, Sceintific_Name=Scientific_Name)) +
+  geom_boxplot() +
+  geom_point(aes(color = Plot, shape = Form, fill = Plot)) +
+  scale_shape_manual(values = c(21, 24, 22, 3, 5, 2)) +
+  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31", "#007555","#007222")) +
+  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31", "#007555", "#007222")) +
+  geom_hline(yintercept = 70, linetype = "dashed", color = "#9a9a9a", size = 0.5) +
+  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 0.5) +
+  geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 0.5) +
+  coord_flip() +
+  scale_x_discrete(guide = guide_axis(angle = 0)) +
+  scale_y_continuous(limits = c(0, 800), breaks = seq(0, 800, by = 50)) +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
+        axis.title.x = element_text(size = 19),
+        axis.text.y = element_text(size=14, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size=15, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Cu (mg/kg)")
+Cu
+
+plt <- ggbetweenstats(
+  data = dt,
+  x = Scientific_Name,
+  y = Predicted_Cu_ICP
+)
+
+install.packages("dplyr")

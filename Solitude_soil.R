@@ -775,7 +775,24 @@ wilcox.test(C2$Cu_ICP, P1$Cu_ICP, mu = 0, paired = TRUE, alternative = "two.side
 wilcox.test(C2$Cu_ICP, P1$Cu_ICP, alternative = "two.sided") # Mann-Whitney U Test for two-sample data
 
 t.test(C1$Cu_ICP, P1$Cu_ICP, paired = TRUE) # dependent t-test
-wilcox.test(dt$Cu_ICP~ dt$Site, alternative = "two.sided")
+wilcox.test(dt$Cu_ICP~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$Fe_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$Mn_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$Zn_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$As_ICP~ dt$Site, alternative = "two.sided") # w paperze 
+wilcox.test(dt$Cr_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$Se_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$Mo_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$P_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$S_ICP~ dt$Site, alternative = "two.sided") # w paperze
+
+
+wilcox.test(dt$pH~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$EC~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$N~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$C~ dt$Site, alternative = "two.sided") # w paperze sig
+wilcox.test(dt$S~ dt$Site, alternative = "two.sided") # w paperze
+
 t.test(dt$Cu_ICP~dt$Site, paired = TRUE) # dependent t-test
 
 
