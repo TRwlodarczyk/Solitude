@@ -14,6 +14,7 @@
   library(agricolae)
   library(tidyverse)
   library (readr) #to read URL
+  library(car)
 }
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
@@ -626,6 +627,14 @@ cat("  p-value:", t_test$p.value, "\n")
 dt <- read.delim("SLT_pXRF_ICP.txt")
 dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
 
+shapiro.test(dt$Cu_concentration)
+shapiro.test(dt$Cu_ICP)
+leveneTest(dt$Cu_concentration, dt$Cu_ICP)
+library(lmtest)
+lm_model <- lm(Cu_ICP~Cu_concentration, data=dt)
+breusch_pagan_test <- bptest(lm_model) # jest hetero
+
+
 model1 <- glm(Cu_ICP ~ Cu_concentration, data = dt)
 summary(model1)
 model2 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt)
@@ -1027,9 +1036,14 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
   shapiro.test(dt$Zn_concentration)
   shapiro.test(dt$Zn_ICP)
+  library(lmtest)
+  lm_model <- lm(Zn_ICP~Zn_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) #pval 0.7 - nie ma heteroscedasticity
+  
   plot(dt$Zn_concentration~dt$Zn_ICP)
   cor.test(dt$Zn_ICP, dt$Zn_concentration, method="spearman") # rho = 0.5615571, p.val = 3.905e-09
 
+  summary(lm_model) 
   
   model1 <- glm(Zn_ICP ~ Zn_concentration, data = dt)
   summary(model1)
@@ -1187,6 +1201,10 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
   shapiro.test(dt$Se_concentration)
   shapiro.test(dt$Se_ICP)
+  library(lmtest)
+  lm_model <- lm(Se_ICP~Se_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest heterosca
+  
   plot(dt$Se_concentration~dt$Se_ICP)
   plot(density(dt$Se_ICP))
   cor.test(dt$Se_ICP, dt$Se_concentration, method="spearman") # rho = 0.9521751, p.val < 2.2e-16
@@ -1363,6 +1381,10 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
   shapiro.test(dt$Mn_concentration)
   shapiro.test(dt$Mn_ICP)
+  library(lmtest)
+  lm_model <- lm(Mn_ICP~Mn_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # nie ma heterosca
+  
   plot(dt$Mn_concentration~dt$Mn_ICP)
   plot(density(dt$Mn_ICP))
   cor.test(dt$Mn_ICP, dt$Mn_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
@@ -1537,6 +1559,10 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
   shapiro.test(dt$As_concentration)
   shapiro.test(dt$As_ICP)
+  library(lmtest)
+  lm_model <- lm(As_ICP~As_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # nie ma hetero
+  
   plot(dt$As_concentration~dt$As_ICP)
   plot(density(dt$As_ICP))
   cor.test(dt$As_ICP, dt$As_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
@@ -1710,6 +1736,10 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
   shapiro.test(dt$Cr_concentration)
   shapiro.test(dt$Cr_ICP)
+  library(lmtest)
+  lm_model <- lm(Cr_ICP~Cr_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest hetero
+  
   plot(dt$Cr_concentration~dt$Cr_ICP)
   plot(density(dt$Cr_ICP))
   cor.test(dt$Cr_ICP, dt$Cr_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
@@ -2091,6 +2121,13 @@ print(factor_result)
 {
 dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
   
+  shapiro.test(dt$Re_concentration)
+  shapiro.test(dt$Re_ICP)
+  library(lmtest)
+  lm_model <- lm(Re_ICP~Re_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest heteros
+  
+  
   {
     tr <- matrix(data = NA, ncol = ncol(dt[,c(1:59)]), nrow=nrow(dt)) # select all columns 1:46
     colnames(tr) <- colnames(dt[,c(1:59)])
@@ -2334,3 +2371,6 @@ cor_matrix <- cor(selected_columns)
 # Create a correlation heatmap using corrplot
 corrplot(cor_matrix, method = "color")
 }
+
+
+
