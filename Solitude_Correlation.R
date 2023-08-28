@@ -353,10 +353,31 @@ dt <- read.delim("SLT_pXRF_ICP.txt")
 dt <- dt[dt$Cu_concentration != 0.25, ]
 dt$Cu_Error <- abs(((dt$Cu_ICP - dt$Cu_concentration) / dt$Cu_ICP) * 100)
 #dt$Cu_Error <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100)
-dt <- subset(dt, Form=="Forb")
-dt <- subset(dt, Form=="Grass")
-dt <- subset(dt, Form=="Tree")
-dt <- subset(dt, Form=="Shrub")
+dtF <- subset(dt, Form=="Forb")
+dtG <- subset(dt, Form=="Grass")
+dtT <- subset(dt, Form=="Tree")
+dtS <- subset(dt, Form=="Shrub")
+
+shapiro.test(dt$Cu_Error) # Normal
+shapiro.test(dt$Cu_Error2) # Non normal
+cor.test(dt$Cu_Error, dt$Substrate_RT, method="pearson") #  R2 = -0.414
+cor.test(dt$Cu_Error, dt$Total_Weight, method="pearson") #  R2 = -0.279
+cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman") #Rho = -0.217
+cor.test(dt$Cu_Error2, dt$Total_Weight, method="spearman") #Rho -0.208
+
+summary(lm(dt$Cu_Error ~ dt$Substrate_RT))
+
+
+length(dtF$Cu_ICP) #56
+length(dtG$Cu_ICP) #9
+length(dtT$Cu_ICP) #20
+length(dtS$Cu_ICP) #13
+
+mean(dtF$Cu_Error) #43.157
+mean(dtG$Cu_Error) #38.54
+mean(dtT$Cu_Error) #35.7
+mean(dtS$Cu_Error) #31.22
+
 
 
 
@@ -2007,6 +2028,78 @@ t.test(difference, mu = 0) #p < 0.05 t=4.69
   
 }
 
+#Re correl
+{
+  dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
+  
+  shapiro.test(dt$Re_concentration)
+  shapiro.test(dt$Re_ICP)
+  library(lmtest)
+  lm_model <- lm(Re_ICP~Re_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest heteros
+  
+  
+  {
+    tr <- matrix(data = NA, ncol = ncol(dt[,c(1:59)]), nrow=nrow(dt)) # select all columns 1:46
+    colnames(tr) <- colnames(dt[,c(1:59)])
+    for (i in 14:48) # select when the concentrations start
+    {
+      tr[,c(i)] <- gsub(".*ND.*", 0, dt[,i])
+    }
+    
+    for(i in c(1:13, 49:59)) # select columns that need to stay the same 1:11 include character and double (weight)
+    {
+      tr[,c(i)] <- dt[,c(i)]
+    }
+    tr   
+    
+    #transform to dataframe
+    tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
+    tr[,14:59] <- sapply(tr[,14:59],as.numeric)# Change a character to numeric (double)
+    tr[,9] <- sapply(tr[,9],as.numeric)
+    typeof(tr$Cu_concentration) # confirm the value is no longer a character
+  }
+  
+  shapiro.test(dt$Re_ICP)
+  
+  model7 <- glm(Re_ICP ~ Re_concentration + Substrate_RT, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50)) # RT not significant
+  summary(model7)
+  model5 <- glm(Re_ICP ~ Re_concentration + Total_Weight, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model5)
+  
+  
+  tr$Predicted_Re_ICP <- 3.84146 + (0.91141* tr$Re_concentration) + (-33.18455* tr$Substrate_RT)
+  #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+  tr$Predicted_Re_ICP2 <- 4.29996 + (0.93425* tr$Re_concentration) + (-3.64517* tr$Total_Weight)
+  
+  
+  cor.test(tr$Re_ICP, tr$Re_concentration, method="spearman")
+  cor.test(tr$Re_ICP, tr$Predicted_Re_ICP, method="spearman")
+  cor.test(tr$Re_ICP, tr$Predicted_Re_ICP2, method="spearman")
+  
+  library(psych)
+  
+  tr_ICC <- tr[, c("Re_ICP", "Re_concentration")]
+  ICC(tr_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  tr_ICC2 <- tr[, c("Re_ICP", "Predicted_Re_ICP")]
+  ICC(tr_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  tr_ICC3 <- tr[, c("Re_ICP", "Predicted_Re_ICP2")]
+  ICC(tr_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  
+  difference <- tr$Re_ICP - tr$Re_concentration
+  t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
+  
+  difference1 <- tr$Re_ICP - tr$Predicted_Re_ICP
+  t_test <- t.test(difference1, mu = 0) #p < 0.05 signif different from 0
+  
+  difference2 <- tr$Re_ICP - tr$Predicted_Re_ICP2
+  t_test <- t.test(difference2, mu = 0) #p < 0.05 signif different from 0
+  
+  
+  wilcox.test(tr$Re_ICP,tr$Re_concentration, mu = 0, paired = TRUE) # for no normal we should use Wilcoxon signed-rank test
+  
+  
+}
 
 ### Aplying new model to pXRF data ### Update to the latest one
 {
@@ -2117,78 +2210,6 @@ print(factor_result)
 }
 
 
-#Re correl
-{
-dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
-  
-  shapiro.test(dt$Re_concentration)
-  shapiro.test(dt$Re_ICP)
-  library(lmtest)
-  lm_model <- lm(Re_ICP~Re_concentration, data=dt)
-  breusch_pagan_test <- bptest(lm_model) # jest heteros
-  
-  
-  {
-    tr <- matrix(data = NA, ncol = ncol(dt[,c(1:59)]), nrow=nrow(dt)) # select all columns 1:46
-    colnames(tr) <- colnames(dt[,c(1:59)])
-    for (i in 14:48) # select when the concentrations start
-    {
-      tr[,c(i)] <- gsub(".*ND.*", 0, dt[,i])
-    }
-    
-    for(i in c(1:13, 49:59)) # select columns that need to stay the same 1:11 include character and double (weight)
-    {
-      tr[,c(i)] <- dt[,c(i)]
-    }
-    tr   
-    
-    #transform to dataframe
-    tr <- as.data.frame.matrix(tr) #A correct command to change the dataset to dataframe after transformations
-    tr[,14:59] <- sapply(tr[,14:59],as.numeric)# Change a character to numeric (double)
-    tr[,9] <- sapply(tr[,9],as.numeric)
-    typeof(tr$Cu_concentration) # confirm the value is no longer a character
-}
-
-shapiro.test(dt$Re_ICP)
-  
-model7 <- glm(Re_ICP ~ Re_concentration + Substrate_RT, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50)) # RT not significant
-summary(model7)
-model5 <- glm(Re_ICP ~ Re_concentration + Total_Weight, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-summary(model5)
-
-
-tr$Predicted_Re_ICP <- 3.84146 + (0.91141* tr$Re_concentration) + (-33.18455* tr$Substrate_RT)
-#Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
-tr$Predicted_Re_ICP2 <- 4.29996 + (0.93425* tr$Re_concentration) + (-3.64517* tr$Total_Weight)
-
-
-cor.test(tr$Re_ICP, tr$Re_concentration, method="spearman")
-cor.test(tr$Re_ICP, tr$Predicted_Re_ICP, method="spearman")
-cor.test(tr$Re_ICP, tr$Predicted_Re_ICP2, method="spearman")
-
-library(psych)
-
-tr_ICC <- tr[, c("Re_ICP", "Re_concentration")]
-ICC(tr_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
-tr_ICC2 <- tr[, c("Re_ICP", "Predicted_Re_ICP")]
-ICC(tr_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
-tr_ICC3 <- tr[, c("Re_ICP", "Predicted_Re_ICP2")]
-ICC(tr_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
-
-difference <- tr$Re_ICP - tr$Re_concentration
-t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
-
-difference1 <- tr$Re_ICP - tr$Predicted_Re_ICP
-t_test <- t.test(difference1, mu = 0) #p < 0.05 signif different from 0
-
-difference2 <- tr$Re_ICP - tr$Predicted_Re_ICP2
-t_test <- t.test(difference2, mu = 0) #p < 0.05 signif different from 0
-
-
-wilcox.test(tr$Re_ICP,tr$Re_concentration, mu = 0, paired = TRUE) # for no normal we should use Wilcoxon signed-rank test
-
-
-}
 
 #Model test
 {dft <- read.delim("Model_Test_3_replicates.txt")
@@ -2371,6 +2392,41 @@ cor_matrix <- cor(selected_columns)
 # Create a correlation heatmap using corrplot
 corrplot(cor_matrix, method = "color")
 }
+
+
+#Outliers check with DIXON
+{
+#Outliers check:
+
+# Your dataset 'dt'
+# Assuming 'Predicted_Cu_ICP' is the column of interest
+data_to_test <- tr$Cd_concentration
+
+# Sort the data in ascending order
+sorted_data <- sort(data_to_test)
+
+# Calculate the range
+range_data <- max(sorted_data) - min(sorted_data)
+
+# Calculate ratios of gaps to the range
+ratios <- diff(sorted_data) / range_data
+
+# Dixon's Q-test critical values for various sample sizes and significance levels
+# For a 95% confidence level, use Q_crit = 0.704 for n = 5 and Q_crit = 0.425 for n = 10
+Q_crit <- c(0.704, 0.425)
+
+# Check if any ratios exceed the critical value
+outliers <- ratios > Q_crit[length(sorted_data)]
+
+# Print the results
+cat("Ratios:", ratios, "\n")
+cat("Outliers Detected:", sorted_data[outliers], "\n")
+
+
+#Cu, Fe, Zn, Mn, Se, Cr, As, Re no outliers
+
+}
+
 
 
 

@@ -827,6 +827,10 @@ sd(CTR$C)/sqrt(6) #0.108
 
 mean(TL$S) #0.0465 
 sd(TL$S)/sqrt(12) #0.0156
+
+
+
+
 }
 #
 
@@ -880,4 +884,4 @@ p_value <- mean(bs_results$t >= observed_f_statistic, na.rm = TRUE)
 # Print the results
 print(paste("p-value:", p_value))
 }
-)
+

@@ -806,6 +806,85 @@ Cu
 #######
 
 
+dt_Cu <- dt %>%
+  group_by(Scientific_Name, Form) %>%
+  summarize(Median = median(Predicted_Cu_ICP), 
+            Mean = mean(Predicted_Cu_ICP), 
+            SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+  arrange(Median) %>%
+  ungroup()
+
+Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),    # Position error bars within bars
+                width = 0.25,                              # Adjust width for error bars
+                size = 0.5) +                               # Adjust size of error bars
+  coord_flip() +
+  labs(x = "", y = "Cu (mg/kg)") +
+  scale_fill_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+  theme_bw()
+Cu
+
+
+dt_Cu <- dt_selected %>%
+  group_by(Scientific_Name, Form) %>%
+  summarize(Median = median(Predicted_Cu_ICP), 
+            Mean = mean(Predicted_Cu_ICP), 
+            SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+  arrange(Median) %>%
+  ungroup()
+
+Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),    # Position error bars within bars
+                width = 0.25,                              # Adjust width for error bars
+                size = 0.5) +                               # Adjust size of error bars
+  coord_flip() +
+  labs(x = "", y = "Cu (mg/kg)") +
+  scale_fill_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+  theme_bw()
+Cu
+
+
+
+
+
+
+
+library(ggpattern)
+
+library(ggplot2)
+
+dt_Cu <- dt_selected %>%
+  group_by(Scientific_Name, Site, Form) %>%
+  summarize(Median = median(Predicted_Cu_ICP), 
+            Mean = mean(Predicted_Cu_ICP), 
+            SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+  arrange(Median) %>%
+  ungroup()
+
+Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Site, color = Form)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.25,
+                size = 0.5) +
+  scale_fill_manual(values = c("#643A6B", "#068DA9"), 
+                    guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
+  scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+  coord_flip() +
+  labs(x = "", y = "Cu (mg/kg)") +
+  theme_bw() +
+  theme(legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size = 15, face = "bold"))
+
+Cu
 
 
 }
@@ -828,169 +907,4 @@ plt <- ggbetweenstats(
   y = Predicted_Cu_ICP
 ) +
   scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31", "#007555", "#007222")) 
-}
-
-
-
-#Boxplot Control vs Tailings plants only matching!
-
-{
-  
-  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
-  dt <- read.delim("Solitude_Plants_Predicted_TLandCTRL.txt")
-  dt <- dt[dt$Type_of_Sample != "root", ]
-  dt <- dt[dt$Type_of_Sample != "stem", ]
-  
-  
-  dt_Cu <- dt %>%
-    group_by(Scientific_Name, Site, Form) %>%
-    summarize(Median = median(Predicted_Cu_ICP), 
-              Mean = mean(Predicted_Cu_ICP), 
-              SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
-    arrange(Median) %>%
-    ungroup()
-  
-  Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
-                          y = Mean, fill = Site, color = Form)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
-                  position = position_dodge(width = 0.9),
-                  width = 0.25,
-                  size = 0.5) +
-    scale_fill_manual(values = c("#643A6B", "#068DA9"), 
-                      guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
-    scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
-    coord_flip() +
-    labs(x = "", y = "Cu (mg/kg)") +
-    theme_bw() +
-    theme(legend.key.size = unit(1, "lines"),
-          legend.text = element_text(size = 13.5), 
-          legend.title = element_text(size = 15, face = "bold"))
-  
-  Cu
-  
-
-  
-  
-
-
-  
-
-  
-  library(dplyr)
-  library(ggplot2)
-  
-
-  # with empty bars
-  dt_Cu <- dt %>%
-    group_by(Scientific_Name, Site) %>%
-    summarize(
-      Median = median(Predicted_Cu_ICP),
-      Mean = mean(Predicted_Cu_ICP),
-      SD = sd(Predicted_Cu_ICP) / sqrt(n())
-    ) %>%
-    arrange(Median) %>%
-    ungroup()
-  
-  Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
-                          y = Mean, fill=Site)) +
-    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
-      color = "black",    # Border color of the bars
-     # Setting fill to white for empty bars
-    ) +
-
-    geom_errorbar(
-      aes(ymin = Mean - SD, ymax = Mean + SD),
-      position = position_dodge(width = 0.9),
-      width = 0.3,
-      size = 0.3
-    ) +
-    scale_fill_manual(values = c("white", "white")) +
-    coord_flip() +
-    labs(x = "", y = "Cu (mg/kg)") +
-    theme_bw() +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      legend.key.size = unit(1, "lines"),
-      legend.text = element_text(size = 8),
-      legend.title = element_text(size = 8, face = "bold")
-    )
-  
-  Cu
-  
-  # with empty bars
-  dt_Fe <- dt %>%
-    group_by(Scientific_Name, Site) %>%
-    summarize(
-      Median = median(Fe_concentration),
-      Mean = mean(Fe_concentration),
-      SD = sd(Fe_concentration) / sqrt(n())
-    ) %>%
-    arrange(Median) %>%
-    ungroup()
-  
-  Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median), 
-                          y = Mean, fill=Site)) +
-    geom_bar(stat = "identity", position = "dodge", # Position bars next to each other
-             color = "black",    # Border color of the bars
-             # Setting fill to white for empty bars
-    ) +
-    
-    geom_errorbar(
-      aes(ymin = Mean - SD, ymax = Mean + SD),
-      position = position_dodge(width = 0.9),
-      width = 0.25,
-      size = 0.5
-    ) +
-    scale_fill_manual(values = c("white", "white")) +
-    coord_flip() +
-    labs(x = "", y = "Cu (mg/kg)") +
-    theme_bw() +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      legend.key.size = unit(1, "lines"),
-      legend.text = element_text(size = 8),
-      legend.title = element_text(size = 8, face = "bold")
-    )
-  
-  Fe
-  
-  # with empty bars
-  dt_Mn <- dt %>%
-    group_by(Scientific_Name, Site) %>%
-    summarize(
-      Median = median(Predicted_Mn_ICP),
-      Mean = mean(Predicted_Mn_ICP),
-      SD = sd(Predicted_Mn_ICP) / sqrt(n())
-    ) %>%
-    arrange(Median) %>%
-    ungroup()
-  
-  Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
-                          y = Mean, fill=Site)) +
-    geom_bar(stat = "identity", position = "dodge", # Position bars next to each other
-             color = "black",    # Border color of the bars
-             # Setting fill to white for empty bars
-    ) +
-    
-    geom_errorbar(
-      aes(ymin = Mean - SD, ymax = Mean + SD),
-      position = position_dodge(width = 0.9),
-      width = 0.25,
-      size = 0.5
-    ) +
-    scale_fill_manual(values = c("white", "white")) +
-    coord_flip() +
-    labs(x = "", y = "Cu (mg/kg)") +
-    theme_bw() +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      legend.key.size = unit(1, "lines"),
-      legend.text = element_text(size = 8),
-      legend.title = element_text(size = 8, face = "bold")
-    )
-  
-  Mn
-  
-  
-
-  
-  
 }
