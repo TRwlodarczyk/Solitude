@@ -351,11 +351,35 @@ dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
 dt <- subset(dt, Site != 'CONTROL')
 dt <- dt[dt$Type_of_Sample != "root", ]
 
-#Shapiro and Leuvene
+#Outliers check:
+{
+# Your dataset 'dt'
+# Assuming 'Predicted_Cu_ICP' is the column of interest
+data_to_test <- dt$Cd_concentration
+
+# Sort the data in ascending order
+sorted_data <- sort(data_to_test)
+
+# Calculate the range
+range_data <- max(sorted_data) - min(sorted_data)
+
+# Calculate ratios of gaps to the range
+ratios <- diff(sorted_data) / range_data
+
+# Dixon's Q-test critical values for various sample sizes and significance levels
+# For a 95% confidence level, use Q_crit = 0.704 for n = 5 and Q_crit = 0.425 for n = 10
+Q_crit <- c(0.704, 0.425)
+
+# Check if any ratios exceed the critical value
+outliers <- ratios > Q_crit[length(sorted_data)]
+
+# Print the results
+cat("Ratios:", ratios, "\n")
+cat("Outliers Detected:", sorted_data[outliers], "\n")
 
 
-
-
+#Cu, Fe, Zn, Mn, Se, Cr, As, Re no outliers
+}
 
 
 #removing LODs
@@ -413,7 +437,7 @@ sum(dt$Predicted_Re_ICP > 5, na.rm = TRUE) #29/224 = 0.1294
 {
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
 dt <- read.delim("SLT_heatmap_plants.txt")
-
+dt <- dt[dt$Type_of_Sample != "stem", ]
 
 library(dplyr)
 library(reshape2)
@@ -472,6 +496,243 @@ ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, match(Scientifi
     axis.title.y = element_blank()
   )
 
+
+
+
+
+
+
+
+
+
+##################### BEZ CR and AS
+
+
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+
+dt_removed_cols <- dt %>%
+  select(-c(2, 3, 4, 5, 6, 11,12,13, 16))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Scientific_Name) %>%
+  summarize(across(Cu:Se, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Scientific_Name")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Scientific_Name <- factor(
+  dt_melted$Scientific_Name,
+  levels = dt_grouped_sorted$Scientific_Name
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Fe", "Mn", "Zn", "Re", "Se")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using geom_tile with the sorted and melted data
+ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, match(Scientific_Name, dt_grouped_sorted$Scientific_Name)), fill = value)) +
+  geom_tile(color = "white", width = 0.7, height = 0.7) +
+  scale_fill_gradient(low = "#C5DFF8", high = "#4A55A2", name = "Rescaled Concentration") +
+  labs(
+    title = "Element Concentrations Heatmap (Rescaled to 0-1 for Each Element)",
+    x = "Element",
+    y = "Sample and Scientific Name",
+    fill = "Rescaled Concentration"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(),
+    axis.text.y = element_text(size = 8),
+    axis.title.y = element_blank()
+  )
+
+
+######################## FINAL
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(gplots)
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_heatmap_plants.txt")
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+dt_removed_cols <- dt %>%
+  select(-c(2, 3, 4, 5, 6, 11, 12, 13, 16))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Scientific_Name) %>%
+  summarize(across(Cu:Se, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Scientific_Name")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Scientific_Name <- factor(
+  dt_melted$Scientific_Name,
+  levels = dt_grouped_sorted$Scientific_Name
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Fe", "Mn", "Zn", "Re", "Se")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using the heatmap.2 function with dendrograms
+heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")),
+          scale = "none", # Use "none" to keep the original values
+          trace = "none", # Remove trace colors
+          Rowv = TRUE, Colv = FALSE, # Add dendrograms
+          col = colorRampPalette(c("#C5DFF8", "#4A55A2"))(256),
+          key = TRUE, keysize = 1, key.title = NA, # Add color scale
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
+
+
+#######
+
+dt <- read.delim("SLT_heatmap_plants.txt")
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+
+dt_removed_cols <- dt %>%
+  select(-c(2, 3, 4, 5, 6, 11, 16))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Scientific_Name) %>%
+  summarize(across(Cu:Se, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Scientific_Name")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Scientific_Name <- factor(
+  dt_melted$Scientific_Name,
+  levels = dt_grouped_sorted$Scientific_Name
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Fe", "Mn", "Zn", "As", "Cr", "Re", "Se")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using geom_tile with the sorted and melted data
+ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, match(Scientific_Name, dt_grouped_sorted$Scientific_Name)), fill = value)) +
+  geom_tile(color = "white", width = 0.7, height = 0.7) +
+  scale_fill_gradient(low = "#C5DFF8", high = "#4A55A2", name = "Rescaled Concentration") +
+  labs(
+    title = "Element Concentrations Heatmap (Rescaled to 0-1 for Each Element)",
+    x = "Element",
+    y = "Sample and Scientific Name",
+    fill = "Rescaled Concentration"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(),
+    axis.text.y = element_text(size = 8),
+    axis.title.y = element_blank()
+  )
+
+
+
+library(dendextend)
+library(ggdendro)
+
+
+
+
+# Check for missing values and non-numeric values in dt_subset_rescaled
+# For columns Cu:Se, ensure they contain only numeric values
+# If necessary, perform appropriate data cleaning or transformation
+
+# Calculate distance matrix (assuming your data is clean)
+dist_matrix <- dist(dt_subset_rescaled, method = "euclidean")
+
+# Perform hierarchical clustering
+hclust_result <- hclust(dist_matrix, method = "ward.D2")
+
+# Convert hclust object to dendrogram
+dendro <- as.dendrogram(hclust_result)
+
+# Get the labels and heights
+leaf_labels <- labels(dendro)
+leaf_heights <- dendro$height
+
+# Create a data frame with leaf labels and heights
+leaf_data <- data.frame(label = leaf_labels, height = leaf_heights)
+
+# Create a ggplot2 dendrogram with labeled leaves
+dend_plot <- ggplot(leaf_data, aes(x = height, y = label)) +
+  geom_line() +
+  geom_text(aes(label = label), hjust = -0.1, size = 3) +
+  labs(x = "Height", y = "Scientific Names") +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+
+# Rotate y-axis labels for better readability
+dend_plot <- dend_plot + theme(axis.text.y = element_text(angle = 0, hjust = 1))
+
+# Show the plot
+print(dend_plot)
+
+
+
+
+
+
+
+
 # Create the heatmap using geom_tile with the sorted and melted data
 ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, -value), fill = value)) +
   geom_tile(color = "white", width = 0.7, height = 0.7) +
@@ -494,6 +755,10 @@ ggplot(dt_melted, aes(x = variable, y = reorder(Scientific_Name, -value), fill =
 #Correlation between elements in plants
 {
 library(car)
+
+  dt <- read.delim("SLT_heatmap_plants.txt")
+  dt <- dt[dt$Type_of_Sample != "stem", ] # wszystkie korelacje byly robione ze stemami..............
+  
 shapiro.test(dt$Fe)
 shapiro.test(dt$Zn) # non normal
 shapiro.test(dt$Mn) # non normal
@@ -806,85 +1071,6 @@ Cu
 #######
 
 
-dt_Cu <- dt %>%
-  group_by(Scientific_Name, Form) %>%
-  summarize(Median = median(Predicted_Cu_ICP), 
-            Mean = mean(Predicted_Cu_ICP), 
-            SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
-  arrange(Median) %>%
-  ungroup()
-
-Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
-                        y = Mean, fill = Form)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
-                position = position_dodge(width = 0.9),    # Position error bars within bars
-                width = 0.25,                              # Adjust width for error bars
-                size = 0.5) +                               # Adjust size of error bars
-  coord_flip() +
-  labs(x = "", y = "Cu (mg/kg)") +
-  scale_fill_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
-  theme_bw()
-Cu
-
-
-dt_Cu <- dt_selected %>%
-  group_by(Scientific_Name, Form) %>%
-  summarize(Median = median(Predicted_Cu_ICP), 
-            Mean = mean(Predicted_Cu_ICP), 
-            SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
-  arrange(Median) %>%
-  ungroup()
-
-Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
-                        y = Mean, fill = Form)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
-                position = position_dodge(width = 0.9),    # Position error bars within bars
-                width = 0.25,                              # Adjust width for error bars
-                size = 0.5) +                               # Adjust size of error bars
-  coord_flip() +
-  labs(x = "", y = "Cu (mg/kg)") +
-  scale_fill_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
-  theme_bw()
-Cu
-
-
-
-
-
-
-
-library(ggpattern)
-
-library(ggplot2)
-
-dt_Cu <- dt_selected %>%
-  group_by(Scientific_Name, Site, Form) %>%
-  summarize(Median = median(Predicted_Cu_ICP), 
-            Mean = mean(Predicted_Cu_ICP), 
-            SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
-  arrange(Median) %>%
-  ungroup()
-
-Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
-                        y = Mean, fill = Site, color = Form)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
-                position = position_dodge(width = 0.9),
-                width = 0.25,
-                size = 0.5) +
-  scale_fill_manual(values = c("#643A6B", "#068DA9"), 
-                    guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
-  scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
-  coord_flip() +
-  labs(x = "", y = "Cu (mg/kg)") +
-  theme_bw() +
-  theme(legend.key.size = unit(1, "lines"),
-        legend.text = element_text(size = 13.5), 
-        legend.title = element_text(size = 15, face = "bold"))
-
-Cu
 
 
 }
@@ -907,4 +1093,469 @@ plt <- ggbetweenstats(
   y = Predicted_Cu_ICP
 ) +
   scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31", "#007555", "#007222")) 
+}
+
+
+
+#Boxplot Control vs Tailings plants only matching!
+
+{
+  
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+  dt <- read.delim("Solitude_Plants_Predicted_TLandCTRL.txt")
+  dt <- dt[dt$Type_of_Sample != "root", ]
+  dt <- dt[dt$Type_of_Sample != "stem", ]
+  
+
+  
+  dt_Cu <- dt %>%
+    group_by(Scientific_Name, Site, Form) %>%
+    summarize(Median = median(Predicted_Cu_ICP), 
+              Mean = mean(Predicted_Cu_ICP), 
+              SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill = Site, color = Form)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                  position = position_dodge(width = 0.9),
+                  width = 0.25,
+                  size = 0.5) +
+    scale_fill_manual(values = c("#643A6B", "#068DA9"), 
+                      guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
+    scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+    coord_flip() +
+    labs(x = "", y = "Cu (mg/kg)") +
+    theme_bw() +
+    theme(legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 13.5), 
+          legend.title = element_text(size = 15, face = "bold"))
+  
+  Cu
+  
+  dt_Mn <- dt %>%
+    group_by(Scientific_Name, Site, Form) %>%
+    summarize(Median = median(Predicted_Mn_ICP), 
+              Mean = mean(Predicted_Mn_ICP), 
+              SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill = Site, color = Form)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                  position = position_dodge(width = 0.9),
+                  width = 0.25,
+                  size = 0.5) +
+    scale_fill_manual(values = c("#643A6B", "#068DA9"), 
+                      guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
+    scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+    coord_flip() +
+    labs(x = "", y = "Mn (mg/kg)") +
+    theme_bw() +
+    theme(legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 13.5), 
+          legend.title = element_text(size = 15, face = "bold"))
+  
+  Mn
+  
+  
+
+
+  
+
+  
+  library(dplyr)
+  library(ggplot2)
+  
+
+  # with empty bars
+  dt_Cu <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_Cu_ICP),
+      SD = sd(Predicted_Cu_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+      color = "black",    # Border color of the bars
+     # Setting fill to white for empty bars
+    ) +
+
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Cu (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      legend.key.size = unit(1, "lines"),
+      legend.text = element_text(size = 8),
+      legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Cu
+  
+
+  # with empty bars
+  dt_Fe <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Fe_concentration),
+      SD = sd(Fe_concentration) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Fe (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Fe
+  
+  
+  
+ 
+  # with empty bars
+  dt_Mn <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_Mn_ICP),
+      SD = sd(Predicted_Mn_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Mn (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Mn
+  
+  # with empty bars
+  dt_Zn <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_Zn_ICP),
+      SD = sd(Predicted_Zn_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Zn <- ggplot(dt_Zn, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Zn (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Zn
+  
+  
+  
+  # with empty bars
+  dt_As <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_As_ICP),
+      SD = sd(Predicted_As_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  As <- ggplot(dt_As, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "As (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  As
+  
+  
+  
+  # with empty bars
+  dt_Cr <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_Cr_ICP),
+      SD = sd(Predicted_Cr_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Cr <- ggplot(dt_Cr, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Cr (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Cr
+  
+  
+  
+  # with empty bars
+  dt_Se <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_Se_ICP),
+      SD = sd(Predicted_Se_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Se <- ggplot(dt_Se, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Se (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Se
+  
+  # with empty bars
+  dt_Re <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+    summarize(
+      Median = median(Predicted_Cu_ICP),
+      Mean = mean(Predicted_Re_ICP),
+      SD = sd(Predicted_Re_ICP) / sqrt(n())
+    ) %>%
+    arrange(Median) %>%
+    ungroup()
+  
+  Re <- ggplot(dt_Re, aes(x = reorder(Scientific_Name, Median), 
+                          y = Mean, fill=Site)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.3, # Position bars next to each other
+             color = "black",    # Border color of the bars
+             # Setting fill to white for empty bars
+    ) +
+    
+    geom_errorbar(
+      aes(ymin = Mean - SD, ymax = Mean + SD),
+      position = position_dodge(width = 0.9),
+      width = 0.3,
+      size = 0.3
+    ) +
+    scale_fill_manual(values = c("white", "white")) +
+    coord_flip() +
+    labs(x = "", y = "Se (mg/kg)") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 8, face = "bold")
+    )
+  
+  Re
+  
+}
+
+
+
+#Counts species across plots - Figure
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
+dt <- subset(dt, Site != 'CONTROL')
+
+
+#Species distr figure - Robic C1 i C2 jako 1?
+ggplot(dt, aes(x = Plot, y = reorder(Scientific_Name, table(Scientific_Name)[Scientific_Name]), group = Form)) +
+  geom_point(shape = 4, size = 1.45, color = "black", stroke = 1)+  # specify shape argument as 4 for X symbol and customize size, color, and stroke
+  facet_grid(Form ~ ., scales = "free_y", space = "free_y") +
+  labs(x = "Plot", color = "Form") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size=12, face="italic"),
+        strip.text = element_text(size = 14, face = "bold"))
+
+}
+
+
+# Mean of concentrations for Re - no control, root or stem
+{
+  
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+  dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
+  dt <- dt[dt$Type_of_Sample != "root", ]
+  dt <- subset(dt, Site != 'CONTROL')
+  dt <- dt[dt$Type_of_Sample != "stem", ]
+  dt_T <- subset(dt, Site == "TAILINGS")
+  dt_C <- subset(dt, Site == "CONTROL")
+  
+Re <- ggplot(dt, aes(x = reorder(Scientific_Name, Predicted_Se_ICP, FUN = mean),
+                              y = Predicted_Se_ICP, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.35) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 22)) +
+  #scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Se (mg kg-1)")
+Re
+
+
+subset_data <- dt[dt$Scientific_Name == "Isocoma acradenia", ]
+mean(subset_data$Predicted_Re_ICP)
+sd(subset_data$Predicted_Re_ICP) / sqrt(nrow(subset_data))
+
+subset_data <- dt[dt$Scientific_Name == "Isocoma pluriflora", ]
+mean(subset_data$Predicted_Re_ICP)
+sd(subset_data$Predicted_Re_ICP) / sqrt(nrow(subset_data))
+
+subset_data <- dt[dt$Scientific_Name == "Senegalia (Acacia) greggii", ]
+mean(subset_data$Predicted_Re_ICP)
+sd(subset_data$Predicted_Re_ICP) / sqrt(nrow(subset_data))
+
+
+subset_data <- dt[dt$Scientific_Name == "Isocoma acradenia", ]
+mean(subset_data$Predicted_Se_ICP)
+sd(subset_data$Predicted_Se_ICP) / sqrt(nrow(subset_data))
+
+subset_data <- dt[dt$Scientific_Name == "Tamarix chinensis", ]
+mean(subset_data$Predicted_Se_ICP)
+sd(subset_data$Predicted_Se_ICP) / sqrt(nrow(subset_data))
+
+subset_data <- dt[dt$Scientific_Name == "Senegalia (Acacia) greggii", ]
+mean(subset_data$Predicted_Se_ICP)
+sd(subset_data$Predicted_Se_ICP) / sqrt(nrow(subset_data))
+
+subset_data <- dt[dt$Scientific_Name == "Populus fremontii", ]
+mean(subset_data$Predicted_Se_ICP)
+sd(subset_data$Predicted_Se_ICP) / sqrt(nrow(subset_data))
 }

@@ -4,6 +4,7 @@
 # 2023-04-23
 
 {
+  
   library(ggplot2)
   library(dplyr)
   library(data.table)
@@ -362,6 +363,8 @@ shapiro.test(dt$Cu_Error) # Normal
 shapiro.test(dt$Cu_Error2) # Non normal
 cor.test(dt$Cu_Error, dt$Substrate_RT, method="pearson") #  R2 = -0.414
 cor.test(dt$Cu_Error, dt$Total_Weight, method="pearson") #  R2 = -0.279
+cor.test(dt$Cu_Error, dt$Substrate_RT, method="spearman") #  R2 = -0.4028
+cor.test(dt$Cu_Error, dt$Total_Weight, method="spearman") #  R2 = -0.2684
 cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman") #Rho = -0.217
 cor.test(dt$Cu_Error2, dt$Total_Weight, method="spearman") #Rho -0.208
 
@@ -384,6 +387,29 @@ mean(dtS$Cu_Error) #31.22
 a <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, shape = Form, color = Substrate_RT)) +
     geom_point(size = 4, stroke=1) +  # Add points with specified size
     labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
+    scale_color_gradient(low = "#068DA9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    theme_minimal() +  # Use a minimal theme
+    theme(
+      plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+      axis.title = element_text(size = 20),  # Customize axis labels
+      axis.text.x = element_text(size = 16),
+      axis.title.x = element_text(size = 20),
+      axis.text.y = element_text(size = 16),
+      axis.title.y = element_text(size = 20),
+      legend.text = element_text(size = 6),
+      legend.title = element_text(size = 16, face = "bold"),
+      legend.position = "top"  # Position the legend at the top
+    ) +
+    guides(
+      shape = guide_legend(title = "Form", override.aes = list(size = 5))
+    )  # Add legend for shape aesthetic with specified size
+  a
+  
+  
+  aS <-   ggplot(dt, aes(x = Substrate_RT, y = Cu_Error, shape = Form, color = Total_Weight)) +
+    geom_point(size = 4, stroke=1) +  # Add points with specified size
+    labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
     scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
     scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
     theme_minimal() +  # Use a minimal theme
@@ -394,13 +420,14 @@ a <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, shape = Form, color = Subs
       axis.title.x = element_text(size = 20),
       axis.text.y = element_text(size = 16),
       axis.title.y = element_text(size = 20),
-      legend.text = element_text(size = 16),
+      legend.text = element_text(size = 6),
       legend.title = element_text(size = 16, face = "bold"),
       legend.position = "top"  # Position the legend at the top
     ) +
     guides(
       shape = guide_legend(title = "Form", override.aes = list(size = 5))
     )  # Add legend for shape aesthetic with specified size
+  aS
   
   sum(dt$Cu_Error > 50, na.rm = TRUE) # 34/98 = 34.6% 
   sum(dt$Cu_Error < 25, na.rm = TRUE) # 26/98 = 26.5%
@@ -421,7 +448,9 @@ b <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, shape = Form, color = Sub
     geom_point(size = 4, stroke=1) +  # Add points with specified size
     labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
     scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
-    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+   # scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+  geom_text(aes(label = Cup_No), vjust = -0.5, size = 3.5) +  # Add text labels
+  
     theme_minimal() +  # Use a minimal theme
     theme(
       plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
@@ -437,8 +466,9 @@ b <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, shape = Form, color = Sub
     guides(
       shape = guide_legend(title = "Form", override.aes = list(size = 5))
     )  # Add legend for shape aesthetic with specified size
+b  
   
-  cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")  
+cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")  
   
   library(ggpubr)
   
@@ -447,11 +477,37 @@ b <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, shape = Form, color = Sub
             common.legend = TRUE, legend = "bottom")
   
 
+# two on one
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ]
+  dt$Cu_Error <- abs(((dt$Cu_ICP - dt$Cu_concentration) / dt$Cu_ICP) * 100)
+  dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+  dt$Cu_Error2 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100)
+  
+  cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")
+  
+ ggplot(dt, aes(x = Total_Weight)) +
+    geom_point(aes(y = Cu_Error, color = "Cu_Error"), size = 3) +
+    geom_smooth(aes(y = Cu_Error), method = "lm", se = TRUE, color = "#068DA9") +
+    geom_point(aes(y = Cu_Error2, color = "Cu_Error2"), size = 3) +
+    geom_smooth(aes(y = Cu_Error2), method = "lm", se = TRUE, color = "#660000") +
+    labs(x = "Total Weight", y = "Error Value", color = "Legend") +
+    scale_color_manual(values = c(Cu_Error = "#068DA9", Cu_Error2 = "#660000")) +
+    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    theme_minimal()
 
 
-
-
-
+ 
+ ggplot() + #it's screwed because there are two points very high for Error2
+   geom_density(data = dt, aes(x = Cu_Error, fill = "Cu_Error"), alpha = 0.5) +
+   geom_density(data = dt, aes(x = Cu_Error2, fill = "Cu_Error2"), alpha = 0.5) +
+   labs(x = "Error Value", y = "Density", fill = "Legend") +
+   scale_fill_manual(values = c(Cu_Error = "blue", Cu_Error2 = "red")) +
+   theme_minimal()
+ 
+ 
+sd(dt$Cu_Error)
+  
 dt <- read.delim("SLT_pXRF_ICP.txt")
 dt$Fe_Error <- abs(((dt$Fe_ICP - dt$Fe_concentration) / dt$Fe_ICP) * 100)
 
@@ -468,16 +524,45 @@ c <-   ggplot(dt, aes(x = Total_Weight, y = Fe_Error, shape = Form, color = Subs
     axis.title.x = element_text(size = 20),
     axis.text.y = element_text(size = 16),
     axis.title.y = element_text(size = 20),
-    legend.text = element_text(size = 16),
+    legend.text = element_text(size = 8),
     legend.title = element_text(size = 16, face = "bold"),
     legend.position = "top"  # Position the legend at the top
   ) +
   guides(
     shape = guide_legend(title = "Form", override.aes = list(size = 5))
   )  # Add legend for shape aesthetic with specified size
+c
+cor.test(dt$Fe_Error, dt$Substrate_RT, method="spearman")  # rho 0.0236, pval. 0.7853
 
-cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")  
 
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Zn_concentration != 0.3, ] # To remove LODs
+dt$Zn_Error <- abs(((dt$Zn_ICP - dt$Zn_concentration) / dt$Zn_ICP) * 100)
+shapiro.test(dt$Zn_Error) # Normal
+cor.test(dt$Zn_Error, dt$Substrate_RT, method="spearman")  # rho -0.392, pval. 0.000104
+
+
+c <-   ggplot(dt, aes(x = Total_Weight, y = Zn_Error, shape = Form, color = Substrate_RT)) +
+  geom_point(size = 4, stroke=1) +  # Add points with specified size
+  labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
+  scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
+  #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+  theme_minimal() +  # Use a minimal theme
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+    axis.title = element_text(size = 20),  # Customize axis labels
+    axis.text.x = element_text(size = 16),
+    axis.title.x = element_text(size = 20),
+    axis.text.y = element_text(size = 16),
+    axis.title.y = element_text(size = 20),
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.position = "top"  # Position the legend at the top
+  ) +
+  guides(
+    shape = guide_legend(title = "Form", override.aes = list(size = 5))
+  )  # Add legend for shape aesthetic with specified size
+c
 
 }
 
@@ -692,6 +777,7 @@ cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP2, method="spearman") # rho = 0.9300852, 
 cor.test(dt$Cu_concentration, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.9767824, p.val < 2.2e-16 
 
 
+
 library(psych)
 dt_ICC <- dt[, c("Cu_ICP", "Cu_concentration")]
 
@@ -888,6 +974,114 @@ difference <- dt08$Cu_ICP - dt08$Cu_concentration
 t.test(difference, mu = 0) #p < 0.05 t=4.69
 
 
+
+
+# Removing outliers from the model2 before applying model!~~~~~!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+dt <- dt[dt$Cup_No != 196,]
+dt <- dt[dt$Cup_No != 4,]
+
+
+
+
+model1 <- glm(Cu_ICP ~ Cu_concentration, data = dt)
+summary(model1) #1005
+model2 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt)
+summary(model2) #998
+model3 <- glm(Cu_ICP ~ Cu_concentration + Substrate_RT, data = dt)
+summary(model3) #989
+
+# Best AIC value for model4!!
+# Provide starting values for the gamma glm model
+start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
+model4 <- glm(Cu_ICP ~ Cu_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+summary(model4) #879
+model5 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model5) #855
+model6 <- glm(Cu_ICP ~ Cu_concentration, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model6) #879
+model7 <- glm(Cu_ICP ~ Cu_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+summary(model7) #827
+
+
+## Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
+dt$Predicted_Cu_ICP = 32.58433 + (1.39091* dt$Cu_concentration) + (-356.22532* dt$Substrate_RT) 
+
+
+## Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+dt$Predicted_Cu_ICP2 <-  18.53305 + (1.43619* dt$Cu_concentration) + (-11.92409* dt$Total_Weight)
+
+#write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/SLT_ICP_predicted_Cu.csv', sep=",", row.names = F)
+
+
+cor.test(dt$Cu_ICP, dt$Cu_concentration, method="spearman") # rho = 0.91132 p.val < 2.2e-16
+cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.948, p.val < 2.2e-16
+cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP2, method="spearman") # rho = 0.932, p.val < 2.2e-16
+
+
+library(psych)
+dt_ICC <- dt[, c("Cu_ICP", "Cu_concentration")]
+
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+
+dt_ICC1 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP")]
+
+ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+
+
+dt_ICC2 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP2")]
+ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+
+
+dt_ICC3 <- dt[, c("Cu_concentration", "Predicted_Cu_ICP")]
+ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+
+
+#Check pvalue for bland altman of new predicted variables vs ICP
+
+difference1 <- dt$Predicted_Cu_ICP - dt$Cu_ICP
+t_test <- t.test(difference1, mu = 0)
+difference2 <- dt$Predicted_Cu_ICP2 - dt$Cu_ICP
+t_test <- t.test(difference2, mu = 0)
+
+dt$Cu_Error2 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100)
+
+b <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, shape = Form, color = Substrate_RT)) +
+  geom_point(size = 4, stroke=1) +  # Add points with specified size
+  labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
+  scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
+  # scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+  geom_text(aes(label = Cup_No), vjust = -0.5, size = 3.5) +  # Add text labels
+  
+  theme_minimal() +  # Use a minimal theme
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+    axis.title = element_text(size = 20),  # Customize axis labels
+    axis.text.x = element_text(size = 16),
+    axis.title.x = element_text(size = 20),
+    axis.text.y = element_text(size = 16),
+    axis.title.y = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.position = "top"  # Position the legend at the top
+  ) +
+  guides(
+    shape = guide_legend(title = "Form", override.aes = list(size = 5))
+  )  # Add legend for shape aesthetic with specified size
+b  
+
+cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman") 
+
+
+#compare points from model where 196 and 4 are removed to the model where those were not removed
+
+dt$Predicted_Cu_ICP_NEW <-  32.58433 + (1.39091* dt$Cu_concentration) + (-356.22532* dt$Substrate_RT) 
+dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+
+#write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Error/CompareModelError.csv', sep=",", row.names = F)
 
 
 }
@@ -2427,6 +2621,198 @@ cat("Outliers Detected:", sorted_data[outliers], "\n")
 
 }
 
+# Wilcoxon between plant before and after the model
 
+{
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+  dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+  
+  
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans",
+                                              "Nultuma (Prosopis) velutina", 'Allionia incarnata', "Isocoma cf. tenuisecta","Mimosa biuncifera (=aculeaticarpa)", "Portulaca suffrutescens"),]
+  #Copper
+  dt_long <- dt_selected %>%
+    pivot_longer(cols = c(Cu_ICP, Predicted_Cu_ICP, Cu_concentration),
+                 names_to = "Variable",
+                 values_to = "Value")
+  
+  ggplot(dt_long, aes(x = Scientific_Name, y = Value, fill = Variable)) +
+    geom_boxplot(position = position_dodge(width = 0.8), alpha = 0.7, size=0.2, outlier.size = 0.6) +
+    labs(x = "Scientific Name", y = "Values") +
+    scale_fill_manual(values = c("Cu_ICP" = "#6699CC", "Predicted_Cu_ICP" = "#36454F", "Cu_concentration" = "#D3D3D3")) +
+    coord_flip()+
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text()
+    )
+  
+  
+  
+  
+  library(agricolae)
+  dt_long_XG <- subset(dt_long, Scientific_Name=='Xanthisma gracile')
+  dt_long_PC <- subset(dt_long, Scientific_Name=='Pseudognaphalium canescens')
+  dt_long_PS <- subset(dt_long, Scientific_Name=='Portulaca suffrutescens')
+  dt_long_NV <- subset(dt_long, Scientific_Name=='Nultuma (Prosopis) velutina')
+  dt_long_MB <- subset(dt_long, Scientific_Name=='Mimosa biuncifera (=aculeaticarpa)')
+  dt_long_IT <- subset(dt_long, Scientific_Name=='Isocoma cf. tenuisecta')
+  dt_long_AI <- subset(dt_long, Scientific_Name=='Allionia incarnata')
+  dt_long_BP <- subset(dt_long, Scientific_Name=='Boechera perennans')
+  
+  print(kruskal(dt_long_XG$Value, dt_long_XG$Variable, p.adj = "bonferroni")) # Predicted a, ICP a, pxRF a,
+  print(kruskal(dt_long_PC$Value, dt_long_PC$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_PS$Value, dt_long_PS$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_NV$Value, dt_long_NV$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_MB$Value, dt_long_MB$Variable, p.adj = "bonferroni")) # abc
+  print(kruskal(dt_long_IT$Value, dt_long_IT$Variable, p.adj = "bonferroni")) # aab
+  print(kruskal(dt_long_AI$Value, dt_long_AI$Variable, p.adj = "bonferroni")) # a,ab,b
+  print(kruskal(dt_long_BP$Value, dt_long_BP$Variable, p.adj = "bonferroni")) # aaa
+  
+  
+  #Fe
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt$Predicted_Fe_ICP <- 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT)
+  
+  
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans",
+                                              "Nultuma (Prosopis) velutina", 'Allionia incarnata', "Isocoma cf. tenuisecta","Mimosa biuncifera (=aculeaticarpa)", "Portulaca suffrutescens"),]
+ 
+  dt_long <- dt_selected %>%
+    pivot_longer(cols = c(Fe_ICP, Predicted_Fe_ICP, Fe_concentration),
+                 names_to = "Variable",
+                 values_to = "Value")
+  
+  ggplot(dt_long, aes(x = Scientific_Name, y = Value, fill = Variable)) +
+    geom_boxplot(position = position_dodge(width = 0.8), alpha = 0.7, size=0.2, outlier.size = 0.6) +
+    labs(x = "Scientific Name", y = "Values") +
+    scale_fill_manual(values = c("Fe_ICP" = "#6699CC", "Predicted_Fe_ICP" = "#36454F", "Fe_concentration" = "#D3D3D3")) +
+    coord_flip()+
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text()
+    )
+  
+  library(agricolae)
+  dt_long_XG <- subset(dt_long, Scientific_Name=='Xanthisma gracile')
+  dt_long_PC <- subset(dt_long, Scientific_Name=='Pseudognaphalium canescens')
+  dt_long_PS <- subset(dt_long, Scientific_Name=='Portulaca suffrutescens')
+  dt_long_NV <- subset(dt_long, Scientific_Name=='Nultuma (Prosopis) velutina')
+  dt_long_MB <- subset(dt_long, Scientific_Name=='Mimosa biuncifera (=aculeaticarpa)')
+  dt_long_IT <- subset(dt_long, Scientific_Name=='Isocoma cf. tenuisecta')
+  dt_long_AI <- subset(dt_long, Scientific_Name=='Allionia incarnata')
+  dt_long_BP <- subset(dt_long, Scientific_Name=='Boechera perennans')
+  
+  print(kruskal(dt_long_XG$Value, dt_long_XG$Variable, p.adj = "bonferroni")) # Predicted a, ICP a, pxRF a,
+  print(kruskal(dt_long_PC$Value, dt_long_PC$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_PS$Value, dt_long_PS$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_NV$Value, dt_long_NV$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_MB$Value, dt_long_MB$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_IT$Value, dt_long_IT$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_AI$Value, dt_long_AI$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_BP$Value, dt_long_BP$Variable, p.adj = "bonferroni")) # a ab b
+  
+  
+  
+  #Zn
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Zn_concentration != 0.3, ] # To remove LODs
+  dt$Predicted_Zn_ICP <- 50.8422 + (0.9560* dt$Zn_concentration) + (-473.9784* dt$Substrate_RT)
+  
+  
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", 
+                                              "Nultuma (Prosopis) velutina", "Isocoma cf. tenuisecta","Mimosa biuncifera (=aculeaticarpa)", "Portulaca suffrutescens"),]
+  
+  dt_long <- dt_selected %>%
+    pivot_longer(cols = c(Zn_ICP, Predicted_Zn_ICP, Zn_concentration),
+                 names_to = "Variable",
+                 values_to = "Value")
+  
+  ggplot(dt_long, aes(x = Scientific_Name, y = Value, fill = Variable)) +
+    geom_boxplot(position = position_dodge(width = 0.8), alpha = 0.7, size=0.3) +
+    labs(x = "Scientific Name", y = "Values") +
+    scale_fill_manual(values = c("Zn_ICP" = "#6699CC", "Predicted_Zn_ICP" = "#36454F", "Zn_concentration" = "#D3D3D3")) +
+    coord_flip()+
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text()
+    )
+  
+  library(agricolae)
+  dt_long_XG <- subset(dt_long, Scientific_Name=='Xanthisma gracile')
+  dt_long_PC <- subset(dt_long, Scientific_Name=='Pseudognaphalium canescens')
+  dt_long_PS <- subset(dt_long, Scientific_Name=='Portulaca suffrutescens')
+  dt_long_NV <- subset(dt_long, Scientific_Name=='Nultuma (Prosopis) velutina')
+  dt_long_MB <- subset(dt_long, Scientific_Name=='Mimosa biuncifera (=aculeaticarpa)')
+  dt_long_IT <- subset(dt_long, Scientific_Name=='Isocoma cf. tenuisecta')
+  dt_long_AI <- subset(dt_long, Scientific_Name=='Allionia incarnata')
+  dt_long_BP <- subset(dt_long, Scientific_Name=='Boechera perennans')
+  
+  print(kruskal(dt_long_XG$Value, dt_long_XG$Variable, p.adj = "bonferroni")) # Predicted a, ICP a, pxRF a,
+
+  print(kruskal(dt_long_PS$Value, dt_long_PS$Variable, p.adj = "bonferroni")) # a ab a
+  print(kruskal(dt_long_NV$Value, dt_long_NV$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_MB$Value, dt_long_MB$Variable, p.adj = "bonferroni")) # a ab a
+  print(kruskal(dt_long_IT$Value, dt_long_IT$Variable, p.adj = "bonferroni")) # a a a
+
+  
+  
+  #Mn
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Mn_concentration != 0.5, ] # To remove LODs
+  dt$Predicted_Mn_ICP <- 51.4943 + (1.0760* dt$Mn_concentration) + (-431.8509* dt$Substrate_RT)
+
+  
+  
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile","Nultuma (Prosopis) velutina", "Isocoma cf. tenuisecta",
+                                              "Mimosa biuncifera (=aculeaticarpa)"),]
+  
+  dt_long <- dt_selected %>%
+    pivot_longer(cols = c(Mn_ICP, Predicted_Mn_ICP, Mn_concentration),
+                 names_to = "Variable",
+                 values_to = "Value")
+  
+  ggplot(dt_long, aes(x = Scientific_Name, y = Value, fill = Variable)) +
+    geom_boxplot(position = position_dodge(width = 0.8), alpha = 0.7, size=0.2, outlier.size = 0.6) +
+    labs(x = "Scientific Name", y = "Values") +
+    scale_fill_manual(values = c("Mn_ICP" = "#6699CC", "Predicted_Mn_ICP" = "#36454F", "Mn_concentration" = "#D3D3D3")) +
+    coord_flip()+
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text()
+    )
+  
+  library(agricolae)
+  dt_long_XG <- subset(dt_long, Scientific_Name=='Xanthisma gracile')
+  dt_long_PC <- subset(dt_long, Scientific_Name=='Pseudognaphalium canescens')
+  dt_long_PS <- subset(dt_long, Scientific_Name=='Portulaca suffrutescens')
+  dt_long_NV <- subset(dt_long, Scientific_Name=='Nultuma (Prosopis) velutina')
+  dt_long_MB <- subset(dt_long, Scientific_Name=='Mimosa biuncifera (=aculeaticarpa)')
+  dt_long_IT <- subset(dt_long, Scientific_Name=='Isocoma cf. tenuisecta')
+  dt_long_AI <- subset(dt_long, Scientific_Name=='Allionia incarnata')
+  dt_long_BP <- subset(dt_long, Scientific_Name=='Boechera perennans')
+  
+  print(kruskal(dt_long_XG$Value, dt_long_XG$Variable, p.adj = "bonferroni")) # Predicted a, ICP a, pxRF a,
+  print(kruskal(dt_long_PC$Value, dt_long_PC$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_PS$Value, dt_long_PS$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_NV$Value, dt_long_NV$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_MB$Value, dt_long_MB$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_IT$Value, dt_long_IT$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_AI$Value, dt_long_AI$Variable, p.adj = "bonferroni")) # a a a
+  print(kruskal(dt_long_BP$Value, dt_long_BP$Variable, p.adj = "bonferroni")) # a ab b
+  
+  
+  #Se
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Se_concentration != 0.05, ] # To remove LODs
+
+  
+  dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Boechera perennans",
+                                              "Nultuma (Prosopis) velutina", 'Allionia incarnata', "Isocoma cf. tenuisecta","Mimosa biuncifera (=aculeaticarpa)"),]
+  
+  
+  
+}
 
 
