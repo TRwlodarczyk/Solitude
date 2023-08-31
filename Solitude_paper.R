@@ -803,6 +803,61 @@ cor.test(dt$Se, dt$Mn, method="spearman") # 0.407
 cor.test(dt$Se, dt$Re, method="spearman") # 0.3731
 cor.test(dt$Re, dt$Mn, method="spearman") # 0.498
 
+
+
+dt <- dt[dt$Scientific_Name == "Allionia incarnata", ]
+
+cor.test(dt$Fe, dt$Zn, method="spearman") # 
+
+
+##kombo
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Assuming dt is your dataset
+
+# Pivot the data to long format
+dt_long <- dt %>%
+  pivot_longer(cols = c(Fe, Zn, Mn),
+               names_to = "Variable",
+               values_to = "Value")
+
+# Calculate mean and standard deviation for each combination
+mean_sd_data <- dt_long %>%
+  group_by(Scientific_Name, Variable) %>%
+  summarize(Mean = mean(Value),
+            SD = sd(Value))
+
+# Merge the calculated data back with the original long data
+dt_long <- dt_long %>%
+  left_join(mean_sd_data, by = c("Scientific_Name", "Variable"))
+
+# Create the plot
+Cu <- ggplot(dt_long, aes(x = Scientific_Name, 
+                          y = Value, fill = Variable)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(),
+               
+                size = 0.5) +
+  scale_fill_manual(values = c("Fe" = "#6699CC", "Zn" = "#36454F", "Mn" = "#D3D3D3")) +
+  coord_flip() +
+  labs(x = "", y = "Zn Fe Mn (mg/kg)") +
+  theme_bw() +
+  theme(legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13.5), 
+        legend.title = element_text(size = 15, face = "bold"))
+
+print(Cu)
+
+
+
+
+
+
 }
 
 
@@ -1108,59 +1163,59 @@ plt <- ggbetweenstats(
   
 
   
-  dt_Cu <- dt %>%
-    group_by(Scientific_Name, Site, Form) %>%
-    summarize(Median = median(Predicted_Cu_ICP), 
-              Mean = mean(Predicted_Cu_ICP), 
-              SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
-    arrange(Median) %>%
-    ungroup()
+ # dt_Cu <- dt %>%
+  #  group_by(Scientific_Name, Site, Form) %>%
+   # summarize(Median = median(Predicted_Cu_ICP), 
+    #          Mean = mean(Predicted_Cu_ICP), 
+     #         SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+    #arrange(Median) %>%
+    #ungroup()
   
-  Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
-                          y = Mean, fill = Site, color = Form)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
-                  position = position_dodge(width = 0.9),
-                  width = 0.25,
-                  size = 0.5) +
-    scale_fill_manual(values = c("#643A6B", "#068DA9"), 
-                      guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
-    scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
-    coord_flip() +
-    labs(x = "", y = "Cu (mg/kg)") +
-    theme_bw() +
-    theme(legend.key.size = unit(1, "lines"),
-          legend.text = element_text(size = 13.5), 
-          legend.title = element_text(size = 15, face = "bold"))
+#  Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+ #                         y = Mean, fill = Site, color = Form)) +
+  #  geom_bar(stat = "identity", position = "dodge") +
+   # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+    #              position = position_dodge(width = 0.9),
+     #             width = 0.25,
+      #            size = 0.5) +
+    #scale_fill_manual(values = c("#643A6B", "#068DA9"), 
+     #                 guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
+    #scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+    #coord_flip() +
+    #labs(x = "", y = "Cu (mg/kg)") +
+    #theme_bw() +
+    #theme(legend.key.size = unit(1, "lines"),
+    #      legend.text = element_text(size = 13.5), 
+    #      legend.title = element_text(size = 15, face = "bold"))
+#  
+ # Cu
   
-  Cu
+  #dt_Mn <- dt %>%
+   # group_by(Scientific_Name, Site, Form) %>%
+    #summarize(Median = median(Predicted_Mn_ICP), 
+     #         Mean = mean(Predicted_Mn_ICP), 
+      #        SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
+    #arrange(Median) %>%
+  # ungroup()
   
-  dt_Mn <- dt %>%
-    group_by(Scientific_Name, Site, Form) %>%
-    summarize(Median = median(Predicted_Mn_ICP), 
-              Mean = mean(Predicted_Mn_ICP), 
-              SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
-    arrange(Median) %>%
-    ungroup()
+ # Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
+ ##                         y = Mean, fill = Site, color = Form)) +
+ #   geom_bar(stat = "identity", position = "dodge") +
+ #   geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+ #                 position = position_dodge(width = 0.9),
+ #                 width = 0.25,
+ #                 size = 0.5) +
+  #  scale_fill_manual(values = c("#643A6B", "#068DA9"), 
+ ##                     guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
+ #   scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
+ #   coord_flip() +
+  #  labs(x = "", y = "Mn (mg/kg)") +
+  #  theme_bw() +
+  #  theme(legend.key.size = unit(1, "lines"),
+   #       legend.text = element_text(size = 13.5), 
+   #       legend.title = element_text(size = 15, face = "bold"))
   
-  Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
-                          y = Mean, fill = Site, color = Form)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
-                  position = position_dodge(width = 0.9),
-                  width = 0.25,
-                  size = 0.5) +
-    scale_fill_manual(values = c("#643A6B", "#068DA9"), 
-                      guide = guide_legend(override.aes = list(pattern = c(1, 1)))) +
-    scale_color_manual(values = c("#643A6B", "#068DA9", "#34495E", "#B0A4A4")) +
-    coord_flip() +
-    labs(x = "", y = "Mn (mg/kg)") +
-    theme_bw() +
-    theme(legend.key.size = unit(1, "lines"),
-          legend.text = element_text(size = 13.5), 
-          legend.title = element_text(size = 15, face = "bold"))
-  
-  Mn
+ # Mn
   
   
 
@@ -1474,6 +1529,222 @@ plt <- ggbetweenstats(
 
 
 
+# All plants barplots with lines!!!
+
+{
+  
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+  dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
+  dt <- dt[dt$Type_of_Sample != "root", ]
+  dt <- dt[dt$Site != "CONTROL", ]
+  dt <- dt[dt$Type_of_Sample != "stem", ]
+  
+  #Cu
+    
+  colors-to-use = c("#454545", "#9a9a9a", "#F9B4B4", "#003f5c", "#AD0B0B")
+  
+   dt_Cu <- dt %>%
+    group_by(Scientific_Name, Site) %>%
+   summarize(Median = median(Predicted_Cu_ICP), 
+            Mean = mean(Predicted_Cu_ICP), 
+           SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+  arrange(Median) %>%
+  ungroup()
+  
+    Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                           y = Mean, fill = Site )) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+               width = 0.25,
+              size = 0.25) +
+  geom_hline(yintercept = 5, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+  geom_hline(yintercept = 20, linetype = "twodash", color = "#003f5c", size = 0.3) +
+  scale_fill_manual(values = c("lightgrey")) +
+  scale_y_continuous(limits = c(0, 405), breaks = seq(0, 405, by = 100), expand = c(0, 9)) +
+  scale_x_discrete(expand = c(0, 0.8)) +  
+  coord_flip() +
+  labs(x = "", y = "Cu (mg/kg)") +
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.text.y = element_text(size = 7),
+            legend.key.size = unit(1, "lines"),
+            legend.text = element_text(size = 4),
+            legend.title = element_text(size = 4, face = "bold"))
+    
+   Cu
+  
+  #Mn
+    dt_Mn <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Cu_ICP), 
+               Mean = mean(Predicted_Mn_ICP), 
+               SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
+                           y = Mean, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 180), breaks = seq(0, 180, by = 40), expand = c(0, 4)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Mn (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Mn
+   
+   #Zn
+   dt_Zn <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Cu_ICP), 
+               Mean = mean(Predicted_Zn_ICP), 
+               SD = sd(Predicted_Zn_ICP)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Zn <- ggplot(dt_Zn, aes(x = reorder(Scientific_Name, Median), 
+                           y = Mean, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     geom_hline(yintercept = 100, linetype = "twodash", color = "#003f5c", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 2.5)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Zn (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Zn
+  
+   #Fe
+   dt_Fe <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Cu_ICP), 
+               Mean = mean(Fe_concentration), 
+               SD = sd(Fe_concentration)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median), 
+                           y = Mean, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     geom_hline(yintercept = 500, linetype = "twodash", color = "#003f5c", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 1500), breaks = seq(0, 1500, by = 350), expand = c(0, 35)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Fe (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Fe
+   
+   
+   #Se
+   dt_Se <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Cu_ICP), 
+               Mean = mean(Predicted_Se_ICP), 
+               SD = sd(Predicted_Se_ICP)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Se <- ggplot(dt_Se, aes(x = reorder(Scientific_Name, Median), 
+                           y = Mean, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     #geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 15), expand = c(0, 1.4)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Se (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Se
+   
+   #Re
+   dt_Re <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Cu_ICP), 
+               Mean = mean(Predicted_Re_ICP), 
+               SD = sd(Predicted_Re_ICP)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Re <- ggplot(dt_Re, aes(x = reorder(Scientific_Name, Median), 
+                           y = Mean, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     #geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 15), expand = c(0, 1.4)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Re (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Re
+   
+   
+   
+}
+
+
 #Counts species across plots - Figure
 {
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
@@ -1558,4 +1829,46 @@ sd(subset_data$Predicted_Se_ICP) / sqrt(nrow(subset_data))
 subset_data <- dt[dt$Scientific_Name == "Populus fremontii", ]
 mean(subset_data$Predicted_Se_ICP)
 sd(subset_data$Predicted_Se_ICP) / sqrt(nrow(subset_data))
+}
+
+
+# RT ~ Total Wieght Plot
+
+{
+  
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+  dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
+  
+  a1 <- ggplot(dt, aes(y = Substrate_RT, x = Total_Weight)) +
+    geom_point(size = 2.1, stroke = 1) +
+    geom_smooth(method = "lm", se = TRUE, color = "#AD0B0B", fill = "lightblue") + 
+    geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = TRUE, color = "#AD0B0B", fill = "lightblue") +
+    labs(x = "Total Weight (TW)", y = "Relative thickness (RT)") +
+    theme_classic2() +
+    theme(panel.grid.major = element_line(), panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),
+          axis.title = element_text(size = 20),
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a1
+
+cor(dt$Total_Weight, dt$Substrate_RT, method = "spearman") # 0.8826
+
+shapiro.test(dt$Total_Weight) # non norm
+shapiro.test(dt$Substrate_RT) # non norm
+  
+
+lm1<- lm(Substrate_RT ~ Total_Weight, data = dt)
+summary(lm1) # R squared 0.7451, p.val < 0.0001
+
+# Quadratic model
+lm2 <- lm(Substrate_RT ~ poly(Total_Weight, 2), data = dt)
+summary(lm2) # R squared 0.7952, p.val < 0.0001
+
+  
 }

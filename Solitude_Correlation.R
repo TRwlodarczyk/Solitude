@@ -172,32 +172,7 @@ plot(residuals ~ Cu_ICP, data = dt)
 
 #Cu boxplots
 {
-Cu <- ggplot(dt, aes(x = reorder(Scientific_Name, Cu_ICP, FUN = median),
-                             y = Cu_ICP, Sceintific_Name=Scientific_Name)) +
-  geom_boxplot() +
-  geom_point(size = 1.7, stroke = 1, aes(color = Plot, shape = Form, fill = Plot)) +
-  scale_shape_manual(values = c(21, 24, 22, 3)) +
-  scale_color_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  scale_fill_manual(values = c("#0070C0", "#92D050", "#EDAD08", "#ED7D31")) +
-  geom_hline(yintercept = 40, linetype = "dashed", color = "#9a9a9a", size = 1.2) +
-  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 1.2) +
-  geom_hline(yintercept = 100, linetype = "dotdash", color = "#454545", size = 1.2) +
-  coord_flip() +
-  scale_x_discrete(guide = guide_axis(angle = 0)) +
-  scale_y_continuous(limits = c(0, 800), breaks = seq(0, 800, by = 50)) +
-  theme_classic() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=14),
-        axis.title.x = element_text(size = 19),
-        axis.text.y = element_text(size=14, face="italic"),
-        axis.title.y = element_blank(),
-        legend.key.size = unit(1, "lines"),
-        legend.text = element_text(size = 13.5), 
-        legend.title = element_text(size=15, face = "bold"))+
-  guides(color = guide_legend(override.aes = list(size = 3.5)),
-         shape = guide_legend(override.aes = list(size = 3.5))) +
-  ylab("Cu (mg/kg)")
-Cu
+
 
 dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans", "Nultuma (Prosopis) velutina", "Tamarix chinesis", "Allionia incarnata"),] 
 
@@ -387,8 +362,8 @@ mean(dtS$Cu_Error) #31.22
 a <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, shape = Form, color = Substrate_RT)) +
     geom_point(size = 4, stroke=1) +  # Add points with specified size
     labs(x = "Total Sample Weight [g]", y = "Percent Error [%]") +  # Set axis labels and title
-    scale_color_gradient(low = "#068DA9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
-    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Relative thickness") +  # Gradient of red color based on Total_Weight column
+    #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
     theme_minimal() +  # Use a minimal theme
     theme(
       plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
@@ -493,7 +468,7 @@ cor.test(dt$Cu_Error2, dt$Substrate_RT, method="spearman")
     geom_smooth(aes(y = Cu_Error2), method = "lm", se = TRUE, color = "#660000") +
     labs(x = "Total Weight", y = "Error Value", color = "Legend") +
     scale_color_manual(values = c(Cu_Error = "#068DA9", Cu_Error2 = "#660000")) +
-    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    #scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
     theme_minimal()
 
 
@@ -566,8 +541,303 @@ c
 
 }
 
+# Error Plots = Paper
+
+{
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ]
+  dt$Cu_Error <- abs(((dt$Cu_ICP - dt$Cu_concentration) / dt$Cu_ICP) * 100) 
+  dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+  dt$Cu_Error2 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100)
+  
+
+  a1 <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = " Cu Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) + # Set y-axis limits
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a1
+  
+  
+  a2 <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = " Cu2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a2
+  
+  
+  #Fe
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt$Predicted_Fe_ICP <- 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT)
+  dt$Fe_Error <- abs(((dt$Fe_ICP - dt$Fe_concentration) / dt$Fe_ICP) * 100) 
+  dt$Fe_Error2 <- abs(((dt$Fe_ICP - dt$Predicted_Fe_ICP) / dt$Fe_ICP) * 100)
+  
+  b1 <-   ggplot(dt, aes(x = Total_Weight, y = Fe_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Fe Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 250), breaks = seq(0, 250, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  b1
+  
+  b2 <-   ggplot(dt, aes(x = Total_Weight, y = Fe_Error2, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Fe2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 250), breaks = seq(0, 250, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  b2
+  
+  #Zn
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Zn_concentration != 0.3, ] # To remove LODs
+  dt$Predicted_Zn_ICP <- 50.8422 + (0.9560* dt$Zn_concentration) + (-473.9784* dt$Substrate_RT)
+  dt$Zn_Error <- abs(((dt$Zn_ICP - dt$Zn_concentration) / dt$Zn_ICP) * 100) 
+  dt$Zn_Error2 <- abs(((dt$Zn_ICP - dt$Predicted_Zn_ICP) / dt$Zn_ICP) * 100)
+  
+  
+  c1 <-   ggplot(dt, aes(x = Total_Weight, y = Zn_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +
+    labs(x = "Zn Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 400), breaks = seq(0, 400, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  c1
+  
+  linear_model <- lm(Zn_Error ~ Total_Weight, data = dt)
+  
+  # Get summary of the linear model to extract R-squared
+  summary_linear_model <- summary(linear_model)
+  
+  
+  c2 <-   ggplot(dt, aes(x = Total_Weight, y = Zn_Error2, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Zn2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 400), breaks = seq(0, 400, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  c2
+  
+  #Mn
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Mn_concentration != 0.5, ] # To remove LODs
+  dt$Predicted_Mn_ICP <- 51.4943 + (1.0760* dt$Mn_concentration) + (-431.8509* dt$Substrate_RT)
+  dt$Mn_Error <- abs(((dt$Mn_ICP - dt$Mn_concentration) / dt$Mn_ICP) * 100) 
+  dt$Mn_Error2 <- abs(((dt$Mn_ICP - dt$Predicted_Mn_ICP) / dt$Mn_ICP) * 100)
+  
+  
+  
+  d1 <-   ggplot(dt, aes(x = Total_Weight, y = Mn_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Mn Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  d1
+  
+  d2 <-   ggplot(dt, aes(x = Total_Weight, y = Mn_Error2, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Mn2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  d2
+  
+  #Se
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Se_concentration != 0.05, ] # To remove LODs
+  dt$Predicted_Se_ICP <- 0.4417 + (1.5683* dt$Se_concentration) + (-8.8017* dt$Substrate_RT)
+  dt$Se_Error <- abs(((dt$Se_ICP - dt$Se_concentration) / dt$Se_ICP) * 100) 
+  dt$Se_Error2 <- abs(((dt$Se_ICP - dt$Predicted_Se_ICP) / dt$Se_ICP) * 100)
+  
+  
+  e1 <-   ggplot(dt, aes(x = Total_Weight, y = Se_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Se Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 325), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  e1
+  
+  e2 <-   ggplot(dt, aes(x = Total_Weight, y = Se_Error2, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Se2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+   scale_y_continuous(limits = c(-20, 325), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  e2
+  
+  #Re
+  dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
+    dt$Predicted_Re_ICP <- 3.84146 + (0.91141* dt$Re_concentration) + (-33.18455* dt$Substrate_RT)
+  dt$Re_Error <- abs(((dt$Re_ICP - dt$Re_concentration) / dt$Re_ICP) * 100) 
+  dt$Re_Error2 <- abs(((dt$Re_ICP - dt$Predicted_Re_ICP) / dt$Re_ICP) * 100)
+  
+  f1 <-   ggplot(dt, aes(x = Total_Weight, y = Re_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Re Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+   scale_y_continuous(limits = c(-10, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  f1
+  
+  f2 <-   ggplot(dt, aes(x = Total_Weight, y = Re_Error2, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = "Re2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-10, 100), breaks = seq(0, 100, by = 25), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  f2
+  
+  
+  #ggarrange(a1, a2, b1, b2, c1, c2, d1, d2, e1, e2, f1, f2,
+            #ncol = 2, nrow = 6, 
+           # common.legend = TRUE, legend = "bottom")
+  
+  
+}
+
 #Bland Altman Cu + ICC
 {
+  
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
   
 #dt <- dt[!dt$Scientific_Name %in% c("Pseudognaphalium canescens", "Boechera perennans", "Xanthisma gracile"), ]# To remove PC and BP as a source of bias
 #dt <- dt[dt$Cu_concentration < 100 & dt$Cu_concentration > 10, ]
@@ -587,23 +857,49 @@ c
   sd_value <- sd(difference)
   
   # Define the plot
-  ggplot(df, aes(x = average, y = difference, shape = Form, color = Total_Weight)) +
-    geom_point(size = 4, stroke=1) +  # Add points with specified size
-    geom_hline(aes(yintercept = mean_diff), color="#7D7CAF", linetype = "dashed", size = 1.5) +  # Add dashed line at the mean difference
-    geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="#AFB07D", linetype = "dashed", size = 1.5) +  # Add upper limit line
-    geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="#AFB07D",linetype = "dashed", size = 1.5) +  # Add lower limit line
+  #ggplot(df, aes(x = average, y = difference, shape = Form, color = Total_Weight)) +
+  #  geom_point(size = 4, stroke=1) +  # Add points with specified size
+  #  geom_hline(aes(yintercept = mean_diff), color="#7D7CAF", linetype = "dashed", size = 1.5) +  # Add dashed line at the mean difference
+  #  geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="#AFB07D", linetype = "dashed", size = 1.5) +  # Add upper limit line
+  #  geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="#AFB07D",linetype = "dashed", size = 1.5) +  # Add lower limit line
+  #  labs(x = "Average", y = "Difference", title = "Bland-Altman Plot Cu") +  # Set axis labels and title
+  #  scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
+  #  scale_y_continuous(limits = c(-200, 100), breaks = seq(-200, 100, by = 50), expand = c(0, 0)) + # Set y-axis limits
+  #  theme_minimal() +  # Use a minimal theme
+  #  theme(
+  #    plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+  #    axis.title = element_text(size = 20),  # Customize axis labels
+  #    axis.text.x = element_text(size = 16),
+  #    axis.title.x = element_text(size = 20),
+  #    axis.text.y = element_text(size = 16),
+  #    axis.title.y = element_text(size = 20),
+  #    legend.text = element_text(size = 16),
+  #    legend.title = element_text(size = 16, face = "bold"),
+  #    legend.position = "top"  # Position the legend at the top
+   # ) +
+  #  guides(
+  #    shape = guide_legend(title = "Form", override.aes = list(size = 5))
+  #  )  # Add legend for shape aesthetic with specified size
+  
+  #ver 2, simplified
+a <-   ggplot(df, aes(x = average, y = difference, color = Total_Weight)) +
+    geom_point(size = 2.2, stroke=1) +  # Add points with specified size
+    geom_hline(aes(yintercept = mean_diff), color="darkgrey", linetype = "dotdash", size = 1.3) +  # Add dashed line at the mean difference
+    geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="grey", linetype = "dashed", size = 1.3) +  # Add upper limit line
+    geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="grey",linetype = "dashed", size = 1.3) +  # Add lower limit line
     labs(x = "Average", y = "Difference", title = "Bland-Altman Plot Cu") +  # Set axis labels and title
-    scale_color_gradient(low = "#FFEAE9", high = "#660000", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
-    scale_y_continuous(limits = c(-200, 100), breaks = seq(-200, 100, by = 50), expand = c(0, 0)) + # Set y-axis limits
-    theme_minimal() +  # Use a minimal theme
-    theme(
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
+  scale_y_continuous(limits = c(-310, 250), breaks = seq(-300, 250, by = 100), expand = c(0, 0)) + # Set y-axis limits
+  scale_x_continuous(limits = c(-20, 750), breaks = seq(0, 750, by = 150), expand = c(0, 0)) + # Set y-axis limits
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
       plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
       axis.title = element_text(size = 20),  # Customize axis labels
       axis.text.x = element_text(size = 16),
       axis.title.x = element_text(size = 20),
       axis.text.y = element_text(size = 16),
       axis.title.y = element_text(size = 20),
-      legend.text = element_text(size = 16),
+      legend.text = element_text(size = 10),
       legend.title = element_text(size = 16, face = "bold"),
       legend.position = "top"  # Position the legend at the top
     ) +
@@ -611,6 +907,49 @@ c
       shape = guide_legend(title = "Form", override.aes = list(size = 5))
     )  # Add legend for shape aesthetic with specified size
   
+a
+  
+  
+  
+  # The same plot but after the model. 
+  {
+    
+    dt <- read.delim("SLT_pXRF_ICP.txt")
+    dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+    dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+    average <- (dt$Predicted_Cu_ICP + dt$Cu_ICP) / 2
+    difference <- dt$Predicted_Cu_ICP - dt$Cu_ICP
+    df <- data.frame(average = average, difference = difference, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
+    mean_diff <- mean(difference)
+    sd_value <- sd(difference)
+    # Define the plot
+  b <-   ggplot(df, aes(x = average, y = difference, color = Total_Weight)) +
+      geom_point(size = 2.2, stroke=1) +  # Add points with specified size
+      geom_hline(aes(yintercept = mean_diff), color="darkgrey", linetype = "dotdash", size = 1.3) +  # Add dashed line at the mean difference
+      geom_hline(aes(yintercept = mean_diff + 1.96 * sd_value), color="grey", linetype = "dashed", size = 1.3) +  # Add upper limit line
+      geom_hline(aes(yintercept = mean_diff - 1.96 * sd_value), color="grey",linetype = "dashed", size = 1.3) +  # Add lower limit line
+      labs(x = "Average", y = "Difference", title = "Bland-Altman Plot Cu") +  # Set axis labels and title
+      scale_color_gradient(low = "lightgrey", high = "black", name = "Total Weight") +  # Gradient of red color based on Total_Weight column
+      scale_y_continuous(limits = c(-310, 250), breaks = seq(-300, 250, by = 100), expand = c(0, 0)) + # Set y-axis limits
+      scale_x_continuous(limits = c(-20, 750), breaks = seq(0, 750, by = 150), expand = c(0, 0)) + # Set y-axis limits
+      theme_classic2() +  # Use a minimal theme
+      theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+            plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+            axis.title = element_text(size = 20),  # Customize axis labels
+            axis.text.x = element_text(size = 16),
+            axis.title.x = element_text(size = 20),
+            axis.text.y = element_text(size = 16),
+            axis.title.y = element_text(size = 20),
+            legend.text = element_text(size = 10),
+            legend.title = element_text(size = 16, face = "bold"),
+            legend.position = "top"  # Position the legend at the top
+      ) +
+      guides(
+        shape = guide_legend(title = "Form", override.aes = list(size = 5))
+      )  # Add legend for shape aesthetic with specified size
+    b
+    
+    }
 # Perform a one-sample t-test
 t_test <- t.test(difference, mu = 0)
 
