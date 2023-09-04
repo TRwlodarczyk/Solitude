@@ -549,7 +549,9 @@ c
   dt$Cu_Error <- abs(((dt$Cu_ICP - dt$Cu_concentration) / dt$Cu_ICP) * 100) 
   dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
   dt$Cu_Error2 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100)
-  
+  #new - just pxrf~ICP bez RT lub WT
+  dt$Predicted_Cu_ICP3 <- 8.5563 + (1.4929* dt$Cu_concentration)
+  dt$Cu_Error3 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP3) / dt$Cu_ICP) * 100)
 
   a1 <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, color = Substrate_RT)) +
     geom_point(size = 2.1, stroke=1) +  # Add points with specified size
@@ -591,6 +593,63 @@ c
   a2
   
   
+  a3 <- ggplot(dt, aes(x = Total_Weight, y = Cu_Error3, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = " Cu2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a3
+  
+  a4 <- ggplot(dt, aes(x = Total_Weight, y = Cu_Error, color = Cu_ICP, shape=Type_of_Sample)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = " Cu2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Cu_ICP") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a4
+  
+  
+  a5 <- ggplot(dt, aes(x = Total_Weight, y = Cu_Error2, color = Cu_ICP, shape=Type_of_Sample)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = " Cu2 Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Cu_ICP") +  # Gradient of red color based on Total_Weight column
+    scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) +
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a5
   #Fe
   dt <- read.delim("SLT_pXRF_ICP.txt")
   dt$Predicted_Fe_ICP <- 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT)
@@ -1107,6 +1166,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
 ## Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
 dt$Predicted_Cu_ICP2 <- 17.03270 + (1.45362* dt$Cu_concentration) + (-11.13508* dt$Total_Weight)
 
+dt$Predicted_Cu_ICP3 <- 8.5563 + (1.4929* dt$Cu_concentration) 
 #write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/SLT_ICP_predicted_Cu.csv', sep=",", row.names = F)
 
 
@@ -1115,7 +1175,8 @@ cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.9433337, p
 cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP2, method="spearman") # rho = 0.9300852, p.val < 2.2e-16
 cor.test(dt$Cu_concentration, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.9767824, p.val < 2.2e-16 
 
-
+#new
+cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP3, method="spearman") # rho = 0.91319
 
 library(psych)
 dt_ICC <- dt[, c("Cu_ICP", "Cu_concentration")]
@@ -1135,6 +1196,9 @@ dt_ICC3 <- dt[, c("Cu_concentration", "Predicted_Cu_ICP")]
 ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
 
 
+#new
+dt_ICC4 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP3")]
+ICC(dt_ICC4, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
 #Check pvalue for bland altman of new predicted variables vs ICP
 
 difference <- dt$Cu_ICP - dt$Cu_concentration
@@ -1150,6 +1214,10 @@ difference1 <- dt$Predicted_Cu_ICP - dt$Cu_ICP
 t_test <- t.test(difference1, mu = 0)
 difference2 <- dt$Predicted_Cu_ICP2 - dt$Cu_ICP
 t_test <- t.test(difference2, mu = 0)
+#new
+difference3 <- dt$Predicted_Cu_ICP3 - dt$Cu_ICP
+t_test <- t.test(difference3, mu = 0)
+
 # Create a data frame with the variables
 df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
 
@@ -1425,6 +1493,122 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
 
 }
 
+#GLMs Cu - FILTERED HIGH BIOMASS HIGH CONCENTRATION
+
+{
+  
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+  
+  dt <- dt %>%
+    filter(Cu_ICP > 50, Total_Weight > 0.5)
+  
+  
+  
+  shapiro.test(dt$Cu_concentration) #non normal
+  shapiro.test(dt$Cu_ICP) # non normal
+  leveneTest(dt$Cu_concentration, dt$Cu_ICP)
+  library(lmtest)
+  lm_model <- lm(Cu_ICP~Cu_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest hetero
+  
+  
+  model1 <- glm(Cu_ICP ~ Cu_concentration, data = dt)
+  summary(model1) # 278
+  model2 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt)
+  summary(model2) #277
+  model3 <- glm(Cu_ICP ~ Cu_concentration + Substrate_RT, data = dt)
+  summary(model3) #270
+  
+  # Best AIC value for model4!!
+  # Provide starting values for the gamma glm model
+  start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
+  model4 <- glm(Cu_ICP ~ Cu_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  summary(model4) #242
+  model5 <- glm(Cu_ICP ~ Cu_concentration + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model5) #236
+  model7 <- glm(Cu_ICP ~ Cu_concentration + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(model7) #231
+  
+  
+  ## Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
+  dt$Predicted_Cu_ICP = 100.1909 + (1.3438* dt$Cu_concentration) + (-1150.8942* dt$Substrate_RT) 
+
+  ## Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
+  dt$Predicted_Cu_ICP2 <- 61.1518 + (1.2887* dt$Cu_concentration) + (-41.9641* dt$Total_Weight)
+  
+  dt$Predicted_Cu_ICP3 <- 29.954 + (1.213* dt$Cu_concentration) 
+  #write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/SLT_ICP_predicted_Cu.csv', sep=",", row.names = F)
+  
+  
+  cor.test(dt$Cu_ICP, dt$Cu_concentration, method="spearman") # rho = 0.84 p
+  cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.91
+  cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP2, method="spearman") # rho = 0.873
+
+  #new
+  cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP3, method="spearman") # rho = 0.848
+  
+  library(psych)
+  dt_ICC <- dt[, c("Cu_ICP", "Cu_concentration")]
+  
+  ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #83
+  
+  dt_ICC1 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP")]
+  
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #93
+  
+  
+  dt_ICC2 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP2")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #i93
+  
+  
+  #new
+  dt_ICC4 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP3")]
+  ICC(dt_ICC4, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #92
+
+  
+  difference <- dt$Cu_ICP - dt$Cu_concentration
+  t.test(difference, mu = 0) # pval 0.000196
+  
+  difference1 <- dt$Predicted_Cu_ICP - dt$Cu_ICP
+  t.test(difference1, mu = 0) #pval 0.817
+  difference2 <- dt$Predicted_Cu_ICP2 - dt$Cu_ICP
+  t.test(difference2, mu = 0) #pval 0.8753
+  
+  #new
+  difference3 <- dt$Predicted_Cu_ICP3 - dt$Cu_ICP
+  t.test(difference3, mu = 0) #pval 0.932
+  
+
+  dt$Cu_Error <- abs(((dt$Cu_ICP - dt$Cu_concentration) / dt$Cu_ICP) * 100) # pxrf ICP
+  dt$Cu_Error2 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP) / dt$Cu_ICP) * 100) # glm RT
+  dt$Cu_Error3 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP2) / dt$Cu_ICP) * 100) #glm WT
+  dt$Cu_Error4 <- abs(((dt$Cu_ICP - dt$Predicted_Cu_ICP3) / dt$Cu_ICP) * 100) # glm no WT no RT
+  
+  a1 <-   ggplot(dt, aes(x = Total_Weight, y = Cu_Error, color = Substrate_RT)) +
+    geom_point(size = 2.1, stroke=1) +  # Add points with specified size
+    labs(x = " Cu Total Sample Weight (g)", y = "Percent Error (%)") +  # Set axis labels and title
+    scale_color_gradient(low = "lightgrey", high = "black", name = "Relative thicnkess (RT)") +  # Gradient of red color based on Total_Weight column
+    #scale_y_continuous(limits = c(-20, 300), breaks = seq(0, 300, by = 50), expand = c(0, 0)) + # Set y-axis limits
+    #scale_x_continuous(limits = c(0, 2.25), breaks = seq(0, 2.25, by = 0.5), expand = c(0, 0)) + # Set y-axis limits
+    theme_classic2() +  # Use a minimal theme
+    theme(panel.grid.major = element_line() , panel.grid.minor = element_line(),
+          plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+          axis.title = element_text(size = 20),  # Customize axis labels
+          axis.text.x = element_text(size = 16),
+          axis.title.x = element_text(size = 20),
+          axis.text.y = element_text(size = 16),
+          axis.title.y = element_text(size = 20),
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 16, face = "bold"),
+          legend.position = "top")
+  a1
+  
+  
+  
+  
+}
+
 #GLMs Fe# not aplicable
 
 {
@@ -1456,6 +1640,9 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   dt$Predicted_Fe_ICP2 <- 17.03270 + (1.45362* dt$Fe_concentration) + (-11.13508* dt$Total_Weight)
+  
+  #New Model 4
+  dt$Predicted_Fe_ICP2 <- -1.00099 + (1.10113* dt$Fe_concentration)
   
   cor.test(dt$Fe_ICP, dt$Fe_concentration, method="spearman") # rho = 0.9131926, p.val < 2.2e-16
   cor.test(dt$Fe_ICP, dt$Predicted_Fe_ICP, method="spearman") # rho = 0.9433337, p.val < 2.2e-16
@@ -1624,6 +1811,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   dt$Predicted_Zn_ICP2 <- 33.6939 + (0.9314* dt$Zn_concentration) + (-16.8131* dt$Total_Weight)
+  # new model 4
+  dt$Predicted_Zn_ICP3 <- 21.7247 + (0.9342* dt$Zn_concentration) 
   
   cor.test(dt$Zn_ICP, dt$Zn_concentration, method="spearman") # rho = 0.5615571, p.val = 3.905e-09
   cor.test(dt$Zn_ICP, dt$Predicted_Zn_ICP, method="spearman") # rho = 0.787104, p.val < 2.2e-16
@@ -1789,6 +1978,9 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   dt$Predicted_Se_ICP2 <- 0.07610 + (1.58532* dt$Se_concentration) + (-0.32381* dt$Total_Weight) # but intercept is not significant, I wouldnt use this
+  
+  #new model 4
+  dt$Predicted_Se_ICP3 <- -0.18545 + (1.60411* dt$Se_concentration) # 
   
   cor.test(dt$Se_ICP, dt$Se_concentration, method="spearman") # rho = 0.9521751, p.val < 2.2e-16
   cor.test(dt$Se_ICP, dt$Predicted_Se_ICP, method="spearman") # rho = 0.9548323, p.val < 2.2e-16
@@ -1969,6 +2161,9 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   dt$Predicted_Mn_ICP2 <- 40.6027 + (1.0494* dt$Mn_concentration) + (-20.5045* dt$Total_Weight) # but intercept is not significant, I wouldnt use this
+  
+  #new model 4
+  dt$Predicted_Mn_ICP3 <- 26.783 + (1.030* dt$Mn_concentration) # but intercept is not significant, I wouldnt use this
   
   cor.test(dt$Mn_ICP, dt$Mn_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
   cor.test(dt$Mn_ICP, dt$Predicted_Mn_ICP, method="spearman") # rho = 0.8058756 , p.val < 2.2e-16
@@ -2599,12 +2794,15 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   summary(model7)
   model5 <- glm(Re_ICP ~ Re_concentration + Total_Weight, data = tr, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(model5)
-  
+  start_vals <- c(coeff_Re_concentration = 0, coeff_intercept = 37)
+  model4 <- glm(Re_ICP ~ Re_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  summary(model4)
   
   tr$Predicted_Re_ICP <- 3.84146 + (0.91141* tr$Re_concentration) + (-33.18455* tr$Substrate_RT)
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   tr$Predicted_Re_ICP2 <- 4.29996 + (0.93425* tr$Re_concentration) + (-3.64517* tr$Total_Weight)
-  
+  #new model 4
+  tr$Predicted_Re_ICP <- 2.17727 + (0.88060* tr$Re_concentration) 
   
   cor.test(tr$Re_ICP, tr$Re_concentration, method="spearman")
   cor.test(tr$Re_ICP, tr$Predicted_Re_ICP, method="spearman")
@@ -3151,6 +3349,430 @@ cat("Outliers Detected:", sorted_data[outliers], "\n")
                                               "Nultuma (Prosopis) velutina", 'Allionia incarnata', "Isocoma cf. tenuisecta","Mimosa biuncifera (=aculeaticarpa)"),]
   
   
+  
+}
+
+
+# R2 linear relationship.Raw and modeled. 
+{
+  
+  #Cu
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+  
+  dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+  dt$Predicted_Cu_ICP3 <- 8.5563 + (1.4929* dt$Cu_concentration) #no RT no TW
+  
+  
+
+  lm_model <- lm(Cu_ICP ~ Cu_concentration, data = dt)
+  
+  plot(dt$Cu_concentration, dt$Cu_ICP, 
+       xlab = "pXRF raw", ylab = "Cu_ICP",
+       main = "pXRF ~ ICP-MS (raw data)",
+       xlim = c(0, max(dt$Cu_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Cu_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model)
+  rsquared <- summary(lm_model)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Cu_concentration) - 10, y = max(dt$Cu_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model2 <- lm(Cu_ICP ~ Predicted_Cu_ICP, data = dt)
+  plot(dt$Predicted_Cu_ICP, dt$Cu_ICP, 
+       xlab = "Cu_pXRF-model1", ylab = "Cu_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM + RT)",
+       xlim = c(0, max(dt$Cu_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Cu_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model2)
+  rsquared <- summary(lm_model2)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Cu_concentration) - 10, y = max(dt$Cu_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model3 <- lm(Cu_ICP ~ Predicted_Cu_ICP3, data = dt)
+  plot(dt$Predicted_Cu_ICP3, dt$Cu_ICP, 
+       xlab = "Cu-pXRF-model2", ylab = "Cu_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM No RT or WT)",
+       xlim = c(0, max(dt$Cu_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Cu_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model3)
+  rsquared <- summary(lm_model3)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Cu_concentration) - 10, y = max(dt$Cu_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  #Fe
+  
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  
+  dt$Predicted_Fe_ICP <- 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT) #glm RT
+  dt$Predicted_Fe_ICP3 <- -1.00099 + (1.10113* dt$Fe_concentration) # glm no RT no WT
+  
+  lm_model <- lm(Fe_ICP ~ Fe_concentration, data = dt)
+  
+  plot(dt$Fe_concentration, dt$Fe_ICP, 
+       xlab = "pXRF raw", ylab = "Fe_ICP",
+       main = "pXRF ~ ICP-MS (raw data)",
+       xlim = c(0, max(dt$Fe_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Fe_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model)
+  rsquared <- summary(lm_model)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Fe_concentration) - 10, y = max(dt$Fe_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model2 <- lm(Fe_ICP ~ Predicted_Fe_ICP, data = dt)
+  plot(dt$Predicted_Fe_ICP, dt$Fe_ICP, 
+       xlab = "Fe_pXRF-model1", ylab = "Fe_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM + RT)",
+       xlim = c(0, max(dt$Fe_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Fe_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model2)
+  rsquared <- summary(lm_model2)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Fe_concentration) - 10, y = max(dt$Fe_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model3 <- lm(Fe_ICP ~ Predicted_Fe_ICP3, data = dt)
+  plot(dt$Predicted_Fe_ICP3, dt$Fe_ICP, 
+       xlab = "Fe-pXRF-model2", ylab = "Fe_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM No RT or WT)",
+       xlim = c(0, max(dt$Fe_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Fe_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model3)
+  rsquared <- summary(lm_model3)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Fe_concentration) - 10, y = max(dt$Fe_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  #Zn
+  
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Zn_concentration != 0.3, ] # To remove LODs
+  dt$Predicted_Zn_ICP <- 50.8422 + (0.9560* dt$Zn_concentration) + (-473.9784* dt$Substrate_RT)
+  dt$Predicted_Zn_ICP3 <- 21.7247 + (0.9342* dt$Zn_concentration) 
+  
+  
+  lm_model <- lm(Zn_ICP ~ Zn_concentration, data = dt)
+  
+  plot(dt$Zn_concentration, dt$Zn_ICP, 
+       xlab = "pXRF raw", ylab = "Zn_ICP",
+       main = "pXRF ~ ICP-MS (raw data)",
+       xlim = c(0, max(dt$Zn_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Zn_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model)
+  rsquared <- summary(lm_model)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Zn_concentration) - 10, y = max(dt$Zn_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model2 <- lm(Zn_ICP ~ Predicted_Zn_ICP, data = dt)
+  plot(dt$Predicted_Zn_ICP, dt$Zn_ICP, 
+       xlab = "Zn_pXRF-model1", ylab = "Zn_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM + RT)",
+       xlim = c(0, max(dt$Zn_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Zn_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model2)
+  rsquared <- summary(lm_model2)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Zn_concentration) - 10, y = max(dt$Zn_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model3 <- lm(Zn_ICP ~ Predicted_Zn_ICP3, data = dt)
+  plot(dt$Predicted_Zn_ICP3, dt$Zn_ICP, 
+       xlab = "Zn-pXRF-model2", ylab = "Zn_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM No RT or WT)",
+       xlim = c(0, max(dt$Zn_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Zn_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model3)
+  rsquared <- summary(lm_model3)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Zn_concentration) - 10, y = max(dt$Zn_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  # Mn
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Mn_concentration != 0.5, ] # To remove LODs
+  dt$Predicted_Mn_ICP <- 51.4943 + (1.0760* dt$Mn_concentration) + (-431.8509* dt$Substrate_RT)
+  dt$Predicted_Mn_ICP3 <- 26.783 + (1.030* dt$Mn_concentration) 
+  
+  lm_model <- lm(Mn_ICP ~ Mn_concentration, data = dt)
+  
+  plot(dt$Mn_concentration, dt$Mn_ICP, 
+       xlab = "pXRF raw", ylab = "Mn_ICP",
+       main = "pXRF ~ ICP-MS (raw data)",
+       xlim = c(0, max(dt$Mn_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Mn_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model)
+  rsquared <- summary(lm_model)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Mn_concentration) - 10, y = max(dt$Mn_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model2 <- lm(Mn_ICP ~ Predicted_Mn_ICP, data = dt)
+  plot(dt$Predicted_Mn_ICP, dt$Mn_ICP, 
+       xlab = "Mn_pXRF-model1", ylab = "Mn_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM + RT)",
+       xlim = c(0, max(dt$Mn_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Mn_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model2)
+  rsquared <- summary(lm_model2)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Mn_concentration) - 10, y = max(dt$Mn_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model3 <- lm(Mn_ICP ~ Predicted_Mn_ICP3, data = dt)
+  plot(dt$Predicted_Mn_ICP3, dt$Mn_ICP, 
+       xlab = "Mn-pXRF-model2", ylab = "Mn_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM No RT or WT)",
+       xlim = c(0, max(dt$Mn_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Mn_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model3)
+  rsquared <- summary(lm_model3)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Mn_concentration) - 10, y = max(dt$Mn_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  #Re
+  dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
+  dt$Predicted_Re_ICP <- 3.84146 + (0.91141* dt$Re_concentration) + (-33.18455* dt$Substrate_RT)
+  dt$Predicted_Re_ICP3 <- 2.17727 + (0.88060* dt$Re_concentration)  # glm no RT no WT
+
+
+  lm_model <- lm(Re_ICP ~ Re_concentration, data = dt)
+  
+  plot(dt$Re_concentration, dt$Re_ICP, 
+       xlab = "pXRF raw", ylab = "Re_ICP",
+       main = "pXRF ~ ICP-MS (raw data)",
+       xlim = c(0, max(dt$Re_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Re_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model)
+  rsquared <- summary(lm_model)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Re_concentration) - 10, y = max(dt$Re_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model2 <- lm(Re_ICP ~ Predicted_Re_ICP, data = dt)
+  plot(dt$Predicted_Re_ICP, dt$Re_ICP, 
+       xlab = "Re_pXRF-model1", ylab = "Re_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM + RT)",
+       xlim = c(0, max(dt$Re_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Re_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model2)
+  rsquared <- summary(lm_model2)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Re_concentration) - 10, y = max(dt$Re_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model3 <- lm(Re_ICP ~ Predicted_Re_ICP3, data = dt)
+  plot(dt$Predicted_Re_ICP3, dt$Re_ICP, 
+       xlab = "Re-pXRF-model2", ylab = "Re_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM No RT or WT)",
+       xlim = c(0, max(dt$Re_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Re_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model3)
+  rsquared <- summary(lm_model3)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Re_concentration) - 10, y = max(dt$Re_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  # Se
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Se_concentration != 0.05, ] # To remove LODs
+  
+  dt$Predicted_Se_ICP <- 0.4417 + (1.5683* dt$Se_concentration) + (-8.8017* dt$Substrate_RT)
+  dt$Predicted_Se_ICP3 <- -0.18545 + (1.60411* dt$Se_concentration)
+  
+  
+  lm_model <- lm(Se_ICP ~ Se_concentration, data = dt)
+  
+  plot(dt$Se_concentration, dt$Se_ICP, 
+       xlab = "pXRF raw", ylab = "Se_ICP",
+       main = "pXRF ~ ICP-MS (raw data)",
+       xlim = c(0, max(dt$Se_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Se_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model)
+  rsquared <- summary(lm_model)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Se_concentration) - 10, y = max(dt$Se_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model2 <- lm(Se_ICP ~ Predicted_Se_ICP, data = dt)
+  plot(dt$Predicted_Se_ICP, dt$Se_ICP, 
+       xlab = "Se_pXRF-model1", ylab = "Se_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM + RT)",
+       xlim = c(0, max(dt$Se_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Se_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model2)
+  rsquared <- summary(lm_model2)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Se_concentration) - 10, y = max(dt$Se_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
+  
+  
+  
+  lm_model3 <- lm(Se_ICP ~ Predicted_Se_ICP3, data = dt)
+  plot(dt$Predicted_Se_ICP3, dt$Se_ICP, 
+       xlab = "Se-pXRF-model2", ylab = "Se_ICP",
+       main = "pXRF ~ ICP-MS  (gamma GLM No RT or WT)",
+       xlim = c(0, max(dt$Se_concentration) + 10),  # Adjust the x-axis limits
+       ylim = c(0, max(dt$Se_ICP) + 10),  # Adjust the y-axis limits
+       col = "blue", pch = 16)  # Customize point color and shape
+  
+  abline(a = 0, b = 1, col = "red")  # 1:1 line in red
+  grid()  # Add grid lines
+  
+  summary(lm_model3)
+  rsquared <- summary(lm_model3)$r.squared
+  
+  # Display R-squared on the graph
+  text(x = max(dt$Se_concentration) - 10, y = max(dt$Se_ICP) - 10,
+       labels = paste("R-squared =", round(rsquared, 3)),
+       adj = c(1, 0))
   
 }
 

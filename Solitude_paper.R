@@ -1742,6 +1742,114 @@ plt <- ggbetweenstats(
    
    
    
+   
+   #########################
+   #######################
+   ########################
+   #####################
+   ###############
+   
+   #Testujemy po medianie
+   
+   
+   dt_Cu <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Cu_ICP), 
+               Mean = mean(Predicted_Cu_ICP), 
+               SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                           y = Median, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Median - SD, ymax = Median + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     geom_hline(yintercept = 5, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     geom_hline(yintercept = 20, linetype = "twodash", color = "#003f5c", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 405), breaks = seq(0, 405, by = 100), expand = c(0, 9)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Cu (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Cu
+   
+   #Fe
+   dt_Fe <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Fe_concentration), 
+               Median2 = median(Predicted_Cu_ICP),
+               Mean = mean(Fe_concentration), 
+               SD = sd(Fe_concentration)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median2), 
+                           y = Median, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Median - SD, ymax = Median + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     geom_hline(yintercept = 500, linetype = "twodash", color = "#003f5c", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 1500), breaks = seq(0, 1500, by = 350), expand = c(0, 35)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Fe (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Fe
+   
+   dt_Mn <- dt %>%
+     group_by(Scientific_Name, Site) %>%
+     summarize(Median = median(Predicted_Mn_ICP),
+               Median2 = median(Predicted_Cu_ICP), 
+               Mean = mean(Predicted_Mn_ICP), 
+               SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
+     arrange(Median) %>%
+     ungroup()
+   
+   Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median2), 
+                           y = Median, fill = Site )) +
+     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+     geom_errorbar(aes(ymin = Median - SD, ymax = Median + SD),
+                   position = position_dodge(width = 0.85),
+                   width = 0.25,
+                   size = 0.25) +
+     geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+     scale_fill_manual(values = c("lightgrey")) +
+     scale_y_continuous(limits = c(0, 180), breaks = seq(0, 180, by = 40), expand = c(0, 4)) +
+     scale_x_discrete(expand = c(0, 0.8)) +  
+     coord_flip() +
+     labs(x = "", y = "Mn (mg/kg)") +
+     theme_bw() +
+     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+           axis.text.x = element_text(size = 7),
+           axis.text.y = element_text(size = 7),
+           legend.key.size = unit(1, "lines"),
+           legend.text = element_text(size = 4),
+           legend.title = element_text(size = 4, face = "bold"))
+   
+   Mn
+   
 }
 
 
