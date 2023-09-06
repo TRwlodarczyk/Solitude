@@ -3774,6 +3774,33 @@ cat("Outliers Detected:", sorted_data[outliers], "\n")
        labels = paste("R-squared =", round(rsquared, 3)),
        adj = c(1, 0))
   
+  
+  
+  # Cu test
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+  library(ggplot2)
+  
+  # Fit a linear model
+  lm_model <- lm(Cu_ICP ~ Cu_concentration, data = dt)
+  
+  # Create a scatterplot
+  p <- ggplot(dt, aes(x = Cu_concentration, y = Cu_ICP)) +
+    geom_point(color = "blue") +  # Customize point color
+    geom_abline(intercept = 0, slope = 1, color = "red") +  # 1:1 line in red
+    theme_minimal()  # Customize the plot theme
+  
+  # Calculate residuals from the linear model
+  residuals <- residuals(lm_model)
+  
+  # Calculate the 25% quantile of the absolute residuals
+  quantile_25 <- quantile(abs(residuals), probs = 0.25)
+  
+  # Add a shaded area to represent the 25% error offset
+  p + geom_abline(intercept = -quantile_25, slope = 1, color = "green", linetype = "dashed") +
+    geom_abline(intercept = quantile_25, slope = 1, color = "green", linetype = "dashed", show.legend = FALSE) +
+    geom_ribbon(data = NULL, aes(ymin = -quantile_25, ymax = quantile_25), fill = "green", alpha = 0.5, show.legend = FALSE)
+  
 }
 
 
