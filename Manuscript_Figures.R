@@ -319,6 +319,311 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
 }
 
 # Bars - TAILINGS vs CONTROL Supplement
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("Solitude_Plants_Predicted_TLandCTRL.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+
+dt_Cu <- dt %>%
+  group_by(Scientific_Name, Site) %>%
+  summarize(
+    Median = median(Predicted_Cu_ICP),
+    Mean = mean(Predicted_Cu_ICP),
+    SD = sd(Predicted_Cu_ICP) / sqrt(n())
+  ) %>%
+  arrange(Median) %>%
+  ungroup()
+# Getting unique sites from dt_Cu
+unique_sites <- unique(dt_Cu$Site)
+
+# Check the length of unique sites, and based on that, assign colors
+if (length(unique_sites) == 2) {
+  site_colors <- c("darkgrey", "lightgrey")
+} else {
+  stop("Number of unique sites is not 2. Please specify colors for all sites.")
+}
+
+# Create a named vector for fill colors
+fill_colors <- setNames(site_colors, unique_sites)
+
+Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge", size = 0.22, 
+           color = "black") +
+  geom_errorbar(
+    aes(ymin = Mean - SD, ymax = Mean + SD),
+    position = position_dodge(width = 0.85),
+    width = 0.25,
+    size = 0.25
+  ) +
+  scale_fill_manual(values = fill_colors) +
+  coord_flip() +
+  geom_hline(yintercept = 5, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+  geom_hline(yintercept = 20, linetype = "twodash", color = "#003f5c", size = 0.3) +
+  labs(x = "", y = "Cu (mg/kg)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold")
+  )
+
+Cu
+
+# Fe
+dt_Fe <- dt %>%
+  group_by(Scientific_Name, Site) %>%
+  summarize(
+    Median = median(Predicted_Cu_ICP),
+    Mean = mean(Predicted_Fe_ICP),
+    SD = sd(Predicted_Fe_ICP) / sqrt(n())
+  ) %>%
+  arrange(Median) %>%
+  ungroup()
+# Getting unique sites from dt_Cu
+unique_sites <- unique(dt_Fe$Site)
+
+# Check the length of unique sites, and based on that, assign colors
+if (length(unique_sites) == 2) {
+  site_colors <- c("darkgrey", "lightgrey")
+} else {
+  stop("Number of unique sites is not 2. Please specify colors for all sites.")
+}
+
+# Create a named vector for fill colors
+fill_colors <- setNames(site_colors, unique_sites)
+
+Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge", size = 0.22, 
+           color = "black") +
+  geom_errorbar(
+    aes(ymin = Mean - SD, ymax = Mean + SD),
+    position = position_dodge(width = 0.85),
+    width = 0.25,
+    size = 0.25
+  ) +
+  scale_fill_manual(values = fill_colors) +
+  scale_y_continuous(limits = c(0, 1600), breaks = seq(0, 1600, by = 400), expand = c(0, 2.5)) +
+  coord_flip() +
+  geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+  geom_hline(yintercept = 500, linetype = "twodash", color = "#003f5c", size = 0.3) +
+  labs(x = "", y = "Fe (mg/kg)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold")
+  )
+
+Fe
 
 
 
+#Mn
+dt_Mn <- dt %>%
+  group_by(Scientific_Name, Site) %>%
+  summarize(
+    Median = median(Predicted_Cu_ICP),
+    Mean = mean(Predicted_Mn_ICP),
+    SD = sd(Predicted_Mn_ICP) / sqrt(n())
+  ) %>%
+  arrange(Median) %>%
+  ungroup()
+# Getting unique sites from dt_Cu
+unique_sites <- unique(dt_Mn$Site)
+
+# Check the length of unique sites, and based on that, assign colors
+if (length(unique_sites) == 2) {
+  site_colors <- c("darkgrey", "lightgrey")
+} else {
+  stop("Number of unique sites is not 2. Please specify colors for all sites.")
+}
+
+# Create a named vector for fill colors
+fill_colors <- setNames(site_colors, unique_sites)
+
+Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge", size = 0.22, 
+           color = "black") +
+  geom_errorbar(
+    aes(ymin = Mean - SD, ymax = Mean + SD),
+    position = position_dodge(width = 0.85),
+    width = 0.25,
+    size = 0.25
+  ) +
+  scale_fill_manual(values = fill_colors) +
+  coord_flip() +
+  geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+
+  labs(x = "", y = "Mn (mg/kg)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold")
+  )
+
+Mn
+
+
+#Zn
+dt_Zn <- dt %>%
+  group_by(Scientific_Name, Site) %>%
+  summarize(
+    Median = median(Predicted_Cu_ICP),
+    Mean = mean(Predicted_Zn_ICP),
+    SD = sd(Predicted_Zn_ICP) / sqrt(n())
+  ) %>%
+  arrange(Median) %>%
+  ungroup()
+# Getting unique sites from dt_Cu
+unique_sites <- unique(dt_Zn$Site)
+
+# Check the length of unique sites, and based on that, assign colors
+if (length(unique_sites) == 2) {
+  site_colors <- c("darkgrey", "lightgrey")
+} else {
+  stop("Number of unique sites is not 2. Please specify colors for all sites.")
+}
+
+# Create a named vector for fill colors
+fill_colors <- setNames(site_colors, unique_sites)
+
+Zn <- ggplot(dt_Zn, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge", size = 0.22, 
+           color = "black") +
+  geom_errorbar(
+    aes(ymin = Mean - SD, ymax = Mean + SD),
+    position = position_dodge(width = 0.85),
+    width = 0.25,
+    size = 0.25
+  ) +
+  scale_fill_manual(values = fill_colors) +
+  coord_flip() +
+  geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+  scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 15), expand = c(0, 2.5)) +
+  labs(x = "", y = "Zn (mg/kg)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold")
+  )
+
+Zn
+
+
+#Se
+dt_Se <- dt %>%
+  group_by(Scientific_Name, Site) %>%
+  summarize(
+    Median = median(Predicted_Cu_ICP),
+    Mean = mean(Predicted_Se_ICP),
+    SD = sd(Predicted_Se_ICP) / sqrt(n())
+  ) %>%
+  arrange(Median) %>%
+  ungroup()
+# Getting unique sites from dt_Cu
+unique_sites <- unique(dt_Se$Site)
+
+# Check the length of unique sites, and based on that, assign colors
+if (length(unique_sites) == 2) {
+  site_colors <- c("darkgrey", "lightgrey")
+} else {
+  stop("Number of unique sites is not 2. Please specify colors for all sites.")
+}
+
+# Create a named vector for fill colors
+fill_colors <- setNames(site_colors, unique_sites)
+
+se<- ggplot(dt_Se, aes(x = reorder(Scientific_Name, Median), 
+                        y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge", size = 0.22, 
+           color = "black") +
+  geom_errorbar(
+    aes(ymin = Mean - SD, ymax = Mean + SD),
+    position = position_dodge(width = 0.85),
+    width = 0.25,
+    size = 0.25
+  ) +
+  scale_fill_manual(values = fill_colors) +
+  coord_flip() +
+  geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
+  #scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 15), expand = c(0, 2.5)) +
+  labs(x = "", y = "Se (mg/kg)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold")
+  )
+
+se
+
+
+#Re
+dt_Re <- dt %>%
+  group_by(Scientific_Name, Site) %>%
+  summarize(
+    Median = median(Predicted_Cu_ICP),
+    Mean = mean(Predicted_Re_ICP),
+    SD = sd(Predicted_Re_ICP) / sqrt(n())
+  ) %>%
+  arrange(Median) %>%
+  ungroup()
+# Getting unique sites from dt_Cu
+unique_sites <- unique(dt_Re$Site)
+
+# Check the length of unique sites, and based on that, assign colors
+if (length(unique_sites) == 2) {
+  site_colors <- c("darkgrey", "lightgrey")
+} else {
+  stop("Number of unique sites is not 2. Please specify colors for all sites.")
+}
+
+# Create a named vector for fill colors
+fill_colors <- setNames(site_colors, unique_sites)
+
+Re <- ggplot(dt_Re, aes(x = reorder(Scientific_Name, Median), 
+                       y = Mean, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge", size = 0.22, 
+           color = "black") +
+  geom_errorbar(
+    aes(ymin = Mean - SD, ymax = Mean + SD),
+    position = position_dodge(width = 0.85),
+    width = 0.25,
+    size = 0.25
+  ) +
+  scale_fill_manual(values = fill_colors) +
+  coord_flip() +
+  geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
+  #scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 15), expand = c(0, 2.5)) +
+  labs(x = "", y = "Re (mg/kg)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold")
+  )
+
+Re
+
+
+}
