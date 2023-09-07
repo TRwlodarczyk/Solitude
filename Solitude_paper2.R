@@ -172,7 +172,7 @@
   setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
   dt <- read.delim("Solitude_Plants_Final_08.23.txt")
   dt <- subset(dt, Scientific_Name != 'QA_Sample')
-  dt <- subset(dt, Site != 'CONTROL')
+  #dt <- subset(dt, Site != 'CONTROL')
   #dt <- dt[dt$Type_of_Sample != "root", ]
   
   #removing LODs
@@ -229,6 +229,7 @@
     }
     
     dt$Predicted_Cu_ICP <- mapply(apply_equation_without_zeros, dt$Cu_concentration, dt$Substrate_RT)
+    
     # Zn
     apply_equation_without_zeros <- function(zn, substrate) {
       if (is.numeric(zn) && is.numeric(substrate) && zn != 0) {
@@ -316,20 +317,31 @@
     # Apply the modified equation function to create the new column
     dt$Predicted_Ti_ICP <- mapply(apply_equation_without_zeros, dt$Ti_concentration, dt$Substrate_RT)
     
+    # Fe NO, because no replicates were removed in this dataset.
+    apply_equation_without_zeros <- function(zn, substrate) {
+      if (is.numeric(zn) && is.numeric(substrate) && zn != 0) {
+        return(28.88747 + (1.41673 * zn) + (-316.95475 * substrate))
+      } else {
+        return(0)  # Set to NA to indicate exclusion
+      }
+    }
     
-    
+    # Apply the modified equation function to create the new column
+    dt$Predicted_Fe_ICP <- mapply(apply_equation_without_zeros, dt$Fe_concentration, dt$Substrate_RT)
+
     
     dt$Predicted_Ti_ICP[dt$Predicted_Ti_ICP == 0] <- 5/2
     dt$Predicted_Cr_ICP[dt$Predicted_Cr_ICP == 0] <- 2/2
     dt$Predicted_Mn_ICP[dt$Predicted_Mn_ICP == 0] <- 1/2
     dt$Fe_concentration[dt$Fe_concentration == 0] <- 5/2
+    #dt$Predicted_Fe_ICP[dt$Predicted_Fe_ICP == 0] <- 5/2
     dt$Predicted_Cu_ICP[dt$Predicted_Cu_ICP == 0] <- 0.5/2
     dt$Predicted_Zn_ICP[dt$Predicted_Zn_ICP == 0] <- 0.6/2
     dt$Predicted_As_ICP[dt$Predicted_As_ICP == 0] <- 0.1/2
     dt$Predicted_Se_ICP[dt$Predicted_Se_ICP == 0] <- 0.1/2
     dt$Predicted_Re_ICP[dt$Predicted_Re_ICP == 0] <- 0.5/2
     
-    #write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final/Solitude_Plants_Predicted_08.08.23.csv', sep=",", row.names = F)
+   # write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final/Solitude_Plants_Predicted_08.08.23.csv', sep=",", row.names = F)
     
     
   }
@@ -345,6 +357,7 @@
   #dt$Predicted_Ti_ICP <- -8.80946 + (0.46543* dt$Ti_concentration) + (162.79067* dt$Substrate_RT)
   
 }
+
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
 dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
@@ -1980,3 +1993,27 @@ dt <- tr
   
   
 }
+
+# Add Fe as a predicted not RAW pXRF
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("Solitude_Plants_Predicted_08.09.23-3reps.txt")
+
+
+dt$Fe_concentration[dt$Fe_concentration == 2.5] <- 0
+apply_equation_without_zeros <- function(fe, substrate) {
+  if (is.numeric(fe) && is.numeric(substrate) && fe != 0) {
+    return(28.88747 + (1.41673 * fe) + (-316.95475 * substrate))
+  } else {
+    return(0)  # Set to NA to indicate exclusion
+  }
+}
+
+dt$Predicted_Fe_ICP <- mapply(apply_equation_without_zeros, dt$Fe_concentration, dt$Substrate_RT)
+
+dt$Predicted_Fe_ICP[dt$Predicted_Fe_ICP == 0] <- 2.5
+
+write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final/SLT_Final_3reps.09.06.23.csv', sep=",", row.names = F)
+
+}
+
