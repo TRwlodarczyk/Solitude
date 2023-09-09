@@ -104,6 +104,22 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
           symkey = FALSE, density.info = "none",
           lwid = c(0.5, 0.5))
 
+
+#With manhattan distance
+
+row_hclust <- hclust(dist(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")), method = "manhattan"), method = "complete")
+
+heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")),
+          scale = "none", # Use "none" to keep the original values
+          trace = "none", # Remove trace colors
+          Rowv = as.dendrogram(row_hclust), # Pass the pre-calculated dendrogram
+          Colv = FALSE, # Add dendrograms
+          col = colorRampPalette(c("#C5DFF8", "#4A55A2"))(256),
+          key = TRUE, keysize = 1, key.title = NA, # Add color scale
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
+
 }
 
 # Barplots 
@@ -408,7 +424,7 @@ Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median),
     size = 0.25
   ) +
   scale_fill_manual(values = fill_colors) +
-  scale_y_continuous(limits = c(0, 1600), breaks = seq(0, 1600, by = 400), expand = c(0, 2.5)) +
+  scale_y_continuous(limits = c(0, 1600), breaks = seq(0, 1600, by = 400), expand = c(0, 60)) +
   coord_flip() +
   geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
   geom_hline(yintercept = 500, linetype = "twodash", color = "#003f5c", size = 0.3) +
@@ -576,7 +592,7 @@ se<- ggplot(dt_Se, aes(x = reorder(Scientific_Name, Median),
 se
 
 
-#Re
+#Re stack from two plots
 dt_Re <- dt %>%
   group_by(Scientific_Name, Site) %>%
   summarize(
@@ -612,7 +628,7 @@ Re <- ggplot(dt_Re, aes(x = reorder(Scientific_Name, Median),
   scale_fill_manual(values = fill_colors) +
   coord_flip() +
   geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
-  #scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, by = 15), expand = c(0, 2.5)) +
+  scale_y_continuous(limits = c(0, 20), breaks = seq(0, 20, by = 3), expand = c(0, 0.5)) +
   labs(x = "", y = "Re (mg/kg)") +
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -624,6 +640,9 @@ Re <- ggplot(dt_Re, aes(x = reorder(Scientific_Name, Median),
   )
 
 Re
+
+
+
 
 
 }
