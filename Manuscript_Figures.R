@@ -89,7 +89,7 @@ dt_melted$Scientific_Name <- factor(
 )
 
 # Define the desired order of elements
-element_order <- c("Cu", "Fe", "Mn", "Zn", "Re", "Se")
+element_order <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
 
 # Factor the variable column based on element_order
 dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
@@ -215,7 +215,7 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
     geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
     geom_hline(yintercept = 100, linetype = "twodash", color = "#003f5c", size = 0.3) +
     scale_fill_manual(values = c("lightgrey")) +
-    scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25), expand = c(0, 2.5)) +
+    scale_y_continuous(limits = c(0, 120), breaks = seq(0, 120, by = 30), expand = c(0, 2.5)) +
     scale_x_discrete(expand = c(0, 0.8)) +  
     coord_flip() +
     labs(x = "", y = "Zn (mg/kg)") +
@@ -646,3 +646,437 @@ Re
 
 
 }
+
+#Boxplots
+
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Site != "CONTROL", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+
+
+dt_selected <- dt[dt$Scientific_Name %in% c("Xanthisma gracile", "Pseudognaphalium canescens", "Boechera perennans",
+                                            "Nultuma (Prosopis) velutina", "Tamarix chinensis", "Senegalia (Acacia) greggii","Isocoma acradenia"),]
+
+
+Cu <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Cu_ICP, FUN = median),
+                              y = Predicted_Cu_ICP, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.3) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 4)) +
+  geom_hline(yintercept = 70, linetype = "dashed", color = "#9a9a9a", size = 0.4) +
+  geom_hline(yintercept = 300, linetype = "dotdash", color = "#454545", size = 0.4) +
+  scale_y_continuous(limits = c(0, 900), breaks = seq(0, 900, by = 150)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Cu (mg kg-1)")
+Cu
+Fe <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Fe_concentration, FUN = median),
+                              y = Fe_concentration, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.3) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 4)) +
+  scale_y_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Fe (mg kg-1)")
+Fe
+
+Se <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Se_ICP, FUN = median),
+                              y = Predicted_Se_ICP, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.3) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 4)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Se (mg kg-1)")
+Se
+
+Re <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Re_ICP, FUN = median),
+                              y = Predicted_Re_ICP, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.3) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 4)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Re (mg kg-1)")
+Re
+
+
+Mn <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Mn_ICP, FUN = median),
+                              y = Predicted_Mn_ICP, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.3) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 4)) +
+  scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 50)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Mn (mg kg-1)")
+Mn
+
+
+Zn <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Zn_ICP, FUN = median),
+                              y = Predicted_Zn_ICP, Sceintific_Name = Scientific_Name)) +
+  geom_boxplot(linewidth=0.3) +
+  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  scale_shape_manual(values = c(21, 21, 21, 4)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  coord_flip() +
+  theme_classic()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size=12),
+        axis.title.x = element_text(size = 15),
+        axis.text.y = element_text(size=12, face="italic"),
+        axis.title.y = element_blank(),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 13), 
+        legend.title = element_text(size=14, face = "bold"))+
+  guides(color = guide_legend(override.aes = list(size = 3.5)),
+         shape = guide_legend(override.aes = list(size = 3.5))) +
+  ylab("Zn (mg kg-1)")
+Zn
+
+
+}
+
+#Regression lines plot
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
+dt <- read.delim("SLT_pXRF_ICP.txt")
+
+#Cu
+dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+
+dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* dt$Substrate_RT)
+dt$Predicted_Cu_ICP3 <- 8.5563 + (1.4929* dt$Cu_concentration) #no RT no TW
+
+lm_model1 <- lm(Cu_ICP ~ Cu_concentration, data = dt)
+
+summary(lm_model1)
+rsquared <- summary(lm_model1)$r.squared
+
+lm_model2 <- lm(Cu_ICP ~ Predicted_Cu_ICP, data = dt)
+summary(lm_model2)
+rsquared2 <- summary(lm_model2)$r.squared
+
+
+p <- ggplot(dt, aes(x = Cu_concentration, y = Cu_ICP)) +
+  geom_point(color = "#003f5c", size=2.1, stroke=1, shape=1) +
+  geom_point(aes(x = Predicted_Cu_ICP, y = Cu_ICP), color = "#AD0B0B", size=2.1, stroke=1, shape=3) + # New points
+  geom_smooth(aes(x = Cu_concentration, y = Cu_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid") +   # Regression line for the first model
+  geom_smooth(aes(x = Predicted_Cu_ICP, y = Cu_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid") +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=1) +
+  labs(x = "pXRF Cu", y = "ICP concentration Cu") +
+  scale_y_continuous(limits = c(0, 800), breaks = seq(0, 800, by = 200)) +
+  annotate("text", x = 700, y = 800, 
+           label = paste("R-squared =", round(rsquared, 3)), hjust = 1, vjust = 0) +
+  annotate("text", x = 700, y=700, 
+           label = paste("R-squared2 =", round(rsquared2, 3)), hjust = 1, vjust = 0)+
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(p)
+
+
+#Fe
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+
+dt$Predicted_Fe_ICP <- 28.88747 + (1.41673* dt$Fe_concentration) + (-316.95475* dt$Substrate_RT) #glm RT
+
+
+lm_model1 <- lm(Fe_ICP ~ Fe_concentration, data = dt)
+
+summary(lm_model1)
+rsquared <- summary(lm_model1)$r.squared
+
+lm_model2 <- lm(Fe_ICP ~ Predicted_Fe_ICP, data = dt)
+summary(lm_model2)
+rsquared2 <- summary(lm_model2)$r.squared
+
+
+p <- ggplot(dt, aes(x = Fe_concentration, y = Fe_ICP)) +
+  geom_point(color = "#003f5c", size=2.1, stroke=1, shape=1) +
+  geom_point(aes(x = Predicted_Fe_ICP, y = Fe_ICP), color = "#AD0B0B", size=2.1, stroke=1, shape=3) + # New points
+  geom_smooth(aes(x = Fe_concentration, y = Fe_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid") +   # Regression line for the first model
+  geom_smooth(aes(x = Predicted_Fe_ICP, y = Fe_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid") +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=1) +
+  labs(x = "pXRF Fe", y = "ICP concentration Fe") +
+  scale_y_continuous(limits = c(0, 4000), breaks = seq(0, 4000, by = 800)) +
+  scale_x_continuous(limits = c(0, 4000), breaks = seq(0, 4000, by = 800)) +
+  annotate("text", x = 3900, y = 3900, 
+           label = paste("R-squared =", round(rsquared, 3)), hjust = 1, vjust = 0) +
+  annotate("text", x = 3900, y=3500, 
+           label = paste("R-squared2 =", round(rsquared2, 3)), hjust = 1, vjust = 0)+
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(p)
+
+
+#Zn
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Mn_concentration != 0.3, ] # To remove LODs
+dt$Predicted_Zn_ICP <- 50.8422 + (0.9560* dt$Mn_concentration) + (-473.9784* dt$Substrate_RT)
+
+
+lm_model1 <- lm(Zn_ICP ~ Mn_concentration, data = dt)
+
+summary(lm_model1)
+rsquared <- summary(lm_model1)$r.squared
+
+lm_model2 <- lm(Zn_ICP ~ Predicted_Zn_ICP, data = dt)
+summary(lm_model2)
+rsquared2 <- summary(lm_model2)$r.squared
+
+
+p <- ggplot(dt, aes(x = Mn_concentration, y = Zn_ICP)) +
+  geom_point(color = "#003f5c", size=2.1, stroke=1, shape=1) +
+  geom_point(aes(x = Predicted_Zn_ICP, y = Zn_ICP), color = "#AD0B0B", size=2.1, stroke=1, shape=3) + # New points
+  geom_smooth(aes(x = Mn_concentration, y = Zn_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid") +   # Regression line for the first model
+  geom_smooth(aes(x = Predicted_Zn_ICP, y = Zn_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid") +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=1) +
+  labs(x = "pXRF Zn", y = "ICP concentration Zn") +
+  scale_y_continuous(limits = c(0, 160), breaks = seq(0, 160, by = 50)) +
+  scale_x_continuous(limits = c(0, 160), breaks = seq(0, 160, by = 50)) +
+ annotate("text", x = 150, y = 150, 
+           label = paste("R-squared =", round(rsquared, 3)), hjust = 1, vjust = 0) +
+ annotate("text", x = 150, y=130, 
+           label = paste("R-squared2 =", round(rsquared2, 3)), hjust = 1, vjust = 0)+
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(p)
+
+
+
+# Mn
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Mn_concentration != 0.5, ] # To remove LODs
+dt$Predicted_Mn_ICP <- 51.4943 + (1.0760* dt$Mn_concentration) + (-431.8509* dt$Substrate_RT)
+
+
+lm_model1 <- lm(Mn_ICP ~ Mn_concentration, data = dt)
+
+summary(lm_model1)
+rsquared <- summary(lm_model1)$r.squared
+
+lm_model2 <- lm(Mn_ICP ~ Predicted_Mn_ICP, data = dt)
+summary(lm_model2)
+rsquared2 <- summary(lm_model2)$r.squared
+
+
+p <- ggplot(dt, aes(x = Mn_concentration, y = Mn_ICP)) +
+  geom_point(color = "#003f5c", size=2.1, stroke=1, shape=1) +
+  geom_point(aes(x = Predicted_Mn_ICP, y = Mn_ICP), color = "#AD0B0B", size=2.1, stroke=1, shape=3) + # New points
+  geom_smooth(aes(x = Mn_concentration, y = Mn_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid") +   # Regression line for the first model
+  geom_smooth(aes(x = Predicted_Mn_ICP, y = Mn_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid") +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=1) +
+  labs(x = "pXRF Mn", y = "ICP concentration Mn") +
+  scale_y_continuous(limits = c(0, 160), breaks = seq(0, 160, by = 50)) +
+  scale_x_continuous(limits = c(0, 160), breaks = seq(0, 160, by = 50)) +
+  annotate("text", x = 150, y = 150, 
+           label = paste("R-squared =", round(rsquared, 3)), hjust = 1, vjust = 0) +
+  annotate("text", x = 150, y=130, 
+           label = paste("R-squared2 =", round(rsquared2, 3)), hjust = 1, vjust = 0)+
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(p)
+
+
+#Re
+dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
+dt$Predicted_Re_ICP <- 3.84146 + (0.91141* dt$Re_concentration) + (-33.18455* dt$Substrate_RT)
+
+
+lm_model1 <- lm(Re_ICP ~ Re_concentration, data = dt)
+
+summary(lm_model1)
+rsquared <- summary(lm_model1)$r.squared
+
+lm_model2 <- lm(Re_ICP ~ Predicted_Re_ICP, data = dt)
+summary(lm_model2)
+rsquared2 <- summary(lm_model2)$r.squared
+
+
+p <- ggplot(dt, aes(x = Re_concentration, y = Re_ICP)) +
+  geom_point(color = "#003f5c", size=2.1, stroke=1, shape=1) +
+  geom_point(aes(x = Predicted_Re_ICP, y = Re_ICP), color = "#AD0B0B", size=2.1, stroke=1, shape=3) + # New points
+  geom_smooth(aes(x = Re_concentration, y = Re_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid") +   # Regression line for the first model
+  geom_smooth(aes(x = Predicted_Re_ICP, y = Re_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid") +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=1) +
+  labs(x = "pXRF Re", y = "ICP concentration Re") +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
+  annotate("text", x = 90, y = 90, 
+           label = paste("R-squared =", round(rsquared, 3)), hjust = 1, vjust = 0) +
+  annotate("text", x = 90, y=80, 
+           label = paste("R-squared2 =", round(rsquared2, 3)), hjust = 1, vjust = 0)+
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(p)
+
+
+#Se
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Se_concentration != 0.05, ] # To remove LODs
+
+dt$Predicted_Se_ICP <- 0.4417 + (1.5683* dt$Se_concentration) + (-8.8017* dt$Substrate_RT)
+
+
+lm_model1 <- lm(Se_ICP ~ Se_concentration, data = dt)
+
+summary(lm_model1)
+rsquared <- summary(lm_model1)$r.squared
+
+lm_model2 <- lm(Se_ICP ~ Predicted_Se_ICP, data = dt)
+summary(lm_model2)
+rsquared2 <- summary(lm_model2)$r.squared
+
+
+p <- ggplot(dt, aes(x = Se_concentration, y = Se_ICP)) +
+  geom_point(color = "#003f5c", size=2.1, stroke=1, shape=1) +
+  geom_point(aes(x = Predicted_Se_ICP, y = Se_ICP), color = "#AD0B0B", size=2.1, stroke=1, shape=3) + # New points
+  geom_smooth(aes(x = Se_concentration, y = Se_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid") +   # Regression line for the first model
+  geom_smooth(aes(x = Predicted_Se_ICP, y = Se_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid") +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=1) +
+  labs(x = "pXRF Se", y = "ICP concentration Se") +
+  scale_y_continuous(limits = c(0, 120), breaks = seq(0, 120, by = 20)) +
+  scale_x_continuous(limits = c(0, 120), breaks = seq(0, 120, by = 20)) +
+  annotate("text", x = 90, y = 90, 
+         label = paste("R-squared =", round(rsquared, 3)), hjust = 1, vjust = 0) +
+  annotate("text", x = 90, y=80, 
+          label = paste("R-squared2 =", round(rsquared2, 3)), hjust = 1, vjust = 0)+
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(p)
