@@ -1165,7 +1165,7 @@ dt <- tr
 
 
 
-#Boxplot Control vs Tailings plants only matching!
+#Barplot Control vs Tailings plants only matching!
 
 {
   

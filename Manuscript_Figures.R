@@ -120,6 +120,65 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
           lwid = c(0.5, 0.5))
 
 
+
+
+##################NEW TESTS
+
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_heatmap_plants_3.txt")
+dt <- subset(dt, Site != 'CONTROL')
+dt <- dt[dt$Type_of_Sample != "stem", ]
+dt <- dt[dt$Type_of_Sample != "root", ]
+
+
+
+dt_removed_cols <- dt %>%
+  select(-c(2, 3, 4, 5, 6,7,8,9, 14,15,16,17,18, 19))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Scientific_Name) %>%
+  summarize(across(Cu:Zn, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Scientific_Name")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Scientific_Name <- factor(
+  dt_melted$Scientific_Name,
+  levels = dt_grouped_sorted$Scientific_Name
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Zn", "Mn", "Fe")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using the heatmap.2 function with dendrograms
+heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")),
+          scale = "none", # Use "none" to keep the original values
+          trace = "none", # Remove trace colors
+          Rowv = TRUE, Colv = FALSE, # Add dendrograms
+          col = colorRampPalette(c("#C5DFF8", "#4A55A2"))(256),
+          key = TRUE, keysize = 1, key.title = NA, # Add color scale
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
 }
 
 # Barplots 
@@ -144,10 +203,10 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
   Cu <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
                           y = Mean, fill = Site )) +
     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+    geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                   position = position_dodge(width = 0.85),
                   width = 0.25,
-                  size = 0.25) +
+                  size = 0.2) +
     geom_hline(yintercept = 5, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
     geom_hline(yintercept = 20, linetype = "twodash", color = "#003f5c", size = 0.3) +
     scale_fill_manual(values = c("lightgrey")) +
@@ -196,6 +255,10 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
   
   Mn
   
+  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Mn.pdf"
+  ggsave(filename = output_path, plot = Mn, device = "pdf", 
+         width = 4.35, height = 3.6, units = "in", dpi = 600)
+  
   #Zn
   dt_Zn <- dt %>%
     group_by(Scientific_Name, Site) %>%
@@ -228,6 +291,10 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
           legend.title = element_text(size = 4, face = "bold"))
   
   Zn
+  
+  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Zn.pdf"
+  ggsave(filename = output_path, plot = Zn, device = "pdf", 
+         width = 4.35, height = 3.6, units = "in", dpi = 600)
   
   #Fe
   dt_Fe <- dt %>%
@@ -262,6 +329,11 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
   
   Fe
   
+  
+  
+  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Fe.pdf"
+  ggsave(filename = output_path, plot = Fe, device = "pdf", 
+         width = 4.35, height = 3.6, units = "in", dpi = 600)
   
   #Se
   dt_Se <- dt %>%
@@ -328,11 +400,221 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
           legend.title = element_text(size = 4, face = "bold"))
   
   Re
-  
-  
-  
-  
 }
+  
+# New bar plots with cut bars
+  
+  {
+  #######################NEW########
+    
+  
+    
+    # Cu
+    
+    dt_Cu <- dt %>%
+      group_by(Scientific_Name, Site) %>%
+      summarize(Median = median(Predicted_Cu_ICP), 
+                Mean = mean(Predicted_Cu_ICP), 
+                SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+      arrange(Median) %>%
+      ungroup()
+    
+    library(ggplot2)
+    library(ggbreak)
+    library(patchwork)
+    
+    # Create the primary plot without any breaks
+    Cu_primary <- ggplot(dt_Cu, aes(x = reorder(Scientific_Name, Median), 
+                                    y = Mean, fill = Site)) +
+      geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+      geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                    position = position_dodge(width = 0.85),
+                    width = 0.25,
+                    size = 0.2) +
+      geom_hline(yintercept = 5, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+      geom_hline(yintercept = 20, linetype = "twodash", color = "#003f5c", size = 0.3) +
+      scale_fill_manual(values = c("lightgrey")) +
+      coord_flip() +
+      labs(x = "", y = "Cu (mg/kg)") +
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.text.y = element_text(size = 7),
+            legend.key.size = unit(1, "lines"),
+            legend.text = element_text(size = 4),
+            legend.title = element_text(size = 4, face = "bold"))
+    
+    # Create a secondary plot that has the y-axis break
+    Cu_broken <- Cu_primary +
+      scale_y_break(c(110, 140), scales="free") +
+      theme(legend.position="none")  # Removing legend as it'll be redundant
+    
+    output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Cu_cut2.pdf"
+    ggsave(filename = output_path, plot = Cu_broken, device = "pdf", 
+           width = 3.4, height = 3.8, units = "in", dpi = 600)
+
+    # Se
+    
+    dt_Se <- dt %>%
+      group_by(Scientific_Name, Site) %>%
+      summarize(Median = median(Predicted_Cu_ICP), 
+                Mean = mean(Predicted_Se_ICP), 
+                SD = sd(Predicted_Se_ICP)/sqrt(n())) %>%
+      arrange(Median) %>%
+      ungroup()
+    
+
+    library(ggplot2)
+    library(ggbreak)
+    library(patchwork)
+    
+    # Create the primary plot without any breaks
+    Se_primary <- ggplot(dt_Se, aes(x = reorder(Scientific_Name, Median), 
+                                    y = Mean, fill = Site)) +
+      geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.18, color = "black") +
+      geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                    position = position_dodge(width = 0.85),
+                    width = 0.25,
+                    size = 0.2) +
+      geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
+            scale_fill_manual(values = c("lightgrey")) +
+      #scale_y_continuous(expand= c(100, 10)) + # Adjust the expand argument as required
+            coord_flip() +
+      labs(x = "", y = "Se (mg/kg)") +
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.text.y = element_text(size = 7),
+            legend.key.size = unit(1, "lines"),
+            legend.text = element_text(size = 4),
+            legend.title = element_text(size = 4, face = "bold"))
+    
+    # Create a secondary plot that has the y-axis break
+    Se_broken <- Se_primary +
+      scale_y_break(c(8, 13), scales="free") +
+      theme(legend.position="none")
+
+    
+    output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Se_cut.pdf"
+    ggsave(filename = output_path, plot = Se_broken, device = "pdf", 
+           width = 3.8, height = 3.8, units = "in", dpi = 600)
+
+    # Re
+    
+    dt_Re <- dt %>%
+      group_by(Scientific_Name, Site) %>%
+      summarize(Median = median(Predicted_Cu_ICP), 
+                Mean = mean(Predicted_Re_ICP), 
+                SD = sd(Predicted_Re_ICP)/sqrt(n())) %>%
+      arrange(Median) %>%
+      ungroup()
+    
+    
+    library(ggplot2)
+    library(ggbreak)
+    library(patchwork)
+    
+    # Create the primary plot without any breaks
+    Re_primary <- ggplot(dt_Re, aes(x = reorder(Scientific_Name, Median), 
+                                    y = Mean, fill = Site)) +
+      geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.18, color = "black") +
+      geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                    position = position_dodge(width = 0.85),
+                    width = 0.25,
+                    size = 0.2) +
+      geom_hline(yintercept = 5, linetype = "twodash", color = "#003f5c", size = 0.3) +
+      scale_fill_manual(values = c("lightgrey")) +
+      #scale_y_continuous(expand= c(100, 10)) + # Adjust the expand argument as required
+      coord_flip() +
+      labs(x = "", y = "Re (mg/kg)") +
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.text.y = element_text(size = 7),
+            legend.key.size = unit(1, "lines"),
+            legend.text = element_text(size = 4),
+            legend.title = element_text(size = 4, face = "bold"))
+    
+    # Create a secondary plot that has the y-axis break
+    Re_broken <- Re_primary +
+      scale_y_break(c(13, 21), scales="free") +
+      theme(legend.position="none")
+      
+
+    output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Re_cut.pdf"
+    ggsave(filename = output_path, plot = Re_broken, device = "pdf", 
+           width = 3.8, height = 3.8, units = "in", dpi = 600)
+#    scale_y_continuous(limits = c(0, 405), breaks = seq(0, 405, by = 100), expand = c(0, 9)) +
+
+    
+    
+
+#### Version 2 with shrinked right part 
+    {
+    library(ggplot2)
+    library(patchwork)
+    
+    # Modify data for Cu_below_break
+    dt_Cu_below_break <- dt_Cu
+    dt_Cu_below_break$Mean[dt_Cu_below_break$Mean > 110] <- 110
+    
+    # Plot for values below break
+    Cu_below_break <- ggplot(dt_Cu_below_break, aes(x = reorder(Scientific_Name, Median), 
+                                                    y = Mean, fill = Site)) +
+      geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+      geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                    position = position_dodge(width = 0.85),
+                    width = 0.25,
+                    size = 0.2) +
+      geom_hline(yintercept = 5, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
+      geom_hline(yintercept = 20, linetype = "twodash", color = "#003f5c", size = 0.3) +
+      scale_fill_manual(values = c("lightgrey")) +
+      coord_flip() +
+      labs(x = "", y = "Cu (mg/kg)") +
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.text.y = element_text(size = 7),
+            legend.key.size = unit(1, "lines"),
+            legend.text = element_text(size = 4),
+            legend.title = element_text(size = 4, face = "bold"))
+    
+    # Modify data for Cu_above_break
+    dt_Cu_above_break <- dt_Cu
+    dt_Cu_above_break$Mean[dt_Cu_above_break$Mean <= 110] <- 0
+    
+    # Plot for values above break
+    Cu_above_break <- ggplot(dt_Cu_above_break, aes(x = reorder(Scientific_Name, Median), 
+                                                    y = Mean, fill = Site)) +
+      geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
+      geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                    position = position_dodge(width = 0.85),
+                    width = 0.25,
+                    size = 0.2) +
+      scale_fill_manual(values = c("lightgrey")) +
+      coord_flip() +
+      labs(x = "", y = NULL) +  # Remove the y-axis label for the above break section
+      theme_bw() +
+      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.text.y = element_text(size = 7),
+            legend.position = "none")  # No legend for this part
+    
+    # Combine both plots
+    Cu_below_break <- Cu_below_break + theme(legend.position = "none")
+    Cu_combined <- Cu_below_break + Cu_above_break + plot_layout(widths = c(3, 1))
+    
+    Cu_combined
+    
+    }
+    
+    
+    
+    
+  
+  
+  }
+
 
 # Bars - TAILINGS vs CONTROL Supplement
 {
