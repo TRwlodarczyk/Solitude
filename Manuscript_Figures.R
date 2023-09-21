@@ -51,7 +51,7 @@ ggplot(dt_unique, aes(x = Plot, y = ordered_name)) +
 
 {
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
-dt <- read.delim("SLT_heatmap_plants_2.txt")
+dt <- read.delim("SLT_heatmap_plants_3.txt")
 dt <- subset(dt, Site != 'CONTROL')
 dt <- dt[dt$Type_of_Sample != "stem", ]
 dt <- dt[dt$Type_of_Sample != "root", ]
@@ -99,25 +99,12 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
           scale = "none", # Use "none" to keep the original values
           trace = "none", # Remove trace colors
           Rowv = TRUE, Colv = FALSE, # Add dendrograms
-          col = colorRampPalette(c("#C5DFF8", "#4A55A2"))(256),
+          col = colorRampPalette(c("white", "#AD0B0B"))(256),
           key = TRUE, keysize = 1, key.title = NA, # Add color scale
           symkey = FALSE, density.info = "none",
           lwid = c(0.5, 0.5))
 
 
-#With manhattan distance
-
-row_hclust <- hclust(dist(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")), method = "manhattan"), method = "complete")
-
-heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")),
-          scale = "none", # Use "none" to keep the original values
-          trace = "none", # Remove trace colors
-          Rowv = as.dendrogram(row_hclust), # Pass the pre-calculated dendrogram
-          Colv = FALSE, # Add dendrograms
-          col = colorRampPalette(c("#C5DFF8", "#4A55A2"))(256),
-          key = TRUE, keysize = 1, key.title = NA, # Add color scale
-          symkey = FALSE, density.info = "none",
-          lwid = c(0.5, 0.5))
 
 
 
@@ -134,11 +121,11 @@ dt <- dt[dt$Type_of_Sample != "root", ]
 
 
 dt_removed_cols <- dt %>%
-  select(-c(2, 3, 4, 5, 6,7,8,9, 14,15,16,17,18, 19))
+  select(-c(2, 3, 4, 5, 6,7,8,9, 11,12,13,14,15,16,17,18, 19))
 
 dt_grouped <- dt_removed_cols %>%
   group_by(Scientific_Name) %>%
-  summarize(across(Cu:Zn, median))
+  summarize(across(Cu:Cu, median))
 
 rescale_0_to_1 <- function(x) {
   if (is.numeric(x)) {
@@ -164,7 +151,7 @@ dt_melted$Scientific_Name <- factor(
 )
 
 # Define the desired order of elements
-element_order <- c("Cu", "Zn", "Mn", "Fe")
+element_order <- c("Cu")
 
 # Factor the variable column based on element_order
 dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
@@ -178,6 +165,34 @@ heatmap.2(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "va
           key = TRUE, keysize = 1, key.title = NA, # Add color scale
           symkey = FALSE, density.info = "none",
           lwid = c(0.5, 0.5))
+
+
+# Duplicate the column
+mat <- as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value"))
+mat <- cbind(mat, mat)  # Add the same column again
+
+# Create the heatmap using the heatmap.2 function with dendrograms
+heatmap.2(mat,
+          scale = "none",
+          trace = "none",
+          Rowv = TRUE, Colv = FALSE,
+          col = colorRampPalette(c("#C5DFF8", "#4A55A2"))(256),
+          key = TRUE, keysize = 1, key.title = NA,
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
+
+library(reshape2)
+
+# 1. Calculate the distance matrix
+dist_matrix <- dist(as.matrix(acast(dt_melted, Scientific_Name ~ variable, value.var = "value")))
+
+# 2. Compute the hierarchical clustering
+hc <- hclust(dist_matrix)
+
+# 3. Plot the dendrogram
+plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", cex=0.9)
+
 
 }
 

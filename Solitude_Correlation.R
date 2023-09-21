@@ -1500,8 +1500,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   dt <- read.delim("SLT_pXRF_ICP.txt")
   dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
   
-  dt <- dt %>%
-    filter(Cu_ICP > 50, Total_Weight > 0.5)
+  #dt <- dt %>%
+   # filter(Cu_ICP > 50, Total_Weight > 0.5)
   
   
   
@@ -1605,7 +1605,23 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   a1
   
   
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$Cu_ICP - dt$Cu_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Cu_ICP - dt$Cu_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Cu_ICP - dt$Predicted_Cu_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Cu_ICP - dt$Predicted_Cu_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Cu_ICP - dt$Predicted_Cu_ICP3)) # Predicted - no RT no TW
   
+  sdr <- sd(dt$Cu_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+
+  CV1 <- (sd(dt$Cu_concentration) / mean(dt$Cu_concentration)) * 100
   
 }
 
@@ -1934,6 +1950,24 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   Zn
   
+  
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$Zn_ICP - dt$Zn_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Zn_ICP - dt$Zn_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Zn_ICP - dt$Predicted_Zn_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Zn_ICP - dt$Predicted_Zn_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Zn_ICP - dt$Predicted_Zn_ICP3)) # Predicted - no RT no TW
+  
+  sdr <- sd(dt$Zn_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+  
+  
 }
 
 #GLMs Se 
@@ -2116,6 +2150,25 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
     theme(legend.position = "bottom")
   
   Se
+  
+  
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$Se_ICP - dt$Se_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Se_ICP - dt$Predicted_Se_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Se_ICP - dt$Predicted_Se_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Se_ICP - dt$Predicted_Se_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Se_ICP - dt$Se_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Se_ICP - dt$Predicted_Se_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Se_ICP - dt$Predicted_Se_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Se_ICP - dt$Predicted_Se_ICP3)) # Predicted - no RT no TW
+  
+  sdr <- sd(dt$Se_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+  
+  
   
 }
 

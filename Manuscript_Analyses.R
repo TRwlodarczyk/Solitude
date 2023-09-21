@@ -115,6 +115,7 @@
 }
 
 # R squared
+{
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
 #As
 
@@ -169,3 +170,29 @@ lm_model1 <- lm(Ti_ICP ~ Ti_concentration, data = dt)
 summary(lm_model1)
 lm_model2 <- lm(Ti_ICP ~ Predicted_Ti_ICP, data = dt)
 summary(lm_model2)
+
+}
+
+# Check some values above toxicity
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Site != "CONTROL", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+
+mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Phyla nodiflora'], na.rm = TRUE)
+sd(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Phyla nodiflora'], na.rm = TRUE)
+mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Ceanothus greggii'], na.rm = TRUE)
+sd(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Ceanothus greggii'], na.rm = TRUE)
+mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Acmispon rigidus'], na.rm = TRUE)
+sd(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Acmispon rigidus'], na.rm = TRUE)
+mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Mentzelia multiflora'], na.rm = TRUE)
+sd(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Mentzelia multiflora'], na.rm = TRUE)
+
+
+median(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Berberis haematocarpa'], na.rm = TRUE)
+median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Berberis haematocarpa'], na.rm = TRUE)
+median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Aristida adscencionis'], na.rm = TRUE)
+median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Dasylirion wheeleri'], na.rm = TRUE)
+median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Dasylirion wheeleri'], na.rm = TRUE)
