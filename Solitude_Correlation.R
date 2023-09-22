@@ -1544,7 +1544,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   cor.test(dt$Cu_ICP, dt$Cu_concentration, method="spearman") # rho = 0.84 p
   cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP, method="spearman") # rho = 0.91
   cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP2, method="spearman") # rho = 0.873
-
+  cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP3, method="spearman") # rho = 
+  
   #new
   cor.test(dt$Cu_ICP, dt$Predicted_Cu_ICP3, method="spearman") # rho = 0.848
   
@@ -1561,7 +1562,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   dt_ICC2 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP2")]
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #i93
   
-  
+
   #new
   dt_ICC4 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP3")]
   ICC(dt_ICC4, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #92
@@ -1623,6 +1624,11 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
 
   CV1 <- (sd(dt$Cu_concentration) / mean(dt$Cu_concentration)) * 100
   
+  NRMSE1 <- RMSE1 / mean(dt$Cu_ICP)
+  NRMSE2 <- RMSE2 / mean(dt$Cu_ICP) 
+  NRMSE3 <- RMSE3 / mean(dt$Cu_ICP) 
+  NRMSE4 <- RMSE4 / mean(dt$Cu_ICP) 
+  
 }
 
 #GLMs Fe# not aplicable
@@ -1658,12 +1664,12 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   dt$Predicted_Fe_ICP2 <- 17.03270 + (1.45362* dt$Fe_concentration) + (-11.13508* dt$Total_Weight)
   
   #New Model 4
-  dt$Predicted_Fe_ICP2 <- -1.00099 + (1.10113* dt$Fe_concentration)
+  dt$Predicted_Fe_ICP3 <- -1.00099 + (1.10113* dt$Fe_concentration)
   
   cor.test(dt$Fe_ICP, dt$Fe_concentration, method="spearman") # rho = 0.9131926, p.val < 2.2e-16
   cor.test(dt$Fe_ICP, dt$Predicted_Fe_ICP, method="spearman") # rho = 0.9433337, p.val < 2.2e-16
   cor.test(dt$Fe_ICP, dt$Predicted_Fe_ICP2, method="spearman") # rho = 0.9300852, p.val < 2.2e-16
-
+  cor.test(dt$Fe_ICP, dt$Predicted_Fe_ICP3, method="spearman") # rho =
   
   library(psych)
   
@@ -1676,7 +1682,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   dt_ICC2 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP2")]
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
-  
+  dt_ICC2 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP3")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
   
   
@@ -1692,6 +1699,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   t_test <- t.test(difference1, mu = 0)
   difference2 <- dt$Predicted_Fe_ICP2 - dt$Fe_ICP
   t_test <- t.test(difference2, mu = 0)
+  difference3 <- dt$Predicted_Fe_ICP3 - dt$Fe_ICP
+  t_test <- t.test(difference3, mu = 0)
   
   # Create a data frame with the variables
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
@@ -1762,26 +1771,27 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   
   
-  Cu <- ggplot(melted_dt_Cu, aes(x = reorder(Scientific_Name, value, FUN = median),
-                                 y = value, fill = variable)) +
-    geom_boxplot(position = position_dodge(width = 0.9)) +
-    geom_point(size = 1.9, stroke = 1, aes(color = variable, fill = variable),
-               position = position_dodge(width = 0.8)) +
-    scale_fill_manual(values = c("#068DA9", "#643A6B")) +
-    scale_color_manual(values = c("#34495E", "#B0A4A4")) +
-    labs(x = "Scientific Name", y = "Cu Value", fill = "Variable") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(size=14),
-          axis.title.x = element_text(size = 19),
-          axis.text.y = element_text(size=14, face="italic"),
-          axis.title.y = element_blank(),
-          legend.key.size = unit(2, "lines"),
-          legend.text = element_text(size = 13.5), 
-          legend.title = element_text(size=20, face = "bold"))+
-    coord_flip() +
-    theme(legend.position = "bottom")
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$Fe_ICP - dt$Fe_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Fe_ICP - dt$Predicted_Fe_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Fe_ICP - dt$Predicted_Fe_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Fe_ICP - dt$Predicted_Fe_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Fe_ICP - dt$Fe_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Fe_ICP - dt$Predicted_Fe_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Fe_ICP - dt$Predicted_Fe_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Fe_ICP - dt$Predicted_Fe_ICP3)) # Predicted - no RT no TW
   
-  Cu
+  sdr <- sd(dt$Fe_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+  
+  NRMSE1 <- RMSE1 / mean(dt$Fe_ICP)
+  NRMSE2 <- RMSE2 / mean(dt$Fe_ICP) 
+  NRMSE3 <- RMSE3 / mean(dt$Fe_ICP) 
+  NRMSE4 <- RMSE4 / mean(dt$Fe_ICP) 
+  
   
 }
 
@@ -1833,7 +1843,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   cor.test(dt$Zn_ICP, dt$Zn_concentration, method="spearman") # rho = 0.5615571, p.val = 3.905e-09
   cor.test(dt$Zn_ICP, dt$Predicted_Zn_ICP, method="spearman") # rho = 0.787104, p.val < 2.2e-16
   cor.test(dt$Zn_ICP, dt$Predicted_Zn_ICP2, method="spearman") # rho = 0.7381209, p.val < 2.2e-16 
-  
+  cor.test(dt$Zn_ICP, dt$Predicted_Zn_ICP3, method="spearman") # rh
   
   library(psych)
   
@@ -1846,7 +1856,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   dt_ICC2 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP2")]
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
-  
+  dt_ICC2 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP3")]
+  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
   
   #One sample t-test for pxrf ICP
@@ -1862,6 +1873,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   difference2 <- dt$Predicted_Zn_ICP2 - dt$Zn_ICP
   t_test <- t.test(difference2, mu = 0)
   
+  difference3 <- dt$Predicted_Zn_ICP3 - dt$Zn_ICP
+  t_test <- t.test(difference3, mu = 0)
   
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
   mean_diff <- mean(difference1)
@@ -1967,6 +1980,11 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   RPD3 <- sdr / RMSE3
   RPD4 <- sdr / RMSE4
   
+  NRMSE1 <- RMSE1 / mean(dt$Zn_ICP)
+  NRMSE2 <- RMSE2 / mean(dt$Zn_ICP) 
+  NRMSE3 <- RMSE3 / mean(dt$Zn_ICP) 
+  NRMSE4 <- RMSE4 / mean(dt$Zn_ICP) 
+  
   
 }
 
@@ -2019,7 +2037,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   cor.test(dt$Se_ICP, dt$Se_concentration, method="spearman") # rho = 0.9521751, p.val < 2.2e-16
   cor.test(dt$Se_ICP, dt$Predicted_Se_ICP, method="spearman") # rho = 0.9548323, p.val < 2.2e-16
   cor.test(dt$Se_ICP, dt$Predicted_Se_ICP2, method="spearman") # rho = 0.9546346, p.val < 2.2e-16 
-  
+  cor.test(dt$Se_ICP, dt$Predicted_Se_ICP3, method="spearman") # rho = 
   
   library(psych)
   
@@ -2030,9 +2048,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   dt_ICC2 <- dt[, c("Se_ICP", "Predicted_Se_ICP2")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
-  
+  dt_ICC3 <- dt[, c("Se_ICP", "Predicted_Se_ICP3")]
+  ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   
   #One sample t-test for pxrf ICP
@@ -2047,6 +2066,9 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   t_test <- t.test(difference1, mu = 0) # p > 0.05 not sig different from 0
   difference2 <- dt$Predicted_Se_ICP2 - dt$Se_ICP
   t_test <- t.test(difference2, mu = 0) # p > 0.05 not sig different from 0
+  
+  difference3 <- dt$Predicted_Se_ICP3 - dt$Se_ICP
+  t_test <- t.test(difference3, mu = 0) # p > 0.05 not sig different from 0
   
   
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
@@ -2168,6 +2190,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   RPD3 <- sdr / RMSE3
   RPD4 <- sdr / RMSE4
   
+  NRMSE1 <- RMSE1 / mean(dt$Se_ICP)
+  NRMSE2 <- RMSE2 / mean(dt$Se_ICP) 
+  NRMSE3 <- RMSE3 / mean(dt$Se_ICP) 
+  NRMSE4 <- RMSE4 / mean(dt$Se_ICP) 
   
   
 }
@@ -2221,7 +2247,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   cor.test(dt$Mn_ICP, dt$Mn_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
   cor.test(dt$Mn_ICP, dt$Predicted_Mn_ICP, method="spearman") # rho = 0.8058756 , p.val < 2.2e-16
   cor.test(dt$Mn_ICP, dt$Predicted_Mn_ICP2, method="spearman") # rho = 0.8096198 , p.val < 2.2e-16 
-  
+  cor.test(dt$Mn_ICP, dt$Predicted_Mn_ICP3, method="spearman") # rho = 0
   
   library(psych)
   
@@ -2232,9 +2258,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   dt_ICC2 <- dt[, c("Mn_ICP", "Predicted_Mn_ICP2")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
-  
+  dt_ICC3 <- dt[, c("Mn_ICP", "Predicted_Mn_ICP3")]
+  ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   
   #One sample t-test for pxrf ICP
@@ -2248,6 +2275,9 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   t_test <- t.test(difference1, mu = 0) # p > 0.05 not sig different from 0
   difference2 <- dt$Predicted_Mn_ICP2 - dt$Mn_ICP
   t_test <- t.test(difference2, mu = 0)
+  difference3 <- dt$Predicted_Mn_ICP3 - dt$Mn_ICP
+  t_test <- t.test(difference3, mu = 0)
+  
   
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
   mean_diff <- mean(difference1)
@@ -2352,6 +2382,29 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   Mn
   
+  
+  
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$Mn_ICP - dt$Mn_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Mn_ICP - dt$Predicted_Mn_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Mn_ICP - dt$Predicted_Mn_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Mn_ICP - dt$Predicted_Mn_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Mn_ICP - dt$Mn_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Mn_ICP - dt$Predicted_Mn_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Mn_ICP - dt$Predicted_Mn_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Mn_ICP - dt$Predicted_Mn_ICP3)) # Predicted - no RT no TW
+  
+  sdr <- sd(dt$Mn_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+  
+  NRMSE1 <- RMSE1 / mean(dt$Mn_ICP)
+  NRMSE2 <- RMSE2 / mean(dt$Mn_ICP) 
+  NRMSE3 <- RMSE3 / mean(dt$Mn_ICP) 
+  NRMSE4 <- RMSE4 / mean(dt$Mn_ICP) 
+  
 }
 
 #GLMs As
@@ -2396,10 +2449,13 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   #dt$Predicted_As_ICP2 <- 40.6027 + (1.0494* dt$As_concentration) + (-20.5045* dt$Total_Weight) # but intercept is not significant, I wouldnt use this
   
+  
+  dt$Predicted_As_ICP3 <- 0.19905 + (0.09543* dt$As_concentration) # From model 6 significant correlations OK
+  
   cor.test(dt$As_ICP, dt$As_concentration, method="spearman") # rho = 0.7655086 , p-value = 2.737e-13
   cor.test(dt$As_ICP, dt$Predicted_As_ICP, method="spearman") # rho = 0.8058756 , p.val < 2.2e-16
   cor.test(dt$As_ICP, dt$Predicted_As_ICP2, method="spearman") # rho = 0.8096198 , p.val < 2.2e-16 
-  
+  cor.test(dt$As_ICP, dt$Predicted_As_ICP3, method="spearman") # rho
   
   library(psych)
   
@@ -2410,8 +2466,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   dt_ICC2 <- dt[, c("As_ICP", "Predicted_As_ICP2")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
+  dt_ICC3 <- dt[, c("As_ICP", "Predicted_As_ICP3")]
+  ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   
   
@@ -2424,6 +2482,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   average1 <- (dt$Predicted_As_ICP + dt$As_ICP) / 2
   difference1 <- dt$Predicted_As_ICP - dt$As_ICP
   t_test <- t.test(difference1, mu = 0) # p > 0.05 not sig different from 0
+  
+  difference3 <- dt$Predicted_As_ICP3 - dt$As_ICP
+  t_test <- t.test(difference3, mu = 0) # p > 0.05 not sig different from 0
+  
   
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
   mean_diff <- mean(difference1)
@@ -2528,6 +2590,24 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   As
   
+  
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$As_ICP - dt$As_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$As_ICP - dt$Predicted_As_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$As_ICP - dt$Predicted_As_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$As_ICP - dt$Predicted_As_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$As_ICP - dt$As_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$As_ICP - dt$Predicted_As_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$As_ICP - dt$Predicted_As_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$As_ICP - dt$Predicted_As_ICP3)) # Predicted - no RT no TW
+  
+  sdr <- sd(dt$As_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+  
+  
 }
 
 #GLMs Cr # not significant coeficients
@@ -2570,6 +2650,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   # Predicted ICP values for Cu from model 7 - Substrate_RT as explanatory
   dt$Predicted_Cr_ICP <- 0.60775 + (0.01228* dt$Cr_concentration) + (-5.78566* dt$Substrate_RT)
   dt$Predicted_Cr_ICP2 <- 0.39856 + (0.02* dt$Cr_concentration) + (-0.26371* dt$Total_Weight)
+  dt$Predicted_Cr_ICP3 <- 0.11921 + (0.03795* dt$Cr_concentration)  # based on model 6
   
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   #dt$Predicted_Cr_ICP2 <- 40.6027 + (1.0494* dt$Cr_concentration) + (-20.5045* dt$Total_Weight) # but intercept is not significant, I wouldnt use this
@@ -2577,7 +2658,7 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   cor.test(dt$Cr_ICP, dt$Cr_concentration, method="spearman") # rho = 
   cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP, method="spearman") # rho = 
   cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP2, method="spearman") # rho = 
-  
+  cor.test(dt$Cr_ICP, dt$Predicted_Cr_ICP3, method="spearman") # rho = 
   
   library(psych)
   
@@ -2588,8 +2669,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   dt_ICC2 <- dt[, c("Cr_ICP", "Predicted_Cr_ICP2")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
+  dt_ICC3 <- dt[, c("Cr_ICP", "Predicted_Cr_ICP3")]
+  ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   
   
@@ -2606,6 +2689,9 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   average2 <- (dt$Predicted_Cr_ICP2 + dt$Cr_ICP) / 2
   difference2 <- dt$Predicted_Cr_ICP2 - dt$Cr_ICP
   t_test <- t.test(difference2, mu = 0) # p > 0.05 not sig different from 0
+  
+  difference3 <- dt$Predicted_Cr_ICP3 - dt$Cr_ICP
+  t_test <- t.test(difference3, mu = 0) # p > 0.05 not sig different from 0
   
   df <- data.frame(average = average1, difference = difference1, Sample.ID = dt$Sample.ID, Form = dt$Form, Plot = dt$Plot, Total_Weight = dt$Total_Weight)
   mean_diff <- mean(difference1)
@@ -2689,26 +2775,22 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   
   
   
-  As <- ggplot(melted_dt_Cr, aes(x = reorder(Scientific_Name, value, FUN = median),
-                                 y = value, fill = variable)) +
-    geom_boxplot(position = position_dodge(width = 0.9)) +
-    geom_point(size = 1.9, stroke = 1, aes(color = variable, fill = variable),
-               position = position_dodge(width = 0.8)) +
-    scale_fill_manual(values = c("#068DA9", "#643A6B")) +
-    scale_color_manual(values = c("#34495E", "#B0A4A4")) +
-    labs(x = "Scientific Name", y = "Mn Value", fill = "Variable") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(size=14),
-          axis.title.x = element_text(size = 19),
-          axis.text.y = element_text(size=14, face="italic"),
-          axis.title.y = element_blank(),
-          legend.key.size = unit(2, "lines"),
-          legend.text = element_text(size = 13.5), 
-          legend.title = element_text(size=20, face = "bold"))+
-    coord_flip() +
-    theme(legend.position = "bottom")
+  # Other tests
+  RMSE1 <- sqrt(mean((dt$Cr_ICP - dt$Cr_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Cr_ICP - dt$Predicted_Cr_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Cr_ICP - dt$Predicted_Cr_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Cr_ICP - dt$Predicted_Cr_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Cr_ICP - dt$Cr_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Cr_ICP - dt$Predicted_Cr_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Cr_ICP - dt$Predicted_Cr_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Cr_ICP - dt$Predicted_Cr_ICP3)) # Predicted - no RT no TW
   
-  As
+  sdr <- sd(dt$Cr_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+  
   
 }
 
@@ -2855,11 +2937,12 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   tr$Predicted_Re_ICP2 <- 4.29996 + (0.93425* tr$Re_concentration) + (-3.64517* tr$Total_Weight)
   #new model 4
-  tr$Predicted_Re_ICP <- 2.17727 + (0.88060* tr$Re_concentration) 
+  tr$Predicted_Re_ICP3 <- 2.17727 + (0.88060* tr$Re_concentration) 
   
   cor.test(tr$Re_ICP, tr$Re_concentration, method="spearman")
   cor.test(tr$Re_ICP, tr$Predicted_Re_ICP, method="spearman")
   cor.test(tr$Re_ICP, tr$Predicted_Re_ICP2, method="spearman")
+  cor.test(tr$Re_ICP, tr$Predicted_Re_ICP3, method="spearman")
   
   library(psych)
   
@@ -2869,6 +2952,8 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(tr_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   tr_ICC3 <- tr[, c("Re_ICP", "Predicted_Re_ICP2")]
   ICC(tr_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
+  tr_ICC4 <- tr[, c("Re_ICP", "Predicted_Re_ICP3")]
+  ICC(tr_ICC4, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients 0.99
   
   difference <- tr$Re_ICP - tr$Re_concentration
   t_test <- t.test(difference, mu = 0) #p < 0.05 signif different from 0
@@ -2879,9 +2964,42 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   difference2 <- tr$Re_ICP - tr$Predicted_Re_ICP2
   t_test <- t.test(difference2, mu = 0) #p < 0.05 signif different from 0
   
+  difference3 <- tr$Re_ICP - tr$Predicted_Re_ICP3
+  t_test <- t.test(difference3, mu = 0) #p < 0.05 signif different from 0
+  
   
   wilcox.test(tr$Re_ICP,tr$Re_concentration, mu = 0, paired = TRUE) # for no normal we should use Wilcoxon signed-rank test
   
+  
+  lm_model1 <- lm(Re_ICP ~ Re_concentration, data = tr)
+  summary(lm_model1)
+  lm_model2 <- lm(Re_ICP ~ Predicted_Re_ICP, data = tr)
+  summary(lm_model2)
+  lm_model3 <- lm(Re_ICP ~ Predicted_Re_ICP2, data = tr)
+  summary(lm_model3)
+  lm_model4 <- lm(Re_ICP ~ Predicted_Re_ICP3, data = tr)
+  summary(lm_model4)
+  
+dt <- tr
+  RMSE1 <- sqrt(mean((dt$Re_ICP - dt$Re_concentration)^2)) # pXRF
+  RMSE2 <- sqrt(mean((dt$Re_ICP - dt$Predicted_Re_ICP)^2)) # Predicted - RT
+  RMSE3 <- sqrt(mean((dt$Re_ICP - dt$Predicted_Re_ICP2)^2)) # Predicted - total weight
+  RMSE4 <- sqrt(mean((dt$Re_ICP - dt$Predicted_Re_ICP3)^2)) # Predicted - no RT no TW
+  MAE1 <- mean(abs(dt$Re_ICP - dt$Re_concentration)) # pXRF 
+  MAE2 <- mean(abs(dt$Re_ICP - dt$Predicted_Re_ICP)) # Predicted - RT
+  MAE3 <- mean(abs(dt$Re_ICP - dt$Predicted_Re_ICP2)) # Predicted - total weight
+  MAE4 <- mean(abs(dt$Re_ICP - dt$Predicted_Re_ICP3)) # Predicted - no RT no TW
+  
+  sdr <- sd(dt$Re_ICP)
+  RPD1 <- sdr / RMSE1
+  RPD2 <- sdr / RMSE2
+  RPD3 <- sdr / RMSE3
+  RPD4 <- sdr / RMSE4
+
+  NRMSE1 <- RMSE1 / mean(dt$Re_ICP)
+  NRMSE2 <- RMSE2 / mean(dt$Re_ICP) 
+  NRMSE3 <- RMSE3 / mean(dt$Re_ICP) 
+  NRMSE4 <- RMSE4 / mean(dt$Re_ICP)   
   
 }
 
