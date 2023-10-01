@@ -44,6 +44,11 @@ dt <-read.delim("Solitude_Complete_List_Soil_08.04.23_R.txt")
 dt_T <- subset(dt, Site == "TAILINGS")
 dt_C <- subset(dt, Site == "CONTROL")
 
+
+mean(dt$Cu_ICP[dt$Plot == 'P5'], na.rm = TRUE)
+sd(dt$Cu_ICP[dt$Plot == 'P5'], na.rm = TRUE)/sqrt(3)
+
+
 shapiro.test(dt_T$Cu_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt_C$Cu_ICP) # > 0.05 =  normally distributed
 shapiro.test(dt$Cu_ICP)   # > 0.05 =  normally distributed
@@ -775,6 +780,8 @@ wilcox.test(C2$Cu_ICP, P1$Cu_ICP, mu = 0, paired = TRUE, alternative = "two.side
 wilcox.test(C2$Cu_ICP, P1$Cu_ICP, alternative = "two.sided") # Mann-Whitney U Test for two-sample data
 
 t.test(C1$Cu_ICP, P1$Cu_ICP, paired = TRUE) # dependent t-test
+
+wilcox.test(dt$Al_ICP~ dt$Site, alternative = "two.sided") # w paperze
 wilcox.test(dt$Cu_ICP~ dt$Site, alternative = "two.sided") # w paperze
 wilcox.test(dt$Fe_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
 wilcox.test(dt$Mn_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
@@ -783,15 +790,22 @@ wilcox.test(dt$As_ICP~ dt$Site, alternative = "two.sided") # w paperze
 wilcox.test(dt$Cr_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
 wilcox.test(dt$Se_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
 wilcox.test(dt$Mo_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
-wilcox.test(dt$P_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
-wilcox.test(dt$S_ICP~ dt$Site, alternative = "two.sided") # w paperze
+#wilcox.test(dt$P_ICP~ dt$Site, alternative = "two.sided") # w paperze sig
+#wilcox.test(dt$S_ICP~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$Ni_ICP~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$Si_ICP~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$Ti_ICP~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$Pb_ICP~ dt$Site, alternative = "two.sided") # w paperze
+wilcox.test(dt$Re_ICP~ dt$Site, alternative = "two.sided") # w paperze
 
+dt[,7:11] <- sapply(dt[,7:11],as.numeric)
 
 wilcox.test(dt$pH~ dt$Site, alternative = "two.sided") # w paperze
 wilcox.test(dt$EC~ dt$Site, alternative = "two.sided") # w paperze
 wilcox.test(dt$N~ dt$Site, alternative = "two.sided") # w paperze sig
 wilcox.test(dt$C~ dt$Site, alternative = "two.sided") # w paperze sig
 wilcox.test(dt$S~ dt$Site, alternative = "two.sided") # w paperze
+
 
 t.test(dt$Cu_ICP~dt$Site, paired = TRUE) # dependent t-test
 

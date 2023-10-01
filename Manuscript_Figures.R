@@ -250,12 +250,12 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   Mn <- ggplot(dt_Mn, aes(x = reorder(Scientific_Name, Median), 
                           y = Mean, fill = Site )) +
     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+    geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                   position = position_dodge(width = 0.85),
                   width = 0.25,
-                  size = 0.25) +
+                  size = 0.2) +
     geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
-    scale_fill_manual(values = c("lightgrey")) +
+    scale_fill_manual(values = c("#EFEFEF")) +
     scale_y_continuous(limits = c(0, 180), breaks = seq(0, 180, by = 40), expand = c(0, 4)) +
     scale_x_discrete(expand = c(0, 0.8)) +  
     coord_flip() +
@@ -270,7 +270,7 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   
   Mn
   
-  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Mn.pdf"
+  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Mn2.pdf"
   ggsave(filename = output_path, plot = Mn, device = "pdf", 
          width = 4.35, height = 3.6, units = "in", dpi = 600)
   
@@ -286,13 +286,13 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   Zn <- ggplot(dt_Zn, aes(x = reorder(Scientific_Name, Median), 
                           y = Mean, fill = Site )) +
     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+    geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                   position = position_dodge(width = 0.85),
                   width = 0.25,
-                  size = 0.25) +
+                  size = 0.2) +
     geom_hline(yintercept = 20, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
     geom_hline(yintercept = 100, linetype = "twodash", color = "#003f5c", size = 0.3) +
-    scale_fill_manual(values = c("lightgrey")) +
+    scale_fill_manual(values = c("#EFEFEF")) +
     scale_y_continuous(limits = c(0, 120), breaks = seq(0, 120, by = 30), expand = c(0, 2.5)) +
     scale_x_discrete(expand = c(0, 0.8)) +  
     coord_flip() +
@@ -307,7 +307,7 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   
   Zn
   
-  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Zn.pdf"
+  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Zn2.pdf"
   ggsave(filename = output_path, plot = Zn, device = "pdf", 
          width = 4.35, height = 3.6, units = "in", dpi = 600)
   
@@ -323,13 +323,13 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   Fe <- ggplot(dt_Fe, aes(x = reorder(Scientific_Name, Median), 
                           y = Mean, fill = Site )) +
     geom_bar(stat = "identity", position = position_dodge(width = 0.01), size=0.22, color = "black") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD),
+    geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                   position = position_dodge(width = 0.85),
                   width = 0.25,
-                  size = 0.25) +
+                  size = 0.2) +
     geom_hline(yintercept = 30, linetype = "dashed", color = "#AD0B0B", size = 0.3) +
     geom_hline(yintercept = 500, linetype = "twodash", color = "#003f5c", size = 0.3) +
-    scale_fill_manual(values = c("lightgrey")) +
+    scale_fill_manual(values = c("#EFEFEF")) +
     scale_y_continuous(limits = c(0, 2100), breaks = seq(0, 2100, by = 450), expand = c(0, 35)) +
     scale_x_discrete(expand = c(0, 0.8)) +  
     coord_flip() +
@@ -346,7 +346,7 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   
   
   
-  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Fe.pdf"
+  output_path <-  "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Figures_Manuscript/Figure 3 - Barplots/New/Cut_Final/Fe2.pdf"
   ggsave(filename = output_path, plot = Fe, device = "pdf", 
          width = 4.35, height = 3.6, units = "in", dpi = 600)
   
@@ -422,7 +422,11 @@ plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", 
   {
   #######################NEW########
     
-  
+    setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+    dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
+    dt <- dt[dt$Type_of_Sample != "root", ]
+    dt <- dt[dt$Site != "CONTROL", ]
+    dt <- dt[dt$Type_of_Sample != "stem", ]
     
     # Cu
     

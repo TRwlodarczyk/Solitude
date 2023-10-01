@@ -1189,10 +1189,10 @@ ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass co
 
 
 dt_ICC2 <- dt[, c("Cu_ICP", "Predicted_Cu_ICP2")]
-ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
 
 
-dt_ICC3 <- dt[, c("Cu_concentration", "Predicted_Cu_ICP")]
+dt_ICC3 <- dt[, c("Cu_concentration", "Predicted_Cu_ICP3")]
 ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
 
 
@@ -1636,6 +1636,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
 {
   dt <- read.delim("SLT_pXRF_ICP.txt")
 
+  library(lmtest)
+  lm_model <- lm(Fe_ICP~Fe_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest hetero
+  
   model1 <- glm(Fe_ICP ~ Fe_concentration, data = dt)
   summary(model1)
   model2 <- glm(Fe_ICP ~ Fe_concentration + Total_Weight, data = dt)
@@ -1680,10 +1684,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
   dt_ICC2 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP2")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
-  dt_ICC2 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP3")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  dt_ICC3 <- dt[, c("Fe_ICP", "Predicted_Fe_ICP3")]
+  ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
   
   
@@ -1854,10 +1858,10 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
   dt_ICC2 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP2")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  ICC(dt_ICC2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
-  dt_ICC2 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP3")]
-  ICC(dt_ICC1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
+  dt_ICC3 <- dt[, c("Zn_ICP", "Predicted_Zn_ICP3")]
+  ICC(dt_ICC3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) #interclass corelation coefficients
   
   
   #One sample t-test for pxrf ICP

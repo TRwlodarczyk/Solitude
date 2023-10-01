@@ -315,3 +315,59 @@ median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Berberis haematocarpa'], na.rm
 median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Aristida adscencionis'], na.rm = TRUE)
 median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Dasylirion wheeleri'], na.rm = TRUE)
 median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Dasylirion wheeleri'], na.rm = TRUE)
+
+
+
+
+#QA samples recovery values
+
+{
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+  dt <- read.delim("Solitude_Plants_Final_08.23.txt")
+  dt <- subset(dt, Scientific_Name == 'QA_Sample')
+  dt <- subset(dt, Sample_Name != 'blank')
+  
+  
+  dt[,17:51] <- sapply(dt[,17:51],as.numeric)
+  
+  dt1573 <- subset(dt, Sample_Name == 'NIST1573')
+  dt1570 <- subset(dt, Sample_Name == 'NIST1570')
+  #na.rm = TRUE - omit NAs
+  Cu <- mean(dt1573$Cu_concentration, na.rm = TRUE) 
+  Se <- mean(dt1573$Se_concentration, na.rm = TRUE) 
+  Re <- mean(dt1573$Re_concentration, na.rm = TRUE)  
+  Zn <- mean(dt1573$Zn_concentration, na.rm = TRUE) 
+  Mn <- mean(dt1573$Mn_concentration, na.rm = TRUE) 
+  Fe <- mean(dt1573$Fe_concentration, na.rm = TRUE) 
+  As <- mean(dt1573$As_concentration, na.rm = TRUE) 
+  Ca <- mean(dt1573$Ca_concentration, na.rm = TRUE) 
+  Cr <- mean(dt1573$Cr_concentration, na.rm = TRUE) 
+  
+  (Cu/4.7)*100 #97.787
+  (Se/0.0543)*100 # lub non detected
+  (Re) # NA
+  (Zn/30.94)*100 #90.32
+  (Mn/246.3)*100 #88.038
+  (Fe/367.5)*100 #83.8095
+  (As/0.1126)*100
+  (Ca/50450)*100 #91.657
+  (Cr/1.988)*100 #180.52
+  
+  
+  Cu2 <- mean(dt1570$Cu_concentration, na.rm = TRUE) 
+  Se2 <- mean(dt1570$Se_concentration, na.rm = TRUE) 
+  Re2 <- mean(dt1570$Re_concentration, na.rm = TRUE)  
+  Zn2 <- mean(dt1570$Zn_concentration, na.rm = TRUE) 
+  Mn2 <- mean(dt1570$Mn_concentration, na.rm = TRUE) 
+  Fe2 <- mean(dt1570$Fe_concentration, na.rm = TRUE) 
+
+  (Cu2/12.22)*100 #88.17512
+  (Se2/0.1152)*100 #395.44
+  (Zn2/82.3)*100 #90.709
+  
+  dt1570 <- dt1570 %>% filter(Mn_concentration != 236.0)
+  (Mn2/76)*100 #96.091
+  (Fe2)# NA
+  
+  
+}
