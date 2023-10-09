@@ -417,13 +417,15 @@ dt <- dt[dt$Type_of_Sample != "root", ]
 } # not necessary here
 dt <- tr
 
-#SUM
+#SUM - Number of samples below or above certain levels in plants
 {
   sum(dt$Zn_concentration == 0, na.rm = TRUE) # 67/224 = 0.32
   sum(dt$Predicted_Zn_ICP < 10, na.rm = TRUE)  #72/224 = 0.321
   sum(dt$Se_concentration == 0, na.rm = TRUE) # 49/224 = 0.218
   sum(dt$Re_concentration == 0, na.rm = TRUE) # 176/224 = 0.785
   sum(dt$Cu_concentration == 0, na.rm = TRUE) #58 /224 = 0.258
+  sum(dt$Predicted_Cu_ICP > 20, na.rm = TRUE) #138
+  
   sum(dt$Predicted_Zn_ICP < 20, na.rm = TRUE)  #84 224 = 0.375
   sum(dt$Re_concentration == 0, na.rm = TRUE)  #
   sum(dt$Mn_concentration == 0, na.rm = TRUE)  #
@@ -438,6 +440,8 @@ dt <- tr
   dt$Predicted_Cr_ICP[dt$Predicted_Cr_ICP == 1] <- 0
   sum(dt$Predicted_Cr_ICP < 0.5, na.rm = TRUE) #183/224 = 0.82
   sum(dt$Predicted_Re_ICP > 5, na.rm = TRUE) #29/224 = 0.1294
+  
+  
   
 }
 

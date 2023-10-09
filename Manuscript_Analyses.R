@@ -317,8 +317,72 @@ median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Dasylirion wheeleri'], na.rm =
 median(dt$Predicted_Fe_ICP[dt$Scientific_Name == 'Dasylirion wheeleri'], na.rm = TRUE)
 
 
+P1 <- subset(dt, Plot=='P1')
+P2 <- subset(dt, Plot=='P2')
+P3 <- subset(dt, Plot=='P5')
+P123 <- subset(dt, Plot!='P6')
+P4 <- subset(dt, Plot=='P6')
+
+#Cu
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Amaranthus palmeri'], na.rm = TRUE)
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Amaranthus palmeri'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Nultuma (Prosopis) velutina'], na.rm = TRUE)
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Nultuma (Prosopis) velutina'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Mentzelia multiflora'], na.rm = TRUE)
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Mentzelia multiflora'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Cynodon dactylon'], na.rm = TRUE)
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Cynodon dactylon'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Eragrostis lehmanniana'], na.rm = TRUE)
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Eragrostis lehmanniana'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Portulaca suffrutescens'], na.rm = TRUE)
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Portulaca suffrutescens'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Solanum elaeagnifolium'], na.rm = TRUE) # except
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Solanum elaeagnifolium'], na.rm = TRUE)
+mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Tamarix chinensis'], na.rm = TRUE) 
+mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Tamarix chinensis'], na.rm = TRUE)
 
 
+#Fe
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Amaranthus palmeri'], na.rm = TRUE)
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Amaranthus palmeri'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Nultuma (Prosopis) velutina'], na.rm = TRUE)
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Nultuma (Prosopis) velutina'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Mentzelia multiflora'], na.rm = TRUE)
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Mentzelia multiflora'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Cynodon dactylon'], na.rm = TRUE)
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Cynodon dactylon'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Eragrostis lehmanniana'], na.rm = TRUE)
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Eragrostis lehmanniana'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Portulaca suffrutescens'], na.rm = TRUE)
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Portulaca suffrutescens'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Solanum elaeagnifolium'], na.rm = TRUE) # except
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Solanum elaeagnifolium'], na.rm = TRUE)
+mean(P123$Predicted_Fe_ICP[P123$Scientific_Name == 'Tamarix chinensis'], na.rm = TRUE) 
+mean(P4$Predicted_Fe_ICP[P4$Scientific_Name == 'Tamarix chinensis'], na.rm = TRUE)
+
+
+# Counts how many samples you have
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Site != "CONTROL", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+#total - 259 bez rootow
+
+#tailings total - 224 samples
+sum(dt$Type_of_Sample == 'leaf-stem', na.rm = TRUE) #  109 leaf-stem samples
+sum(dt$Type_of_Sample == 'leaf', na.rm = TRUE) #  110 leaf samples
+sum(dt$Type_of_Sample == 'stem', na.rm = TRUE) #  5 leaf samples
+
+dt <- dt[dt$Site != "TAILINGS", ]
+
+
+# Count how many LODs in As and Cr
+sum(dt$Cr_concentration == 0, na.rm = TRUE) #  46
+sum(dt$As_concentration == 0, na.rm = TRUE) #  3
+}
 #QA samples recovery values
 
 {
