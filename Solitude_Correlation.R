@@ -1137,6 +1137,7 @@ leveneTest(dt$Cu_concentration, dt$Cu_ICP)
 library(lmtest)
 lm_model <- lm(Cu_ICP~Cu_concentration, data=dt)
 breusch_pagan_test <- bptest(lm_model) # jest hetero
+breusch_pagan_test
 
 
 model1 <- glm(Cu_ICP ~ Cu_concentration, data = dt)

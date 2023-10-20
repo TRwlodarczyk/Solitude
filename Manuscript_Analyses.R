@@ -284,14 +284,6 @@ summary(lm_model2)
 
 
 
-
-
-
-
-
-
-
-
 # Check some values above toxicity
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
 dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
@@ -434,4 +426,55 @@ sum(dt$As_concentration == 0, na.rm = TRUE) #  3
   (Fe2)# NA
   
   
+}
+
+
+#BC calculation
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Site != "CONTROL", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+
+bp <- mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Boechera perennans'], na.rm = TRUE)
+
+bp/343
+
+pc <- mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Pseudognaphalium canescens'], na.rm = TRUE)
+
+pc/343
+
+dt <- dt[dt$Site != "TAILINGS", ]
+bp <- mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Boechera perennans'], na.rm = TRUE)
+
+bp/187
+
+}
+
+
+# Data transformation  
+
+{
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New")
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs
+  
+  shapiro.test(dt$Cu_concentration)
+  shapiro.test(dt$Cu_ICP)
+  leveneTest(dt$Cu_concentration, dt$Cu_ICP)
+  library(lmtest)
+  lm_model <- lm(Cu_ICP~Cu_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest hetero
+  breusch_pagan_test
+  
+  dt$Cu_new_pxrf <- log(dt$Cu_concentration)
+  dt$Cu_new_ICP <- log(dt$Cu_ICP)
+  shapiro.test(dt$Cu_new_pxrf)
+  shapiro.test(dt$Cu_new_ICP)
+  lm_model <- lm(Cu_new_ICP~Cu_new_pxrf, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest hetero wciaz
+
+
 }
