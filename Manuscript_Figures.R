@@ -194,6 +194,157 @@ hc <- hclust(dist_matrix)
 plot(hc, main="Dendrogram for Scientific_Name", xlab="Scientific Name", sub="", cex=0.9)
 
 
+
+
+
+# Raina asked to cluster families
+dt_removed_cols <- dt %>%
+  select(-c(1, 3, 4, 5, 6,7,8,9, 14,15,16, 19))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Family) %>%
+  summarize(across(Cu:Se, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Family")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Family <- factor(
+  dt_melted$Family,
+  levels = dt_grouped_sorted$Family
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using the heatmap.2 function with dendrograms
+heatmap.2(as.matrix(acast(dt_melted, Family ~ variable, value.var = "value")),
+          scale = "none", # Use "none" to keep the original values
+          trace = "none", # Remove trace colors
+          Rowv = TRUE, Colv = FALSE, # Add dendrograms
+          col = colorRampPalette(c("white", "#AD0B0B"))(256),
+          key = TRUE, keysize = 1, key.title = NA, # Add color scale
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
+
+# Raina asked to cluster form
+
+dt_removed_cols <- dt %>%
+  select(-c(1, 2, 4, 5, 6,7,8,9, 14,15,16, 19))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Form) %>%
+  summarize(across(Cu:Se, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Form")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Form <- factor(
+  dt_melted$Form,
+  levels = dt_grouped_sorted$Form
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using the heatmap.2 function with dendrograms
+heatmap.2(as.matrix(acast(dt_melted, Form ~ variable, value.var = "value")),
+          scale = "none", # Use "none" to keep the original values
+          trace = "none", # Remove trace colors
+          Rowv = TRUE, Colv = FALSE, # Add dendrograms
+          col = colorRampPalette(c("white", "#AD0B0B"))(256),
+          key = TRUE, keysize = 1, key.title = NA, # Add color scale
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
+
+
+# Raina asked to cluster Annual Prennial
+
+dt_removed_cols <- dt %>%
+  select(-c(1, 2, 3, 5, 6,7,8,9, 14,15,16, 19))
+
+dt_grouped <- dt_removed_cols %>%
+  group_by(Duration) %>%
+  summarize(across(Cu:Se, median))
+
+rescale_0_to_1 <- function(x) {
+  if (is.numeric(x)) {
+    return((x - min(x)) / (max(x) - min(x)))
+  } else {
+    return(x)
+  }
+}
+dt_subset_rescaled <- as.data.frame(lapply(dt_grouped, rescale_0_to_1))
+
+# Step 4: Melt the data frame to long format
+dt_melted <- melt(dt_subset_rescaled, id.vars = "Duration")
+dt_melted$variable <- gsub("_concentration", "", dt_melted$variable)
+
+# Step 5: Sort dt_grouped by the highest Cu values
+dt_grouped_sorted <- dt_grouped %>%
+  arrange(desc(Cu))
+
+# Reorder levels of Scientific_Name based on Cu values
+dt_melted$Duration <- factor(
+  dt_melted$Duration,
+  levels = dt_grouped_sorted$Duration
+)
+
+# Define the desired order of elements
+element_order <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
+
+# Factor the variable column based on element_order
+dt_melted$variable <- factor(dt_melted$variable, levels = element_order)
+
+# Create the heatmap using the heatmap.2 function with dendrograms
+heatmap.2(as.matrix(acast(dt_melted, Duration ~ variable, value.var = "value")),
+          scale = "none", # Use "none" to keep the original values
+          trace = "none", # Remove trace colors
+          Rowv = TRUE, Colv = FALSE, # Add dendrograms
+          col = colorRampPalette(c("white", "#AD0B0B"))(256),
+          key = TRUE, keysize = 1, key.title = NA, # Add color scale
+          symkey = FALSE, density.info = "none",
+          lwid = c(0.5, 0.5))
+
+
+
 }
 
 # Barplots 
