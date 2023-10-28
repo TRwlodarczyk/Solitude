@@ -315,6 +315,51 @@ P3 <- subset(dt, Plot=='P5')
 P123 <- subset(dt, Plot!='P6')
 P4 <- subset(dt, Plot=='P6')
 
+stems <- subset(dt, Type_of_Sample=='stem')
+leaves <- subset(dt, Type_of_Sample!='stem')
+
+mean(stems$Predicted_Cu_ICP[stems$Scientific_Name == 'Boechera perennans'], na.rm = TRUE)
+sd(stems$Predicted_Cu_ICP[stems$Scientific_Name == 'Boechera perennans'], na.rm = TRUE)/sqrt(4)
+
+mean(leaves$Predicted_Cu_ICP[leaves$Scientific_Name == 'Boechera perennans'], na.rm = TRUE)
+sd(leaves$Predicted_Cu_ICP[leaves$Scientific_Name == 'Boechera perennans'], na.rm = TRUE)/sqrt(8)
+
+mean(stems$Predicted_Cu_ICP[stems$Scientific_Name == 'Pseudognaphalium canescens'], na.rm = TRUE)
+sd(stems$Predicted_Cu_ICP[stems$Scientific_Name == 'Pseudognaphalium canescens'], na.rm = TRUE)/sqrt(1)
+
+mean(leaves$Predicted_Cu_ICP[leaves$Scientific_Name == 'Pseudognaphalium canescens'], na.rm = TRUE)
+sd(leaves$Predicted_Cu_ICP[leaves$Scientific_Name == 'Pseudognaphalium canescens'], na.rm = TRUE)/sqrt(8)
+
+#Forbs, grasses, etc
+
+sum(leaves$Form == 'Forb', na.rm = TRUE)
+sum(leaves$Form == 'Grass', na.rm = TRUE)
+sum(leaves$Form == 'Tree', na.rm = TRUE)
+sum(leaves$Form == 'Shrub', na.rm = TRUE)
+mean(leaves$Predicted_Cu_ICP[leaves$Form == 'Forb'], na.rm = TRUE)
+min(leaves$Predicted_Cu_ICP[leaves$Form == 'Forb'], na.rm = TRUE)
+max(leaves$Predicted_Cu_ICP[leaves$Form == 'Forb'], na.rm = TRUE)
+median(leaves$Predicted_Cu_ICP[leaves$Form == 'Forb'], na.rm = TRUE)
+sd(leaves$Predicted_Cu_ICP[leaves$Form == 'Forb'], na.rm = TRUE)/sqrt(109)
+
+mean(leaves$Predicted_Cu_ICP[leaves$Form == 'Grass'], na.rm = TRUE)
+min(leaves$Predicted_Cu_ICP[leaves$Form == 'Grass'], na.rm = TRUE)
+max(leaves$Predicted_Cu_ICP[leaves$Form == 'Grass'], na.rm = TRUE)
+median(leaves$Predicted_Cu_ICP[leaves$Form == 'Grass'], na.rm = TRUE)
+sd(leaves$Predicted_Cu_ICP[leaves$Form == 'Grass'], na.rm = TRUE)/sqrt(48)
+
+mean(leaves$Predicted_Cu_ICP[leaves$Form == 'Shrub'], na.rm = TRUE)
+min(leaves$Predicted_Cu_ICP[leaves$Form == 'Shrub'], na.rm = TRUE)
+max(leaves$Predicted_Cu_ICP[leaves$Form == 'Shrub'], na.rm = TRUE)
+median(leaves$Predicted_Cu_ICP[leaves$Form == 'Shrub'], na.rm = TRUE)
+sd(leaves$Predicted_Cu_ICP[leaves$Form == 'Shrub'], na.rm = TRUE)/sqrt(31)
+
+mean(leaves$Predicted_Cu_ICP[leaves$Form == 'Tree'], na.rm = TRUE)
+min(leaves$Predicted_Cu_ICP[leaves$Form == 'Tree'], na.rm = TRUE)
+max(leaves$Predicted_Cu_ICP[leaves$Form == 'Tree'], na.rm = TRUE)
+median(leaves$Predicted_Cu_ICP[leaves$Form == 'Tree'], na.rm = TRUE)
+sd(leaves$Predicted_Cu_ICP[leaves$Form == 'Tree'], na.rm = TRUE)/sqrt(36)
+
 #Cu
 mean(P123$Predicted_Cu_ICP[P123$Scientific_Name == 'Amaranthus palmeri'], na.rm = TRUE)
 mean(P4$Predicted_Cu_ICP[P4$Scientific_Name == 'Amaranthus palmeri'], na.rm = TRUE)
@@ -473,8 +518,247 @@ bp/187
   dt$Cu_new_ICP <- log(dt$Cu_ICP)
   shapiro.test(dt$Cu_new_pxrf)
   shapiro.test(dt$Cu_new_ICP)
+  leveneTest(dt$Cu_new_pxrf, dt$Cu_new_ICP)
   lm_model <- lm(Cu_new_ICP~Cu_new_pxrf, data=dt)
   breusch_pagan_test <- bptest(lm_model) # jest hetero wciaz
 
+    library(MASS)
+  bc_transform <- boxcox(dt$Cu_concentration ~ 1, plotit = TRUE)
+  lambda <- bc_transform$x[which.max(bc_transform$y)]
+  
+  if (lambda != 0) {
+    dt$transformed_data <- (dt$Cu_concentration^lambda - 1)/lambda
+  } else {
+    dt$transformed_data <- log(dt$Cu_concentration)
+  }
+  
+  bc_transform2 <- boxcox(dt$Cu_ICP ~ 1, plotit = TRUE)
+  lambda2 <- bc_transform2$x[which.max(bc_transform2$y)]
+  
+  if (lambda2 != 0) {
+    dt$transformed_data2 <- (dt$Cu_ICP^lambda - 1)/lambda2
+  } else {
+    dt$transformed_data2 <- log(dt$Cu_ICP)
+  }
+  
+  
+  shapiro.test(dt$transformed_data)
+  shapiro.test(dt$transformed_data2)
+  leveneTest(dt$transformed_data, dt$transformed_data2)
+  lm_model <- lm(transformed_data~transformed_data2, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # nie jest hetero
+  
+  
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Se_concentration != 0.05, ] # To remove LODs
+  
+  shapiro.test(dt$Se_concentration)
+  shapiro.test(dt$Se_ICP)
+  leveneTest(dt$Se_concentration, dt$Se_ICP)
+  library(lmtest)
+  lm_model <- lm(Se_ICP~Se_concentration, data=dt)
+  breusch_pagan_test <- bptest(lm_model) # jest hetero
+  breusch_pagan_test
+  
+  
+ 
+  
+  
+  
+  
+  
+  library(MASS)
+  bc_transform <- boxcox(dt$Se_concentration ~ 1, plotit = TRUE)
+  lambda <- bc_transform$x[which.max(bc_transform$y)]
+  
+  if (lambda != 0) {
+    dt$Se-box-pxrf <- (dt$Cu_concentration^lambda - 1)/lambda
+  } else {
+    dt$Se-box-pxrf <- log(dt$Cu_concentration)
+  }
+  
+
+
+ 
+
+  dt <- read.delim("SLT_pXRF_ICP.txt")
+  dt <- dt[dt$Cu_concentration != 0.25, ] # To remove LODs  
+  
+  shapiro.test(dt$Cu_concentration)
+  shapiro.test(dt$Cu_ICP)
+  
+library(bestNormalize)
+result <- bestNormalize(dt$Cu_concentration)
+dt$Cu_concentration2 <- result$x.t
+result # log_b (x+a) was chosen because it has the lowest value of 1.1173
+  
+result2 <- bestNormalize(dt$Cu_ICP)
+dt$Cu_ICP2 <- result2$x.t
+result2
+
+lm_model <- lm(Cu_concentration2~Cu_ICP2, data=dt)
+bptest(lm_model) # homo
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Se_concentration != 0.05, ] # To remove LODs
+
+shapiro.test(dt$Se_concentration)
+shapiro.test(dt$Se_ICP)
+
+result3 <- bestNormalize(dt$Se_concentration)
+dt$Se_concentration2 <- result3$x.t
+result3
+result4 <- bestNormalize(dt$Se_ICP)
+dt$Se_ICP2 <- result4$x.t
+result4
+ 
+shapiro.test(dt$Se_concentration2)
+shapiro.test(dt$Se_ICP2)
+
+lm_model <- lm(Se_concentration2~Se_ICP2, data=dt)
+bptest(lm_model)# hetero - uffff
+
+
+dt <-read.delim("Solitude_pXRF_ICP_correl_Re.txt")
+shapiro.test(dt$Re_concentration)
+shapiro.test(dt$Re_ICP)
+
+lm_model <- lm(Re_concentration~Re_ICP, data=dt)
+bptest(lm_model)
+
+result5 <- bestNormalize(dt$Re_concentration)
+dt$Re_concentration2 <- result5$x.t
+result5
+result6 <- bestNormalize(dt$Re_ICP)
+dt$Re_ICP2 <- result6$x.t
+result6
+
+dt$Re_concentration2 <- log(dt$Re_concentration)
+dt$Re_ICP2 <- log(dt$Re_ICP)
+
+shapiro.test(dt$Re_concentration2)
+shapiro.test(dt$Re_ICP2)
+lm_model <- lm(Re_concentration2~Re_ICP2, data=dt)
+bptest(lm_model) # heter - ufff
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Zn_concentration != 0.3, ] # To remove LODs
+
+shapiro.test(dt$Zn_concentration)
+shapiro.test(dt$Zn_ICP)
+
+lm_model <- lm(Zn_concentration~Zn_ICP, data=dt)
+bptest(lm_model)
+
+result7 <- bestNormalize(dt$Zn_concentration)
+dt$Zn_concentration2 <- result7$x.t
+result7
+result8 <- bestNormalize(dt$Zn_ICP)
+dt$Zn_ICP2 <- result8$x.t
+result8
+
+shapiro.test(dt$Zn_concentration2)
+shapiro.test(dt$Zn_ICP2)
+   
+lm_model <- lm(Zn_concentration2~Zn_ICP2, data=dt)
+bptest(lm_model) # hetero
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Mn_concentration != 0.5, ] # To remove LODs
+
+shapiro.test(dt$Mn_concentration)
+shapiro.test(dt$Mn_ICP)
+lm_model <- lm(Mn_concentration~Mn_ICP, data=dt)
+bptest(lm_model)
+
+result9 <- bestNormalize(dt$Mn_concentration)
+dt$Mn_concentration2 <- result9$x.t
+result9
+result10 <- bestNormalize(dt$Mn_ICP)
+dt$Mn_ICP2 <- result10$x.t
+result10
+
+shapiro.test(dt$Mn_concentration2)
+shapiro.test(dt$Mn_ICP2)
+lm_model <- lm(Mn_concentration2~Mn_ICP2, data=dt)
+bptest(lm_model)# homo
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+
+shapiro.test(dt$Fe_concentration)
+shapiro.test(dt$Fe_ICP)
+lm_model <- lm(Fe_concentration~Fe_ICP, data=dt)
+bptest(lm_model)
+
+result11 <- bestNormalize(dt$Fe_concentration)
+dt$Fe_concentration2 <- result11$x.t
+result11
+result12 <- bestNormalize(dt$Fe_ICP)
+dt$Fe_ICP2 <- result12$x.t
+result12
+
+shapiro.test(dt$Fe_concentration2)
+shapiro.test(dt$Fe_ICP2)
+lm_model <- lm(Fe_concentration2~Fe_ICP2, data=dt)
+bptest(lm_model)# homo
+
+
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$As_concentration != 0.05, ] # To remove LODs
+
+shapiro.test(dt$As_concentration)
+shapiro.test(dt$As_ICP)
+lm_model <- lm(As_concentration~As_ICP, data=dt)
+bptest(lm_model) # homo
+
+result13 <- bestNormalize(dt$As_concentration)
+dt$As_concentration2 <- result13$x.t
+result13
+result14 <- bestNormalize(dt$As_ICP)
+dt$As_ICP2 <- result14$x.t
+result14
+
+shapiro.test(dt$As_concentration2)
+shapiro.test(dt$As_ICP2)
+
+
+
+dt <- read.delim("SLT_pXRF_ICP.txt")
+dt <- dt[dt$Cr_concentration != 1, ] # To remove LODs
+dt <- dt[dt$Cr_ICP != 0, ] # To remove LODs
+
+shapiro.test(dt$Cr_concentration)
+shapiro.test(dt$Cr_ICP)
+
+lm_model <- lm(Cr_concentration~Cr_ICP, data=dt)
+bptest(lm_model) # homo
+
+result15 <- bestNormalize(dt$Cr_concentration)
+dt$Cr_concentration2 <- result15$x.t
+result15
+result16 <- bestNormalize(dt$Cr_ICP)
+dt$Cr_ICP2 <- result16$x.t
+result16
+
+shapiro.test(dt$Cr_concentration2)
+shapiro.test(dt$Cr_ICP2)
+
 
 }
+  
+#test shapiro on new data
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("SLT_Final_3reps.09.06.23.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Site != "CONTROL", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+
+shapiro.test(dt$Predicted_Cu_ICP)
+

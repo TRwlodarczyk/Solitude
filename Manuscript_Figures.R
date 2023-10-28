@@ -985,12 +985,13 @@ Cu <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Predicted_Cu_ICP, FUN
          shape = guide_legend(override.aes = list(size = 3.5))) +
   ylab("Cu (mg kg-1)")
 Cu
+
 Fe <- ggplot(dt_selected, aes(x = reorder(Scientific_Name, Fe_concentration, FUN = median),
                               y = Fe_concentration, Sceintific_Name = Scientific_Name)) +
-  geom_boxplot(linewidth=0.3) +
-  geom_point(aes(shape = Plot), size = 2.5) +  # Adjust the size parameter here
+  geom_boxplot(linewidth=0.1) +
+  geom_point(aes(shape = Plot), size = 3.6) +  # Adjust the size parameter here
   scale_shape_manual(values = c(21, 21, 21, 4)) +
-  scale_y_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
+  scale_y_continuous(limits = c(0, 3000), breaks = seq(0, 3000, by = 500)) +
   coord_flip() +
   theme_classic()+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -1465,3 +1466,5 @@ print(p)
   
   
 }
+
+# Site Map
