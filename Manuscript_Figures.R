@@ -1618,4 +1618,280 @@ print(p)
   
 }
 
-# Site Map
+# Forbs/grass/tree/shrub/plot + soil
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("Solitude_For_Fig.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+
+
+
+
+library(dplyr)
+library(ggplot2)
+library(forcats)
+
+# Cu
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Cu_ICP), SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+  ungroup()
+
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Cu_ICP), SD = sd(Predicted_Cu_ICP)/sqrt(n())) %>%
+  mutate(Plot = "Average") %>%
+  ungroup()
+
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Cu_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Form), y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), size=0.22, color = "black") +
+  facet_grid(Plot~., scales = "free_x") + # Changed from free_y to free_x
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Cu (mg/kg)") +
+  scale_fill_manual(values = c("#AAAAAA", "#BFBFBF", "#D9D9D9", "#E8E8E8")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"),
+        strip.background = element_rect(fill = "#CAE6ED", colour = "black"))
+
+print(Cu_plant)
+
+#Se
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Se_ICP), SD = sd(Predicted_Se_ICP)/sqrt(n())) %>%
+  ungroup()
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Se_ICP), SD = sd(Predicted_Se_ICP)/sqrt(n())) %>%
+  mutate(Plot = "Average") %>%
+  ungroup()
+
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Se_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Form), y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), size=0.22, color = "black") +
+  facet_grid(Plot~., scales = "free_x") + # Changed from free_y to free_x
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Se (mg/kg)") +
+  scale_fill_manual(values = c("#AAAAAA", "#BFBFBF", "#D9D9D9", "#E8E8E8")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"),
+        strip.background = element_rect(fill = "#CAE6ED", colour = "black"))
+
+Se_plant
+
+#Re
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Re_ICP), SD = sd(Predicted_Re_ICP)/sqrt(n())) %>%
+  ungroup()
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Re_ICP), SD = sd(Predicted_Re_ICP)/sqrt(n())) %>%
+  mutate(Plot = "Average") %>%
+  ungroup()
+
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Re_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Form), y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), size=0.22, color = "black") +
+  facet_grid(Plot~., scales = "free_x") + # Changed from free_y to free_x
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Re (mg/kg)") +
+  scale_fill_manual(values = c("#AAAAAA", "#BFBFBF", "#D9D9D9", "#E8E8E8")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"),
+        strip.background = element_rect(fill = "#CAE6ED", colour = "black"))
+
+Re_plant
+
+#Zn
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Zn_ICP), SD = sd(Predicted_Zn_ICP)/sqrt(n())) %>%
+  ungroup()
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Zn_ICP), SD = sd(Predicted_Zn_ICP)/sqrt(n())) %>%
+  mutate(Plot = "Average") %>%
+  ungroup()
+
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Zn_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Form), y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), size=0.22, color = "black") +
+  facet_grid(Plot~., scales = "free_x") + # Changed from free_y to free_x
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Zn (mg/kg)") +
+  scale_fill_manual(values = c("#AAAAAA", "#BFBFBF", "#D9D9D9", "#E8E8E8")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"),
+        strip.background = element_rect(fill = "#CAE6ED", colour = "black"))
+
+Zn_plant
+
+
+#Mn
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Mn_ICP), SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
+  ungroup()
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Mn_ICP), SD = sd(Predicted_Mn_ICP)/sqrt(n())) %>%
+  mutate(Plot = "Average") %>%
+  ungroup()
+
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Mn_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Form), y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), size=0.22, color = "black") +
+  facet_grid(Plot~., scales = "free_x") + # Changed from free_y to free_x
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Mn (mg/kg)") +
+  scale_fill_manual(values = c("#AAAAAA", "#BFBFBF", "#D9D9D9", "#E8E8E8")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"),
+        strip.background = element_rect(fill = "#CAE6ED", colour = "black"))
+
+Mn_plant
+
+
+
+#Fe
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Fe_ICP), SD = sd(Predicted_Fe_ICP)/sqrt(n())) %>%
+  ungroup()
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Fe_ICP), SD = sd(Predicted_Fe_ICP)/sqrt(n())) %>%
+  mutate(Plot = "Average") %>%
+  ungroup()
+
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Fe_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Form), y = Mean, fill = Form)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), size=0.22, color = "black") +
+  facet_grid(Plot~., scales = "free_x") + # Changed from free_y to free_x
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.85),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Fe (mg/kg)") +
+  scale_fill_manual(values = c("#AAAAAA", "#BFBFBF", "#D9D9D9", "#E8E8E8")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"),
+        strip.background = element_rect(fill = "#CAE6ED", colour = "black"))
+
+Fe_plant
+
+
+library(ggpubr)
+
+ggarrange(Cu_plant, Se_plant, Re_plant, Zn_plant, Mn_plant, Fe_plant,
+          ncol = 3, nrow = 2, 
+          common.legend = TRUE, legend = "bottom")
+
