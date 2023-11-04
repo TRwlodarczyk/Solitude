@@ -178,4 +178,142 @@ cor.test(dt_plants_XG$Ti_concentration, dt_plants_XG$Fe_concentration, method="s
 }
 
 
+# Kruskal Forb Tree Shrub 
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+dt <- read.delim("Solitude_For_Fig.txt")
+dt <- dt[dt$Type_of_Sample != "root", ]
+dt <- dt[dt$Type_of_Sample != "stem", ]
+#dt <- dt[dt$Site != "CONTROL", ]
+
+P1 <- subset(dt, Plot=="P1")
+P2 <- subset(dt, Plot=="P2")
+P5 <- subset(dt, Plot=="P5")
+P6 <- subset(dt, Plot=="P6")
+C <- subset(dt, Plot=="C")
+AVG <- subset(dt, Site=="TAILINGS")
+
+
+library(agricolae)
+CuP1<-kruskal(P1$Predicted_Cu_ICP, P1$Form, group=TRUE,p.adj="bonferroni")
+CuP1
+
+CuP2<-kruskal(P2$Predicted_Cu_ICP, P2$Form, group=TRUE,p.adj="bonferroni")
+CuP2
+
+CuP5<-kruskal(P5$Predicted_Cu_ICP, P5$Form, group=TRUE,p.adj="bonferroni")
+CuP5
+
+CuP6<-kruskal(P6$Predicted_Cu_ICP, P6$Form, group=TRUE,p.adj="bonferroni")
+CuP6
+
+CuAVG<-kruskal(AVG$Predicted_Cu_ICP, AVG$Form, group=TRUE,p.adj="bonferroni")
+CuAVG
+
+uC<-kruskal(C$Predicted_Cu_ICP, C$Form, group=TRUE,p.adj="bonferroni")
+CuC
+
+
+#Se
+SeP1<-kruskal(P1$Predicted_Se_ICP, P1$Form, group=TRUE,p.adj="bonferroni")
+SeP1
+
+SeP2<-kruskal(P2$Predicted_Se_ICP, P2$Form, group=TRUE,p.adj="bonferroni")
+SeP2
+
+SeP5<-kruskal(P5$Predicted_Se_ICP, P5$Form, group=TRUE,p.adj="bonferroni")
+SeP5
+
+SeP6<-kruskal(P6$Predicted_Se_ICP, P6$Form, group=TRUE,p.adj="bonferroni")
+SeP6
+
+SeAVG<-kruskal(AVG$Predicted_Se_ICP, AVG$Form, group=TRUE,p.adj="bonferroni")
+SeAVG
+
+SeC<-kruskal(C$Predicted_Se_ICP, C$Form, group=TRUE,p.adj="bonferroni")
+SeC
+
+
+#Re
+ReP1<-kruskal(P1$Predicted_Re_ICP, P1$Form, group=TRUE,p.adj="bonferroni")
+ReP1
+
+ReP2<-kruskal(P2$Predicted_Re_ICP, P2$Form, group=TRUE,p.adj="bonferroni")
+ReP2
+
+ReP5<-kruskal(P5$Predicted_Re_ICP, P5$Form, group=TRUE,p.adj="bonferroni")
+ReP5
+
+ReP6<-kruskal(P6$Predicted_Re_ICP, P6$Form, group=TRUE,p.adj="bonferroni")
+ReP6
+
+ReAVG<-kruskal(AVG$Predicted_Re_ICP, AVG$Form, group=TRUE,p.adj="bonferroni")
+ReAVG
+
+ReC<-kruskal(C$Predicted_Re_ICP, C$Form, group=TRUE,p.adj="bonferroni")
+ReC
+
+
+#Zn
+ZnP1<-kruskal(P1$Predicted_Zn_ICP, P1$Form, group=TRUE,p.adj="bonferroni")
+ZnP1
+
+ZnP2<-kruskal(P2$Predicted_Zn_ICP, P2$Form, group=TRUE,p.adj="bonferroni")
+ZnP2
+
+ZnP5<-kruskal(P5$Predicted_Zn_ICP, P5$Form, group=TRUE,p.adj="bonferroni")
+ReP5
+
+ZnP6<-kruskal(P6$Predicted_Zn_ICP, P6$Form, group=TRUE,p.adj="bonferroni")
+ZnP6
+
+ZnAVG<-kruskal(AVG$Predicted_Zn_ICP, AVG$Form, group=TRUE,p.adj="bonferroni")
+ZnAVG
+
+ZnC<-kruskal(C$Predicted_Zn_ICP, C$Form, group=TRUE,p.adj="bonferroni")
+ZnC
+
+
+
+
+#Mn
+MnP1<-kruskal(P1$Predicted_Mn_ICP, P1$Form, group=TRUE,p.adj="bonferroni")
+MnP1
+
+MnP2<-kruskal(P2$Predicted_Mn_ICP, P2$Form, group=TRUE,p.adj="bonferroni")
+MnP2
+
+MnP5<-kruskal(P5$Predicted_Mn_ICP, P5$Form, group=TRUE,p.adj="bonferroni")
+ReP5
+
+MnP6<-kruskal(P6$Predicted_Mn_ICP, P6$Form, group=TRUE,p.adj="bonferroni")
+MnP6
+
+MnAVG<-kruskal(AVG$Predicted_Mn_ICP, AVG$Form, group=TRUE,p.adj="bonferroni")
+MnAVG
+
+MnC<-kruskal(C$Predicted_Mn_ICP, C$Form, group=TRUE,p.adj="bonferroni")
+MnC
+
+
+#Mn
+FeP1<-kruskal(P1$Predicted_Fe_ICP, P1$Form, group=TRUE,p.adj="bonferroni")
+FeP1
+
+FeP2<-kruskal(P2$Predicted_Fe_ICP, P2$Form, group=TRUE,p.adj="bonferroni")
+FeP2
+
+FeP5<-kruskal(P5$Predicted_Fe_ICP, P5$Form, group=TRUE,p.adj="bonferroni")
+FeP5
+
+FeP6<-kruskal(P6$Predicted_Fe_ICP, P6$Form, group=TRUE,p.adj="bonferroni")
+FeP6
+
+FeAVG<-kruskal(AVG$Predicted_Fe_ICP, AVG$Form, group=TRUE,p.adj="bonferroni")
+FeAVG
+
+FeC<-kruskal(C$Predicted_Fe_ICP, C$Form, group=TRUE,p.adj="bonferroni")
+FeC
+
+
 
