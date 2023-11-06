@@ -1946,3 +1946,265 @@ ggarrange(Cu_plant, Se_plant, Re_plant, Zn_plant, Mn_plant, Fe_plant,
   
   
 }
+
+
+
+# Bars form, elements, plots different
+
+{
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final")
+  dt <- read.delim("Solitude_For_Fig.txt")
+  dt <- dt[dt$Type_of_Sample != "root", ]
+  dt <- dt[dt$Type_of_Sample != "stem", ]
+  library(dplyr)
+  library(ggplot2)
+  library(forcats)
+  
+#Cu
+  dt_summary <- dt %>%
+    group_by(Plot, Form) %>%
+    summarize(Mean = mean(Predicted_Cu_ICP), SD = sd(Predicted_Cu_ICP)/sqrt(n()), .groups = 'drop')
+  
+
+  global_averages <- dt %>%
+    filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+    group_by(Form) %>%
+    summarize(Mean = mean(Predicted_Cu_ICP), SD = sd(Predicted_Cu_ICP)/sqrt(n()), .groups = 'drop') %>%
+    mutate(Plot = "Average")
+  
+  dt_summary <- bind_rows(dt_summary, global_averages)
+  dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+  
+
+  Cu_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
+    geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
+    facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+    geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                  position = position_dodge(width = 0.9),
+                  width = 0.25, size=0.2) +
+    coord_flip() +
+    labs(x = "", y = "Cu (mg/kg)") +
+    scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          axis.text.x = element_text(size = 7),
+          axis.text.y = element_text(size = 7),
+          legend.key.size = unit(1, "lines"),
+          legend.text = element_text(size = 4),
+          legend.title = element_text(size = 4, face = "bold"),
+          panel.spacing = unit(0.1, "lines"), # Adjust spacing between facets
+          strip.background = element_rect(fill = "#d6d4b2", colour = "black")) # Custom strip background color
+  
+
+Cu_plant
+  
+  
+#Se
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Se_ICP), SD = sd(Predicted_Se_ICP)/sqrt(n()), .groups = 'drop')
+
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Se_ICP), SD = sd(Predicted_Se_ICP)/sqrt(n()), .groups = 'drop') %>%
+  mutate(Plot = "Average")
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Se_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
+  geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
+  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Se (mg/kg)") +
+  scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"), # Adjust spacing between facets
+        strip.background = element_rect(fill = "#d6d4b2", colour = "black")) # Custom strip background color
+
+
+Se_plant
+  
+
+#Re
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Re_ICP), SD = sd(Predicted_Re_ICP)/sqrt(n()), .groups = 'drop')
+
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Re_ICP), SD = sd(Predicted_Re_ICP)/sqrt(n()), .groups = 'drop') %>%
+  mutate(Plot = "Average")
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Re_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
+  geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
+  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Re (mg/kg)") +
+  scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"), # Adjust spacing between facets
+        strip.background = element_rect(fill = "#d6d4b2", colour = "black")) # Custom strip background color
+
+
+Re_plant
+
+
+
+
+#Zn
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Zn_ICP), SD = sd(Predicted_Zn_ICP)/sqrt(n()), .groups = 'drop')
+
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Zn_ICP), SD = sd(Predicted_Zn_ICP)/sqrt(n()), .groups = 'drop') %>%
+  mutate(Plot = "Average")
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Zn_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
+  geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
+  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Zn (mg/kg)") +
+  scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"), # Adjust spacing between facets
+        strip.background = element_rect(fill = "#d6d4b2", colour = "black")) # Custom strip background color
+
+
+Zn_plant
+
+
+#Mn
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Mn_ICP), SD = sd(Predicted_Mn_ICP)/sqrt(n()), .groups = 'drop')
+
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Mn_ICP), SD = sd(Predicted_Mn_ICP)/sqrt(n()), .groups = 'drop') %>%
+  mutate(Plot = "Average")
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Mn_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
+  geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
+  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Mn (mg/kg)") +
+  scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"), # Adjust spacing between facets
+        strip.background = element_rect(fill = "#d6d4b2", colour = "black")) # Custom strip background color
+
+
+Mn_plant
+
+#Fe
+
+dt_summary <- dt %>%
+  group_by(Plot, Form) %>%
+  summarize(Mean = mean(Predicted_Fe_ICP), SD = sd(Predicted_Fe_ICP)/sqrt(n()), .groups = 'drop')
+
+
+global_averages <- dt %>%
+  filter(Plot %in% c("P1", "P2", "P5", "P6")) %>%
+  group_by(Form) %>%
+  summarize(Mean = mean(Predicted_Fe_ICP), SD = sd(Predicted_Fe_ICP)/sqrt(n()), .groups = 'drop') %>%
+  mutate(Plot = "Average")
+
+dt_summary <- bind_rows(dt_summary, global_averages)
+dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "Average", "C"))
+
+
+Fe_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
+  geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
+  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
+                position = position_dodge(width = 0.9),
+                width = 0.25, size=0.2) +
+  coord_flip() +
+  labs(x = "", y = "Fe (mg/kg)") +
+  scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        legend.key.size = unit(1, "lines"),
+        legend.text = element_text(size = 4),
+        legend.title = element_text(size = 4, face = "bold"),
+        panel.spacing = unit(0.1, "lines"), # Adjust spacing between facets
+        strip.background = element_rect(fill = "#d6d4b2", colour = "black")) # Custom strip background color
+
+
+Fe_plant
+
+
+library(ggpubr)
+
+ggarrange(Cu_plant, Se_plant, Re_plant, Zn_plant, Mn_plant, Fe_plant,
+          ncol = 3, nrow = 2, 
+          common.legend = TRUE, legend = "bottom")
+
+
+}
