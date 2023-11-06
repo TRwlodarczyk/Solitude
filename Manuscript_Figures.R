@@ -1978,13 +1978,15 @@ ggarrange(Cu_plant, Se_plant, Re_plant, Zn_plant, Mn_plant, Fe_plant,
 
   Cu_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
     geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
-    facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+    facet_grid(Form ~ ., scales = "free_x") + # Facets are now based on 'Form'
     geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                   position = position_dodge(width = 0.9),
                   width = 0.25, size=0.2) +
     coord_flip() +
     labs(x = "", y = "Cu (mg/kg)") +
     scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+    scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+    scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
     theme_bw() +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           axis.text.x = element_text(size = 7),
@@ -2018,13 +2020,15 @@ dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "A
 
 Se_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
   geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
-  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  facet_grid(Form ~ ., scales = "free_x") + # Facets are now based on 'Form'
   geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                 position = position_dodge(width = 0.9),
                 width = 0.25, size=0.2) +
   coord_flip() +
   labs(x = "", y = "Se (mg/kg)") +
   scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(size = 7),
@@ -2058,13 +2062,15 @@ dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "A
 
 Re_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
   geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
-  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  facet_grid(Form ~ ., scales = "free_x") + # Facets are now based on 'Form'
   geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                 position = position_dodge(width = 0.9),
                 width = 0.25, size=0.2) +
   coord_flip() +
   labs(x = "", y = "Re (mg/kg)") +
   scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(size = 7),
@@ -2100,13 +2106,15 @@ dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "A
 
 Zn_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
   geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
-  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  facet_grid(Form ~ ., scales = "free_x") + # Facets are now based on 'Form'
   geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                 position = position_dodge(width = 0.9),
                 width = 0.25, size=0.2) +
   coord_flip() +
   labs(x = "", y = "Zn (mg/kg)") +
   scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(size = 7),
@@ -2140,13 +2148,15 @@ dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "A
 
 Mn_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
   geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
-  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  facet_grid(Form ~ ., scales = "free_x") + # Facets are now based on 'Form'
   geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                 position = position_dodge(width = 0.9),
                 width = 0.25, size=0.2) +
   coord_flip() +
   labs(x = "", y = "Mn (mg/kg)") +
   scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(size = 7),
@@ -2179,13 +2189,15 @@ dt_summary$Plot <- factor(dt_summary$Plot, levels = c("P1", "P2", "P5", "P6", "A
 
 Fe_plant <- ggplot(dt_summary, aes(x = forcats::fct_rev(Plot), y = Mean, fill = Plot)) +
   geom_bar(stat = "identity", position = "dodge", size=0.22, color = "black") +
-  facet_grid(Form ~ ., scales = "free_y") + # Facets are now based on 'Form'
+  facet_grid(Form ~ ., scales = "free_x") + # Facets are now based on 'Form'
   geom_errorbar(aes(ymin = Mean, ymax = Mean + SD),
                 position = position_dodge(width = 0.9),
                 width = 0.25, size=0.2) +
   coord_flip() +
   labs(x = "", y = "Fe (mg/kg)") +
   scale_fill_manual(values = c("#D9D9D9", "#D9D9D9", "#D9D9D9", "#D9D9D9", "#5d5b31", "#b1ae6c")) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.05))) + # Add this line to adjust the gap
+  scale_x_discrete(expand = expansion(add = c(0.8, 0.8))) +
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         axis.text.x = element_text(size = 7),
@@ -2205,6 +2217,7 @@ library(ggpubr)
 ggarrange(Cu_plant, Se_plant, Re_plant, Zn_plant, Mn_plant, Fe_plant,
           ncol = 3, nrow = 2, 
           common.legend = TRUE, legend = "bottom")
+
 
 
 }

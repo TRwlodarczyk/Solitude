@@ -316,4 +316,36 @@ FeC<-kruskal(C$Predicted_Fe_ICP, C$Form, group=TRUE,p.adj="bonferroni")
 FeC
 
 
+# Between plots for each Form
+
+Forb <- subset(dt, Form=="Forb")
+Grass <- subset(dt, Form=="Grass")
+Tree <- subset(dt, Form=="Tree")
+Shrub <- subset(dt, Form=="Shrub")
+
+
+
+CuForb<-kruskal(Forb$Predicted_Cu_ICP, Forb$Plot, group=TRUE,p.adj="bonferroni")
+CuForb
+
+CuGrass<-kruskal(Grass$Predicted_Cu_ICP, Grass$Plot, group=TRUE,p.adj="bonferroni")
+CuGrass
+
+CuShrub<-kruskal(Shrub$Predicted_Cu_ICP, Shrub$Plot, group=TRUE,p.adj="bonferroni")
+CuShrub
+
+CuTree<-kruskal(Tree$Predicted_Cu_ICP, Tree$Plot, group=TRUE,p.adj="bonferroni")
+CuTree
+
+SeForb<-kruskal(Forb$Predicted_Se_ICP, Forb$Plot, group=TRUE,p.adj="bonferroni")
+SeForb
+
+SeGrass<-kruskal(Grass$Predicted_Se_ICP, Grass$Plot, group=TRUE,p.adj="bonferroni")
+SeGrass
+
+SeShrub<-kruskal(Shrub$Predicted_Se_ICP, Shrub$Plot, group=TRUE,p.adj="bonferroni")
+SeShrub
+
+SeTree<-kruskal(Tree$Predicted_Se_ICP, Tree$Plot, group=TRUE,p.adj="bonferroni")
+SeTree
 
