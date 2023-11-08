@@ -292,6 +292,7 @@ dt <- dt[dt$Site != "CONTROL", ]
 dt <- dt[dt$Type_of_Sample != "stem", ]
 
 
+
 mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Phyla nodiflora'], na.rm = TRUE)
 sd(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Phyla nodiflora'], na.rm = TRUE)
 mean(dt$Predicted_Cu_ICP[dt$Scientific_Name == 'Ceanothus greggii'], na.rm = TRUE)

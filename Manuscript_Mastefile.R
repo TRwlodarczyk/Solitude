@@ -25,7 +25,10 @@ dt <- dt[dt$Type_of_Sample != "root", ]
 dt <- dt[dt$Site != "CONTROL", ]
 dt <- dt[dt$Type_of_Sample != "stem", ]
 
-dt[,18:85] <- sapply(dt[,18:85],as.numeric)
+dt[,17:95] <- sapply(dt[,17:95],as.numeric)
+
+#shapiro.test(dt$Cu_ICP)
+#test_result <- shapiro.test(na.omit(dt$Cu_ICP))
 
 #Normality loop
 {
@@ -34,7 +37,7 @@ library(writexl)
 
   results <- data.frame(Column = character(0), W_Statistic = numeric(0), P_Value = numeric(0), Sample_Size = numeric(0), Valid = logical(0))
   
-  for (i in 18:85) {
+  for (i in 17:95) {
 
     column_data <- na.omit(dt[[i]])
     sample_size <- length(column_data)
@@ -64,18 +67,19 @@ library(writexl)
   write_xlsx(results, "ShapiroTestResults.xlsx")
   
   
-  
-  
 }
 
 
 
+#Homogenity of variance across groups (Scientific_Name and Plot)
+levene_result_species <- leveneTest(Cu_PXRF ~ Scientific_Name, data = dt)
+print(levene_result_species) # variance is homogenous across species
 
 
 
+boxplot(data=dt, dt$Cu_PXRF)
 
 
-leveneTest(dt$Cu_concentration, dt$Cu_ICP)
 library(lmtest)
 lm_model <- lm(Cu_ICP~Cu_concentration, data=dt)
 breusch_pagan_test <- bptest(lm_model) # jest hetero
