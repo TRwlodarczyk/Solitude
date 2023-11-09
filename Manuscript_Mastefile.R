@@ -27,6 +27,10 @@ dt <- dt[dt$Type_of_Sample != "stem", ]
 
 dt[,17:95] <- sapply(dt[,17:95],as.numeric)
 
+
+sum(dt$Re_PXRF != "NA", na.rm = TRUE) # 
+
+
 #shapiro.test(dt$Cu_ICP)
 #test_result <- shapiro.test(na.omit(dt$Cu_ICP))
 
