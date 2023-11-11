@@ -1301,12 +1301,15 @@ dt$Fe_PXRF2 <- result_Fe_PXRF$x.t
 
 #GLM
 
+#GLM before outliers removed Cu
+{
 start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
-
 M1Cu <- glm(Cu_ICP ~ Cu_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
 M2Cu <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
 M3Cu <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
 M4Cu <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+
+
 
 AIC(M1Cu)
 AIC(M2Cu)
@@ -1318,6 +1321,15 @@ summary(M2Cu)
 summary(M3Cu)
 summary(M4Cu)
 
+
+
+
+dt$Predicted_Cu_M1 = 8.5563 + (1.4929* dt$Cu_PXRF) 
+dt$Predicted_Cu_M2 = 17.03270 + (1.45362* dt$Cu_PXRF) + (-11.13508 * dt$Total_Weight) 
+dt$Predicted_Cu_M3 = 28.88747 + (1.41673* dt$Cu_PXRF) + (-316.95475 * dt$Substrate_RT) 
+
+
+# GLM after outliers removed
 ##Outliers
 dt$z_scores_Cu_ICP <- (dt$Cu_ICP - mean(dt$Cu_ICP, na.rm = TRUE)) / sd(dt$Cu_ICP, na.rm = TRUE)
 outlier_indices_Cu_ICP <- which(abs(dt$z_scores_Cu_ICP) > 3 & !is.na(dt$z_scores_Cu_ICP))
@@ -1330,30 +1342,332 @@ dt_cleaned$z_scores_Cu_ICP <- NULL
 dt_cleaned$z_scores_Cu_PXRF <- NULL
 
 
+start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
+M1Cu_O <- glm(Cu_ICP ~ Cu_PXRF, data = dt_cleaned, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+M2Cu_O <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+M3Cu_O <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
 
-M1Cu <- glm(Cu_ICP ~ Cu_PXRF, data = dt_cleaned, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
-M2Cu <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-M3Cu <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-M4Cu <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT + Total_Weight, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
 
-AIC(M1Cu)
-AIC(M2Cu)
-AIC(M3Cu)
-AIC(M4Cu)
-summary(M1Cu)
-summary(M2Cu)
-summary(M3Cu)
-summary(M4Cu)
+AIC(M1Cu_O)
+AIC(M2Cu_O)
+AIC(M3Cu_O)
+summary(M1Cu_O)
+summary(M2Cu_O)
+summary(M3Cu_O)
 
-dt$z_scores_Fe_ICP <- (dt$Fe_ICP - mean(dt$Fe_ICP, na.rm = TRUE)) / sd(dt$Fe_ICP, na.rm = TRUE)
-outlier_indices_Fe_ICP <- which(abs(dt$z_scores_Fe_ICP) > 3 & !is.na(dt$z_scores_Fe_ICP))
-dt$z_scores_Fe_PXRF <- (dt$Fe_PXRF - mean(dt$Fe_PXRF, na.rm = TRUE)) / sd(dt$Fe_PXRF, na.rm = TRUE)
-outlier_indices_Fe_PXRF <- which(abs(dt$z_scores_Fe_PXRF) > 3 & !is.na(dt$z_scores_Fe_PXRF))
-combined_outlier_indices <- union(outlier_indices_Fe_ICP, outlier_indices_Fe_PXRF)
-outliers_combined <- dt[combined_outlier_indices,]
-dt_cleaned <- dt[-combined_outlier_indices,]
-dt_cleaned$z_scores_Fe_ICP <- NULL
-dt_cleaned$z_scores_Fe_PXRF <- NULL
+
+dt$Predicted_Cu_M1_O = 8.358 + (1.511* dt$Cu_PXRF) 
+dt$Predicted_Cu_M2_O = 16.8588 + (1.4679* dt$Cu_PXRF) + (-11.1075 * dt$Total_Weight) 
+dt$Predicted_Cu_M3_O = 28.63436 + (1.42769* dt$Cu_PXRF) + (-314.89807 * dt$Substrate_RT) 
+
+dt_cleaned$Predicted_Cu_M1_O = 8.358 + (1.511* dt_cleaned$Cu_PXRF) 
+dt_cleaned$Predicted_Cu_M2_O = 16.8588 + (1.4679* dt_cleaned$Cu_PXRF) + (-11.1075 * dt_cleaned$Total_Weight) 
+dt_cleaned$Predicted_Cu_M3_O = 28.63436 + (1.42769* dt_cleaned$Cu_PXRF) + (-314.89807 * dt_cleaned$Substrate_RT) 
+
+#RMSE
+RMSE_RAW <- sqrt(mean((dt$Cu_ICP - dt$Cu_PXRF)^2, na.rm = TRUE))
+RMSE_RAW_O <- sqrt(mean((dt_cleaned$Cu_ICP - dt_cleaned$Cu_PXRF)^2, na.rm = TRUE)) # 
+
+
+RMSE_M1 <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_M1)^2, na.rm = TRUE)) # 
+RMSE_M1_O <- sqrt(mean((dt_cleaned$Cu_ICP - dt_cleaned$Predicted_Cu_M1_O)^2, na.rm = TRUE)) # 
+RMSE_M1_O_dt <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_M1_O)^2, na.rm = TRUE)) # 
+
+RMSE_M2 <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_M2)^2, na.rm = TRUE)) # 
+RMSE_M2_O <- sqrt(mean((dt_cleaned$Cu_ICP - dt_cleaned$Predicted_Cu_M2_O)^2, na.rm = TRUE)) # 
+RMSE_M2_O_dt <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_M2_O)^2, na.rm = TRUE)) # 
+
+RMSE_M3 <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_M3)^2, na.rm = TRUE)) # 
+RMSE_M3_O <- sqrt(mean((dt_cleaned$Cu_ICP - dt_cleaned$Predicted_Cu_M3_O)^2, na.rm = TRUE)) # 
+RMSE_M3_O_dt <- sqrt(mean((dt$Cu_ICP - dt$Predicted_Cu_M3_O)^2, na.rm = TRUE)) # 
+
+#NRMSE
+RMSE_RAW / mean(dt$Cu_ICP, na.rm = TRUE)
+RMSE_RAW_O / mean(dt_cleaned$Cu_ICP, na.rm = TRUE)
+
+RMSE_M1 / mean(dt$Cu_ICP, na.rm = TRUE)
+RMSE_M1_O / mean(dt_cleaned$Cu_ICP, na.rm = TRUE)
+
+RMSE_M2 / mean(dt$Cu_ICP, na.rm = TRUE)
+RMSE_M2_O / mean(dt_cleaned$Cu_ICP, na.rm = TRUE)
+
+RMSE_M3 / mean(dt$Cu_ICP, na.rm = TRUE)
+RMSE_M3_O / mean(dt_cleaned$Cu_ICP, na.rm = TRUE)
+
+sdr <- sd(dt$Cu_ICP, na.rm = TRUE)
+sdr_O <- sd(dt_cleaned$Cu_ICP, na.rm = TRUE)
+#RPD
+sdr / RMSE_RAW
+sdr_O / RMSE_RAW_O
+
+sdr / RMSE_M1
+sdr_O / RMSE_M1_O
+
+sdr / RMSE_M2
+sdr_O / RMSE_M2_O
+
+sdr / RMSE_M3
+sdr_O / RMSE_M3_O
+
+#R squared
+lm_model_RAW <- lm(Cu_ICP ~ Cu_PXRF, data = dt)
+summary(lm_model_RAW)
+lm_model_RAW <- lm(Cu_ICP ~ Cu_PXRF, data = dt_cleaned)
+summary(lm_model_RAW)
+
+lm_model_M1 <- lm(Cu_ICP ~ Predicted_Cu_M1, data = dt)
+summary(lm_model_M1)
+lm_model_M1_O <- lm(Cu_ICP ~ Predicted_Cu_M1_O, data = dt_cleaned)
+summary(lm_model_M1_O)
+
+
+lm_model_M2 <- lm(Cu_ICP ~ Predicted_Cu_M2, data = dt)
+summary(lm_model_M2)
+lm_model_M2_O <- lm(Cu_ICP ~ Predicted_Cu_M2_O, data = dt_cleaned)
+summary(lm_model_M2_O)
+
+lm_model_M3 <- lm(Cu_ICP ~ Predicted_Cu_M3, data = dt)
+summary(lm_model_M3)
+lm_model_M3_O <- lm(Cu_ICP ~ Predicted_Cu_M3_O, data = dt_cleaned)
+summary(lm_model_M3_O)
+
+
+#MAE
+mean(abs(dt$Cu_ICP - dt$Cu_PXRF), na.rm = TRUE) # pXRF 
+mean(abs(dt_cleaned$Cu_ICP - dt_cleaned$Cu_PXRF), na.rm = TRUE) # pXR
+
+mean(abs(dt$Cu_ICP - dt$Predicted_Cu_M1), na.rm = TRUE) 
+mean(abs(dt_cleaned$Cu_ICP - dt_cleaned$Predicted_Cu_M1_O), na.rm = TRUE) 
+
+mean(abs(dt$Cu_ICP - dt$Predicted_Cu_M2), na.rm = TRUE) 
+mean(abs(dt_cleaned$Cu_ICP - dt_cleaned$Predicted_Cu_M2_O), na.rm = TRUE) 
+
+mean(abs(dt$Cu_ICP - dt$Predicted_Cu_M3), na.rm = TRUE) 
+mean(abs(dt_cleaned$Cu_ICP - dt_cleaned$Predicted_Cu_M3_O), na.rm = TRUE) 
+
+ 
+dt_ICC_RAW<- dt[, c("Cu_ICP", "Cu_PXRF")]
+dt_ICC_RAW <- na.omit(dt_ICC_RAW)
+ICC(dt_ICC_RAW, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC_RAW_O<- dt_cleaned[, c("Cu_ICP", "Cu_PXRF")]
+dt_ICC_RAW_O <- na.omit(dt_ICC_RAW_O)
+ICC(dt_ICC_RAW_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+
+dt_ICC_M1<- dt[, c("Cu_ICP", "Predicted_Cu_M1")]
+dt_ICC_M1 <- na.omit(dt_ICC_M1)
+ICC(dt_ICC_M1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC_M1_O<- dt_cleaned[, c("Cu_ICP", "Predicted_Cu_M1_O")]
+dt_ICC_M1_O <- na.omit(dt_ICC_M1_O)
+ICC(dt_ICC_M1_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+dt_ICC_M2<- dt[, c("Cu_ICP", "Predicted_Cu_M2")]
+dt_ICC_M2 <- na.omit(dt_ICC_M2)
+ICC(dt_ICC_M2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC_M2_O<- dt_cleaned[, c("Cu_ICP", "Predicted_Cu_M2_O")]
+dt_ICC_M2_O <- na.omit(dt_ICC_M2_O)
+ICC(dt_ICC_M2_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+
+dt_ICC_M3<- dt[, c("Cu_ICP", "Predicted_Cu_M3")]
+dt_ICC_M3 <- na.omit(dt_ICC_M3)
+ICC(dt_ICC_M3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC_M3_O<- dt_cleaned[, c("Cu_ICP", "Predicted_Cu_M3_O")]
+dt_ICC_M3_O <- na.omit(dt_ICC_M3_O)
+ICC(dt_ICC_M3_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+
+
+}
+# Zn model + bledy etc.
+{
+  
+  start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
+  M1Zn <- glm(Zn_ICP ~ Zn_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  M2Zn <- glm(Zn_ICP ~ Zn_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  M3Zn <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  M4Zn <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  
+  
+  
+  AIC(M1Zn)
+  AIC(M2Zn)
+  AIC(M3Zn)
+  AIC(M4Zn)
+  
+  summary(M1Zn)
+  summary(M2Zn)
+  summary(M3Zn)
+  summary(M4Zn)
+  
+  
+  
+  
+  dt$Predicted_Zn_M1 = 21.7247 + (0.9342* dt$Zn_PXRF) 
+  dt$Predicted_Zn_M2 = 33.6939 + (0.9314* dt$Zn_PXRF) + (-16.8131 * dt$Total_Weight) 
+  dt$Predicted_Zn_M3 = 50.8422 + (0.9560* dt$Zn_PXRF) + (-473.9784 * dt$Substrate_RT) 
+  
+  
+  # GLM after outliers removed
+  ##Outliers
+  dt$z_scores_Zn_ICP <- (dt$Zn_ICP - mean(dt$Zn_ICP, na.rm = TRUE)) / sd(dt$Zn_ICP, na.rm = TRUE)
+  outlier_indices_Zn_ICP <- which(abs(dt$z_scores_Zn_ICP) > 3 & !is.na(dt$z_scores_Zn_ICP))
+  dt$z_scores_Zn_PXRF <- (dt$Zn_PXRF - mean(dt$Zn_PXRF, na.rm = TRUE)) / sd(dt$Zn_PXRF, na.rm = TRUE)
+  outlier_indices_Zn_PXRF <- which(abs(dt$z_scores_Zn_PXRF) > 3 & !is.na(dt$z_scores_Zn_PXRF))
+  combined_outlier_indices <- union(outlier_indices_Zn_ICP, outlier_indices_Zn_PXRF)
+  outliers_combined <- dt[combined_outlier_indices,]
+  dt_cleaned <- dt[-combined_outlier_indices,]
+  dt_cleaned$z_scores_Zn_ICP <- NULL
+  dt_cleaned$z_scores_Zn_PXRF <- NULL
+  
+  
+  start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
+  M1Zn_O <- glm(Zn_ICP ~ Zn_PXRF, data = dt_cleaned, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
+  M2Zn_O <- glm(Zn_ICP ~ Zn_PXRF + Total_Weight, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  M3Zn_O <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = dt_cleaned, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  
+  
+  AIC(M1Zn_O)
+  AIC(M2Zn_O)
+  AIC(M3Zn_O)
+  summary(M1Zn_O)
+  summary(M2Zn_O)
+  summary(M3Zn_O)
+  
+  
+
+  dt_cleaned$Predicted_Zn_M1_O = 22.0285 + (0.8265* dt_cleaned$Zn_PXRF) 
+  dt_cleaned$Predicted_Zn_M2_O = 33.3758 + (0.8484* dt_cleaned$Zn_PXRF) + (-16.1377 * dt_cleaned$Total_Weight) 
+  dt_cleaned$Predicted_Zn_M3_O = 49.8142  + (0.8757* dt_cleaned$Zn_PXRF) + (-453.8441 * dt_cleaned$Substrate_RT) 
+  
+  #RMSE
+  RMSE_RAW <- sqrt(mean((dt$Zn_ICP - dt$Zn_PXRF)^2, na.rm = TRUE))
+  RMSE_RAW_O <- sqrt(mean((dt_cleaned$Zn_ICP - dt_cleaned$Zn_PXRF)^2, na.rm = TRUE)) # 
+  
+  
+  RMSE_M1 <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_M1)^2, na.rm = TRUE)) # 
+  RMSE_M1_O <- sqrt(mean((dt_cleaned$Zn_ICP - dt_cleaned$Predicted_Zn_M1_O)^2, na.rm = TRUE)) # 
+  RMSE_M1_O_dt <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_M1_O)^2, na.rm = TRUE)) # 
+  
+  RMSE_M2 <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_M2)^2, na.rm = TRUE)) # 
+  RMSE_M2_O <- sqrt(mean((dt_cleaned$Zn_ICP - dt_cleaned$Predicted_Zn_M2_O)^2, na.rm = TRUE)) # 
+  RMSE_M2_O_dt <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_M2_O)^2, na.rm = TRUE)) # 
+  
+  RMSE_M3 <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_M3)^2, na.rm = TRUE)) # 
+  RMSE_M3_O <- sqrt(mean((dt_cleaned$Zn_ICP - dt_cleaned$Predicted_Zn_M3_O)^2, na.rm = TRUE)) # 
+  RMSE_M3_O_dt <- sqrt(mean((dt$Zn_ICP - dt$Predicted_Zn_M3_O)^2, na.rm = TRUE)) # 
+  
+  #NRMSE
+  RMSE_RAW / mean(dt$Zn_ICP, na.rm = TRUE)
+  RMSE_RAW_O / mean(dt_cleaned$Zn_ICP, na.rm = TRUE)
+  
+  RMSE_M1 / mean(dt$Zn_ICP, na.rm = TRUE)
+  RMSE_M1_O / mean(dt_cleaned$Zn_ICP, na.rm = TRUE)
+  
+  RMSE_M2 / mean(dt$Zn_ICP, na.rm = TRUE)
+  RMSE_M2_O / mean(dt_cleaned$Zn_ICP, na.rm = TRUE)
+  
+  RMSE_M3 / mean(dt$Zn_ICP, na.rm = TRUE)
+  RMSE_M3_O / mean(dt_cleaned$Zn_ICP, na.rm = TRUE)
+  
+  sdr <- sd(dt$Zn_ICP, na.rm = TRUE)
+  sdr_O <- sd(dt_cleaned$Zn_ICP, na.rm = TRUE)
+  #RPD
+  sdr / RMSE_RAW
+  sdr_O / RMSE_RAW_O
+  
+  sdr / RMSE_M1
+  sdr_O / RMSE_M1_O
+  
+  sdr / RMSE_M2
+  sdr_O / RMSE_M2_O
+  
+  sdr / RMSE_M3
+  sdr_O / RMSE_M3_O
+  
+  #R squared
+  lm_model_RAW <- lm(Zn_ICP ~ Zn_PXRF, data = dt)
+  summary(lm_model_RAW)
+  lm_model_RAW <- lm(Zn_ICP ~ Zn_PXRF, data = dt_cleaned)
+  summary(lm_model_RAW)
+  
+  lm_model_M1 <- lm(Zn_ICP ~ Predicted_Zn_M1, data = dt)
+  summary(lm_model_M1)
+  lm_model_M1_O <- lm(Zn_ICP ~ Predicted_Zn_M1_O, data = dt_cleaned)
+  summary(lm_model_M1_O)
+  
+  
+  lm_model_M2 <- lm(Zn_ICP ~ Predicted_Zn_M2, data = dt)
+  summary(lm_model_M2)
+  lm_model_M2_O <- lm(Zn_ICP ~ Predicted_Zn_M2_O, data = dt_cleaned)
+  summary(lm_model_M2_O)
+  
+  lm_model_M3 <- lm(Zn_ICP ~ Predicted_Zn_M3, data = dt)
+  summary(lm_model_M3)
+  lm_model_M3_O <- lm(Zn_ICP ~ Predicted_Zn_M3_O, data = dt_cleaned)
+  summary(lm_model_M3_O)
+  
+  
+  #MAE
+  mean(abs(dt$Zn_ICP - dt$Zn_PXRF), na.rm = TRUE) # pXRF 
+  mean(abs(dt_cleaned$Zn_ICP - dt_cleaned$Zn_PXRF), na.rm = TRUE) # pXR
+  
+  mean(abs(dt$Zn_ICP - dt$Predicted_Zn_M1), na.rm = TRUE) 
+  mean(abs(dt_cleaned$Zn_ICP - dt_cleaned$Predicted_Zn_M1_O), na.rm = TRUE) 
+  
+  mean(abs(dt$Zn_ICP - dt$Predicted_Zn_M2), na.rm = TRUE) 
+  mean(abs(dt_cleaned$Zn_ICP - dt_cleaned$Predicted_Zn_M2_O), na.rm = TRUE) 
+  
+  mean(abs(dt$Zn_ICP - dt$Predicted_Zn_M3), na.rm = TRUE) 
+  mean(abs(dt_cleaned$Zn_ICP - dt_cleaned$Predicted_Zn_M3_O), na.rm = TRUE) 
+  
+  
+  dt_ICC_RAW<- dt[, c("Zn_ICP", "Zn_PXRF")]
+  dt_ICC_RAW <- na.omit(dt_ICC_RAW)
+  ICC(dt_ICC_RAW, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  dt_ICC_RAW_O<- dt_cleaned[, c("Zn_ICP", "Zn_PXRF")]
+  dt_ICC_RAW_O <- na.omit(dt_ICC_RAW_O)
+  ICC(dt_ICC_RAW_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  
+  
+  dt_ICC_M1<- dt[, c("Zn_ICP", "Predicted_Zn_M1")]
+  dt_ICC_M1 <- na.omit(dt_ICC_M1)
+  ICC(dt_ICC_M1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  dt_ICC_M1_O<- dt_cleaned[, c("Zn_ICP", "Predicted_Zn_M1_O")]
+  dt_ICC_M1_O <- na.omit(dt_ICC_M1_O)
+  ICC(dt_ICC_M1_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  
+  dt_ICC_M2<- dt[, c("Zn_ICP", "Predicted_Zn_M2")]
+  dt_ICC_M2 <- na.omit(dt_ICC_M2)
+  ICC(dt_ICC_M2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  dt_ICC_M2_O<- dt_cleaned[, c("Zn_ICP", "Predicted_Zn_M2_O")]
+  dt_ICC_M2_O <- na.omit(dt_ICC_M2_O)
+  ICC(dt_ICC_M2_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  
+  
+  dt_ICC_M3<- dt[, c("Zn_ICP", "Predicted_Zn_M3")]
+  dt_ICC_M3 <- na.omit(dt_ICC_M3)
+  ICC(dt_ICC_M3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+  dt_ICC_M3_O<- dt_cleaned[, c("Zn_ICP", "Predicted_Zn_M3_O")]
+  dt_ICC_M3_O <- na.omit(dt_ICC_M3_O)
+  ICC(dt_ICC_M3_O, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE) 
+  
+  
+  
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
