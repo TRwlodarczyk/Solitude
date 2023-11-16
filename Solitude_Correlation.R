@@ -2937,10 +2937,11 @@ dt$Predicted_Cu_ICP <- 28.88747 + (1.41673* dt$Cu_concentration) + (-316.95475* 
   start_vals <- c(coeff_Re_concentration = 0, coeff_intercept = 37)
   model4 <- glm(Re_ICP ~ Re_concentration, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   summary(model4)
-  
+
   tr$Predicted_Re_ICP <- 3.84146 + (0.91141* tr$Re_concentration) + (-33.18455* tr$Substrate_RT)
   #Predicted ICP values for Cu from model 5 - Total_Weight as explanatory
   tr$Predicted_Re_ICP2 <- 4.29996 + (0.93425* tr$Re_concentration) + (-3.64517* tr$Total_Weight)
+
   #new model 4
   tr$Predicted_Re_ICP3 <- 2.17727 + (0.88060* tr$Re_concentration) 
   
