@@ -18,6 +18,7 @@
   library(gplots)
   library(psych)
   library(car)
+  library(openxlsx)
 }
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final/Manuscript")
@@ -89,156 +90,6 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   
 }
 
-#RMSE
-RMSE_RAW <- sqrt(mean((dt$Fe_ICP - dt$Fe_PXRF)^2, na.rm = TRUE))
-RMSE_M1 <- sqrt(mean((dt$Fe_ICP - dt$Predicted_Fe_M1)^2, na.rm = TRUE)) # 
-RMSE_M2 <- sqrt(mean((dt$Fe_ICP - dt$Predicted_Fe_M2)^2, na.rm = TRUE)) # 
-RMSE_M3 <- sqrt(mean((dt$Fe_ICP - dt$Predicted_Fe_M3)^2, na.rm = TRUE)) # 
-
-#NRMSE
-RMSE_RAW / mean(dt$Fe_ICP, na.rm = TRUE)
-RMSE_M1 / mean(dt$Fe_ICP, na.rm = TRUE)
-RMSE_M2 / mean(dt$Fe_ICP, na.rm = TRUE)
-RMSE_M3 / mean(dt$Fe_ICP, na.rm = TRUE)
-
-#RPD
-sdr <- sd(dt$Fe_ICP, na.rm = TRUE)
-sdr / RMSE_RAW
-sdr / RMSE_M1
-sdr / RMSE_M2
-sdr / RMSE_M3
-
-#R squared
-lm_model_RAW <- lm(Fe_ICP ~ Fe_PXRF, data = dt)
-summary(lm_model_RAW)
-lm_model_M1 <- lm(Fe_ICP ~ Predicted_Fe_M1, data = dt)
-summary(lm_model_M1)
-lm_model_M2 <- lm(Fe_ICP ~ Predicted_Fe_M2, data = dt)
-summary(lm_model_M2)
-lm_model_M3 <- lm(Fe_ICP ~ Predicted_Fe_M3, data = dt)
-summary(lm_model_M3)
-
-
-#MAE
-mean(abs(dt$Fe_ICP - dt$Fe_PXRF), na.rm = TRUE) # pXRF 
-mean(abs(dt$Fe_ICP - dt$Predicted_Fe_M1), na.rm = TRUE) 
-mean(abs(dt$Fe_ICP - dt$Predicted_Fe_M2), na.rm = TRUE) 
-mean(abs(dt$Fe_ICP - dt$Predicted_Fe_M3), na.rm = TRUE) 
-
-dt_ICC_RAW<- dt[, c("Fe_ICP", "Fe_PXRF")]
-dt_ICC_RAW <- na.omit(dt_ICC_RAW)
-ICC(dt_ICC_RAW, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
-
-dt_ICC_M1<- dt[, c("Fe_ICP", "Predicted_Fe_M1")]
-dt_ICC_M1 <- na.omit(dt_ICC_M1)
-ICC(dt_ICC_M1, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
-
-dt_ICC_M2<- dt[, c("Fe_ICP", "Predicted_Fe_M2")]
-dt_ICC_M2 <- na.omit(dt_ICC_M2)
-ICC(dt_ICC_M2, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
-
-dt_ICC_M3<- dt[, c("Fe_ICP", "Predicted_Fe_M3")]
-dt_ICC_M3 <- na.omit(dt_ICC_M3)
-ICC(dt_ICC_M3, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
-
-  
-
-
-
-#####RMSE######
-
-for (i in 1:6) {
-  raw_col <- 20 + i
-  icp_col <- 59 + i  # Corresponding ICP column
-  
-  for (j in 0:3) {
-    if (j == 0) {
-      # RMSE for RAW
-      rmse_raw <- sqrt(mean((dt[, icp_col] - dt[, raw_col])^2, na.rm = TRUE))
-      print(paste("RMSE_RAW for element", raw_col, ":", rmse_raw))
-    } else {
-      # Calculating the index for Predicted columns
-      pred_col <- 88 + (j - 1) + (i - 1) * 3
-      # RMSE for Predicted models
-      rmse_m <- sqrt(mean((dt[, icp_col] - dt[, pred_col])^2, na.rm = TRUE))
-      print(paste("RMSE_M", j, "for element", raw_col, ":", rmse_m))
-    }
-  }
-}
-
-
-####NRMSE#####  
-for (i in 21:26) {
-  icp_col <- i + 39  # Corresponding ICP column
-  
-  for (j in 0:3) {
-    pred_col <- i + 68 + j * 6  # Corresponding Predicted column
-    rmse <- sqrt(mean((dt[, icp_col] - dt[, pred_col])^2, na.rm = TRUE))
-    nrmse <- rmse / mean(dt[, icp_col], na.rm = TRUE)
-    print(paste("NRMSE for element", i, "model", j, ":", nrmse))
-  }
-}
-
-
-#####RPD#####
-
-for (i in 21:26) {
-  icp_col <- i + 39  # Corresponding ICP column
-  sdr <- sd(dt[, icp_col], na.rm = TRUE)
-  
-  for (j in 0:3) {
-    pred_col <- i + 68 + j * 6  # Corresponding Predicted column
-    rmse <- sqrt(mean((dt[, icp_col] - dt[, pred_col])^2, na.rm = TRUE))
-    rpd <- sdr / rmse
-    print(paste("RPD for element", i, "model", j, ":", rpd))
-  }
-}
-
-
-
-######R-SQUARED#####
-for (i in 21:26) {
-  icp_col <- i + 39  # Corresponding ICP column
-  
-  for (j in 0:3) {
-    pred_col <- i + 68 + j * 6  # Corresponding Predicted column
-    lm_model <- lm(dt[, icp_col] ~ dt[, pred_col], data = dt)
-    r_squared <- summary(lm_model)$r.squared
-    print(paste("R-squared for element", i, "model", j, ":", r_squared))
-  }
-}
-
-
-######MAE#####
-
-for (i in 21:26) {
-  icp_col <- i + 39  # Corresponding ICP column
-  
-  for (j in 0:3) {
-    pred_col <- i + 68 + j * 6  # Corresponding Predicted column
-    mae <- mean(abs(dt[, icp_col] - dt[, pred_col]), na.rm = TRUE)
-    print(paste("MAE for element", i, "model", j, ":", mae))
-  }
-}
-
-#####ICP###
-for (i in 21:26) {
-  icp_col <- i + 39  # Corresponding ICP column
-  
-  for (j in 0:3) {
-    pred_col <- i + 68 + j * 6  # Corresponding Predicted column
-    dt_icc <- na.omit(dt[, c(icp_col, pred_col)])
-    icc_result <- ICC(dt_icc, missing=TRUE, alpha=.05, lmer=TRUE, check.keys=FALSE)
-    icc_value <- icc_result$results$ICC[1]  # Assuming you need the first ICC value
-    print(paste("ICC for element", i, "model", j, ":", icc_value))
-  }
-}
-
-
-
-
-
-
 
 
 #RMSE with col names and save to excel
@@ -271,25 +122,14 @@ for (i in 1:length(elements)) {
   }
 }
 
-# No need to convert RMSE to numeric now, as it should already be numeric
-
-
-# Ensuring RMSE is numeric
 rmse_results$RMSE <- as.numeric(rmse_results$RMSE)
-
-# Set appropriate column names
 colnames(rmse_results) <- c("Element", "Model", "RMSE")
-
-
-# Create a new Excel workbook
 wb <- createWorkbook()
-
-# Add a sheet and write data for RMSE
 addWorksheet(wb, "RMSE Results")
 writeData(wb, "RMSE Results", rmse_results)
 
 # Save the workbook
-saveWorkbook(wb, "Statistical_Results.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "RMSE_no_outliers.xlsx", overwrite = TRUE)
 
 }
 
@@ -318,11 +158,136 @@ for (i in 1:length(elements)) {
   }
 }
 
-# Create a new Excel workbook or add to the existing one
-wb <- loadWorkbook("Statistical_Results.xlsx")  # Load the existing workbook
-addWorksheet(wb, "NRMSE Results")
-writeData(wb, "NRMSE Results", nrmse_results)
 
-# Save the workbook
-saveWorkbook(wb, "Statistical_Results.xlsx", overwrite = TRUE)
+wb_nrmse <- createWorkbook()
+addWorksheet(wb_nrmse, "NRMSE Results")
+writeData(wb_nrmse, "NRMSE Results", nrmse_results)
+saveWorkbook(wb_nrmse, "NRMSE_Statistical_Results.xlsx", overwrite = TRUE)
 
+
+
+#MAE
+####MAE with col names and save to excel######
+
+# Initialize a data frame to store MAE results
+mae_results <- data.frame(Element = character(), Model = character(), MAE = numeric(), stringsAsFactors = FALSE)
+
+for (i in 1:length(elements)) {
+  # MAE for RAW
+  mae_raw <- mean(abs(dt[[icp_cols[i]]] - dt[[raw_cols[i]]]), na.rm = TRUE)
+  temp_df <- data.frame(Element = elements[i], Model = "RAW", MAE = mae_raw, stringsAsFactors = FALSE)
+  mae_results <- rbind(mae_results, temp_df)
+  
+  # MAE for Predicted models
+  for (j in 1:3) {
+    pred_col_name <- predicted_cols[[i]][j]
+    mae_pred <- mean(abs(dt[[icp_cols[i]]] - dt[[pred_col_name]]), na.rm = TRUE)
+    temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), MAE = mae_pred, stringsAsFactors = FALSE)
+    mae_results <- rbind(mae_results, temp_df)
+  }
+}
+
+library(openxlsx)
+
+wb_mae <- createWorkbook()
+addWorksheet(wb_mae, "MAE Results")
+writeData(wb_mae, "MAE Results", mae_results)
+saveWorkbook(wb_mae, "MAE_Statistical_Results.xlsx", overwrite = TRUE)
+
+
+
+#R-Squared
+####R-squared with col names and save to excel######
+
+# Initialize a data frame to store R-squared results
+r_squared_results <- data.frame(Element = character(), Model = character(), R_squared = numeric(), stringsAsFactors = FALSE)
+
+for (i in 1:length(elements)) {
+  # R-squared for RAW
+  lm_model_raw <- lm(dt[[icp_cols[i]]] ~ dt[[raw_cols[i]]], data = dt, na.action = na.exclude)
+  r_squared_raw <- summary(lm_model_raw)$r.squared
+  temp_df <- data.frame(Element = elements[i], Model = "RAW", R_squared = r_squared_raw, stringsAsFactors = FALSE)
+  r_squared_results <- rbind(r_squared_results, temp_df)
+  
+  # R-squared for Predicted models
+  for (j in 1:3) {
+    pred_col_name <- predicted_cols[[i]][j]
+    lm_model_pred <- lm(dt[[icp_cols[i]]] ~ dt[[pred_col_name]], data = dt, na.action = na.exclude)
+    r_squared_pred <- summary(lm_model_pred)$r.squared
+    temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), R_squared = r_squared_pred, stringsAsFactors = FALSE)
+    r_squared_results <- rbind(r_squared_results, temp_df)
+  }
+}
+
+
+wb_r_squared <- createWorkbook()
+addWorksheet(wb_r_squared, "R-squared Results")
+writeData(wb_r_squared, "R-squared Results", r_squared_results)
+saveWorkbook(wb_r_squared, "R_squared_Statistical_Results.xlsx", overwrite = TRUE)
+
+
+
+#RPD
+#RPD with col names and save to excel
+
+# Initialize a data frame to store RPD results
+rpd_results <- data.frame(Element = character(), Model = character(), RPD = numeric(), stringsAsFactors = FALSE)
+
+for (i in 1:length(elements)) {
+  # Standard deviation for ICP data
+  sdr <- sd(dt[[icp_cols[i]]], na.rm = TRUE)
+  
+  # RPD for RAW
+  rmse_raw <- sqrt(mean((dt[[icp_cols[i]]] - dt[[raw_cols[i]]])^2, na.rm = TRUE))
+  rpd_raw <- sdr / rmse_raw
+  temp_df <- data.frame(Element = elements[i], Model = "RAW", RPD = rpd_raw, stringsAsFactors = FALSE)
+  rpd_results <- rbind(rpd_results, temp_df)
+  
+  # RPD for Predicted models
+  for (j in 1:3) {
+    pred_col_name <- predicted_cols[[i]][j]
+    rmse_pred <- sqrt(mean((dt[[icp_cols[i]]] - dt[[pred_col_name]])^2, na.rm = TRUE))
+    rpd_pred <- sdr / rmse_pred
+    temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), RPD = rpd_pred, stringsAsFactors = FALSE)
+    rpd_results <- rbind(rpd_results, temp_df)
+  }
+}
+
+wb_rpd <- createWorkbook()
+addWorksheet(wb_rpd, "RPD Results")
+writeData(wb_rpd, "RPD Results", rpd_results)
+saveWorkbook(wb_rpd, "RPD_Statistical_Results.xlsx", overwrite = TRUE)
+
+
+#ICC
+#ICC with col names, only ICC2 for single random raster value
+
+
+# Initialize a data frame to store ICC results
+icc_results <- data.frame(Element = character(), Model = character(), ICC_Value = numeric(), stringsAsFactors = FALSE)
+
+for (i in 1:length(elements)) {
+  # ICC for RAW
+  dt_icc_raw <- dt[, c(icp_cols[i], raw_cols[i])]
+  dt_icc_raw <- na.omit(dt_icc_raw)
+  icc_raw <- ICC(dt_icc_raw, missing=TRUE, alpha=.05, lmer=TRUE, check.keys=FALSE)
+  icc_value_raw <- icc_raw$results["Single_random_raters", "ICC"]
+  temp_df <- data.frame(Element = elements[i], Model = "RAW", ICC_Value = icc_value_raw, stringsAsFactors = FALSE)
+  icc_results <- rbind(icc_results, temp_df)
+  
+  # ICC for Predicted models
+  for (j in 1:3) {
+    pred_col_name <- predicted_cols[[i]][j]
+    dt_icc_pred <- dt[, c(icp_cols[i], pred_col_name)]
+    dt_icc_pred <- na.omit(dt_icc_pred)
+    icc_pred <- ICC(dt_icc_pred, missing=TRUE, alpha=.05, lmer=TRUE, check.keys=FALSE)
+    icc_value_pred <- icc_pred$results["Single_random_raters", "ICC"]
+    temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), ICC_Value = icc_value_pred, stringsAsFactors = FALSE)
+    icc_results <- rbind(icc_results, temp_df)
+  }
+}
+
+wb_icc <- createWorkbook()
+addWorksheet(wb_icc, "ICC Results")
+writeData(wb_icc, "ICC Results", icc_results)
+saveWorkbook(wb_icc, "ICC_Statistical_Results.xlsx", overwrite = TRUE)
