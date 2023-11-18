@@ -1,7 +1,9 @@
-# Solitude Manuscript 
+# Solitude Manuscript With Cook's Distance
 # Tomasz Wlodarczyk
 # twlodarczyk@arizona.edu
 # 2023-15-11
+
+
 
 {
   library(ggplot2)
@@ -31,47 +33,138 @@ dt <- dt[dt$Type_of_Sample != "stem", ]
 dt[,19:87] <- sapply(dt[,19:87],as.numeric)
 dt[,13] <- sapply(dt[,13],as.numeric)
 
+
+
 # Creating Predicting values
 {
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Cu <- glm(Cu_ICP ~ Cu_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Cu <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Cu <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-  M4Cu <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
- summary(M1Cu)
-  #dt$Predicted_Cu_M1 = 8.5563 + (1.4929* dt$Cu_PXRF) 
-  #dt$Predicted_Cu_M2 = 17.03270 + (1.45362* dt$Cu_PXRF) + (-11.13508 * dt$Total_Weight) 
-  #dt$Predicted_Cu_M3 = 28.88747 + (1.41673* dt$Cu_PXRF) + (-316.95475 * dt$Substrate_RT) 
- 
-  dt$Predicted_Cu_M1 <- predict(M1Cu, newdata = dt, type = "response")
-  dt$Predicted_Cu_M2 <- predict(M2Cu, newdata = dt, type = "response")
-  dt$Predicted_Cu_M3 <- predict(M3Cu, newdata = dt, type = "response")
+  summary(M1Cu)
   
+  dt_M1Cu <- dt
+  cooks_distance <- cooks.distance(M1Cu)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M1Cu[outliers, "Cu_ICP"] <- NA
+
+  M1Cu_adjusted <- glm(Cu_ICP ~ Cu_PXRF, data = dt_M1Cu, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M1Cu_adjusted)
+  #
+  dt$Predicted_Cu_M1 <- predict(M1Cu_adjusted, newdata = dt, type = "response")
+  #
+  dt_M2Cu <- dt
+  cooks_distance <- cooks.distance(M2Cu)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M2Cu[outliers, "Cu_ICP"] <- NA
+  
+  M2Cu_adjusted <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = dt_M2Cu, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M2Cu_adjusted)
+  #
+  dt$Predicted_Cu_M2 <- predict(M2Cu_adjusted, newdata = dt, type = "response")
+  #
+  dt_M3Cu <- dt
+  cooks_distance <- cooks.distance(M3Cu)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M3Cu[outliers, "Cu_ICP"] <- NA
+  
+  M3Cu_adjusted <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = dt_M3Cu, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M3Cu_adjusted)
+
+  #
+  dt$Predicted_Cu_M3 <- predict(M3Cu_adjusted, newdata = dt, type = "response")
+  #
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Se <- glm(Se_ICP ~ Se_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Se <- glm(Se_ICP ~ Se_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Se <- glm(Se_ICP ~ Se_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M4Se <- glm(Se_ICP ~ Se_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(M1Se)
-  #dt$Predicted_Se_M1 = -0.18545 + (1.60411* dt$Se_PXRF) 
-  #dt$Predicted_Se_M2 = 0.07610 + (1.58532* dt$Se_PXRF) + (-0.32381 * dt$Total_Weight) 
-  #dt$Predicted_Se_M3 = 0.4417 + (1.5683* dt$Se_PXRF) + (-8.8017 * dt$Substrate_RT) 
+
   
-  dt$Predicted_Se_M1 <- predict(M1Se, newdata = dt, type = "response")
-  dt$Predicted_Se_M2 <- predict(M2Se, newdata = dt, type = "response")
-  dt$Predicted_Se_M3 <- predict(M3Se, newdata = dt, type = "response")
+  dt_M1Se <- dt
+  cooks_distance <- cooks.distance(M1Se)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M1Se[outliers, "Se_ICP"] <- NA
+  
+  M1Se_adjusted <- glm(Se_ICP ~ Se_PXRF, data = dt_M1Se, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M1Se_adjusted)
+  dt_M1Se$Predicted_Se_M1 <- predict(M1Se_adjusted, newdata = dt_M1Se, type = "response")
+  #
+  dt$Predicted_Se_M1 <- predict(M1Se_adjusted, newdata = dt, type = "response")
+  #
+  dt_M2Se <- dt
+  cooks_distance <- cooks.distance(M2Se)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M2Se[outliers, "Se_ICP"] <- NA
+  
+  M2Se_adjusted <- glm(Se_ICP ~ Se_PXRF + Total_Weight, data = dt_M2Se, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M2Se_adjusted)
+  dt_M2Se$Predicted_Se_M2 <- predict(M2Se_adjusted, newdata = dt_M2Se, type = "response")
+  #
+  dt$Predicted_Se_M2 <- predict(M2Se_adjusted, newdata = dt, type = "response")
+  #
+  dt_M3Se <- dt
+  cooks_distance <- cooks.distance(M3Se)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M3Se[outliers, "Se_ICP"] <- NA
+  
+  M3Se_adjusted <- glm(Se_ICP ~ Se_PXRF + Substrate_RT, data = dt_M3Se, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M3Se_adjusted)
+  dt_M3Se$Predicted_Se_M3 <- predict(M3Se_adjusted, newdata = dt_M3Se, type = "response")
+  
+  #
+  dt$Predicted_Se_M3 <- predict(M3Se_adjusted, newdata = dt, type = "response")
+  #
+  
+  
+  
+  
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Re <- glm(Re_ICP ~ Re_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Re <- glm(Re_ICP ~ Re_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Re <- glm(Re_ICP ~ Re_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(M1Re)
-  #dt$Predicted_Re_M1 = 2.17727 + (0.88060* dt$Re_PXRF) 
-  #dt$Predicted_Re_M2 = 4.29996 + (0.93425* dt$Re_PXRF) + (-3.64517 * dt$Total_Weight) 
-  #dt$Predicted_Re_M3 = 3.84146 + (0.91141* dt$Re_PXRF) + (-33.18455 * dt$Substrate_RT) 
-  dt$Predicted_Re_M1 <- predict(M1Re, newdata = dt, type = "response")
-  dt$Predicted_Re_M2 <- predict(M2Re, newdata = dt, type = "response")
-  dt$Predicted_Re_M3 <- predict(M3Re, newdata = dt, type = "response")
+ 
+  
+  dt_M1Re <- dt
+  cooks_distance <- cooks.distance(M1Re)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M1Re[outliers, "Re_ICP"] <- NA
+  
+  M1Re_adjusted <- glm(Re_ICP ~ Re_PXRF, data = dt_M1Re, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Re_M1 <- predict(M1Re_adjusted, newdata = dt, type = "response")
+  #
+  dt_M2Re <- dt
+  cooks_distance <- cooks.distance(M2Re)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M2Re[outliers, "Re_ICP"] <- NA
+  
+  M2Re_adjusted <- glm(Re_ICP ~ Re_PXRF + Total_Weight, data = dt_M2Re, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Re_M2 <- predict(M2Re_adjusted, newdata = dt, type = "response")
+  #
+  dt_M3Re <- dt
+  cooks_distance <- cooks.distance(M3Re)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M3Re[outliers, "Re_ICP"] <- NA
+  
+  M3Re_adjusted <- glm(Re_ICP ~ Re_PXRF + Substrate_RT, data = dt_M3Re, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+
+  #
+  dt$Predicted_Re_M3 <- predict(M3Re_adjusted, newdata = dt, type = "response")
+  #
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Zn <- glm(Zn_ICP ~ Zn_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
@@ -79,43 +172,117 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   M3Zn <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M4Zn <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(M1Zn)
-  #dt$Predicted_Zn_M1 = 21.7247 + (0.9342* dt$Zn_PXRF) 
-  #dt$Predicted_Zn_M2 = 33.6939 + (0.9314* dt$Zn_PXRF) + (-16.8131 * dt$Total_Weight) 
-  #dt$Predicted_Zn_M3 = 50.8422 + (0.9560* dt$Zn_PXRF) + (-473.9784 * dt$Substrate_RT) 
+
+  dt_M1Zn <- dt
+  cooks_distance <- cooks.distance(M1Zn)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M1Zn[outliers, "Zn_ICP"] <- NA
   
-  dt$Predicted_Zn_M1 <- predict(M1Zn, newdata = dt, type = "response")
-  dt$Predicted_Zn_M2 <- predict(M2Zn, newdata = dt, type = "response")
-  dt$Predicted_Zn_M3 <- predict(M3Zn, newdata = dt, type = "response")
+  M1Zn_adjusted <- glm(Zn_ICP ~ Zn_PXRF, data = dt_M1Zn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Zn_M1 <- predict(M1Zn_adjusted, newdata = dt, type = "response")
+  #
+  dt_M2Zn <- dt
+  cooks_distance <- cooks.distance(M2Zn)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M2Zn[outliers, "Zn_ICP"] <- NA
+  
+  M2Zn_adjusted <- glm(Zn_ICP ~ Zn_PXRF + Total_Weight, data = dt_M2Zn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Zn_M2 <- predict(M2Zn_adjusted, newdata = dt, type = "response")
+  #
+  dt_M3Zn <- dt
+  cooks_distance <- cooks.distance(M3Zn)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M3Zn[outliers, "Zn_ICP"] <- NA
+  
+  M3Zn_adjusted <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = dt_M3Zn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  
+  #
+  dt$Predicted_Zn_M3 <- predict(M3Zn_adjusted, newdata = dt, type = "response")
+  #
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Mn <- glm(Mn_ICP ~ Mn_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Mn <- glm(Mn_ICP ~ Mn_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Mn <- glm(Mn_ICP ~ Mn_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(M1Mn)
-  #dt$Predicted_Mn_M1 = 26.783 + (1.030* dt$Mn_PXRF) 
-  #dt$Predicted_Mn_M2 = 40.6027 + (1.0494* dt$Mn_PXRF) + (-20.5045 * dt$Total_Weight) 
-  #dt$Predicted_Mn_M3 = 51.4943 + (1.0760* dt$Mn_PXRF) + (-431.8509 * dt$Substrate_RT) 
+
+  dt_M1Mn <- dt
+  cooks_distance <- cooks.distance(M1Mn)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M1Mn[outliers, "Mn_ICP"] <- NA
   
-  dt$Predicted_Mn_M1 <- predict(M1Mn, newdata = dt, type = "response")
-  dt$Predicted_Mn_M2 <- predict(M2Mn, newdata = dt, type = "response")
-  dt$Predicted_Mn_M3 <- predict(M3Mn, newdata = dt, type = "response")
+  M1Mn_adjusted <- glm(Mn_ICP ~ Mn_PXRF, data = dt_M1Mn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Mn_M1 <- predict(M1Mn_adjusted, newdata = dt, type = "response")
+  #
+  dt_M2Mn <- dt
+  cooks_distance <- cooks.distance(M2Mn)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M2Mn[outliers, "Mn_ICP"] <- NA
+  
+  M2Mn_adjusted <- glm(Mn_ICP ~ Mn_PXRF + Total_Weight, data = dt_M2Mn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Mn_M2 <- predict(M2Mn_adjusted, newdata = dt, type = "response")
+  #
+  dt_M3Mn <- dt
+  cooks_distance <- cooks.distance(M3Mn)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M3Mn[outliers, "Mn_ICP"] <- NA
+  
+  M3Mn_adjusted <- glm(Mn_ICP ~ Mn_PXRF + Substrate_RT, data = dt_M3Mn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  
+  #
+  dt$Predicted_Mn_M3 <- predict(M3Mn_adjusted, newdata = dt, type = "response")
+  #
+  
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Fe <- glm(Fe_ICP ~ Fe_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Fe <- glm(Fe_ICP ~ Fe_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Fe <- glm(Fe_ICP ~ Fe_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-  summary(M1Fe)
-  #dt$Predicted_Fe_M1 = -1.00099 + (1.10113* dt$Fe_PXRF) 
-  #dt$Predicted_Fe_M2 = 3.31281 + (1.09861* dt$Fe_PXRF) + (-5.30449 * dt$Total_Weight) 
-  #dt$Predicted_Fe_M3 = 9.25556 + (1.08668* dt$Fe_PXRF) + (-137.37547 * dt$Substrate_RT) 
+
+  dt_M1Fe <- dt
+  cooks_distance <- cooks.distance(M1Fe)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M1Fe[outliers, "Fe_ICP"] <- NA
   
-  dt$Predicted_Fe_M1 <- predict(M1Fe, newdata = dt, type = "response")
-  dt$Predicted_Fe_M2 <- predict(M2Fe, newdata = dt, type = "response")
-  dt$Predicted_Fe_M3 <- predict(M3Fe, newdata = dt, type = "response")
+  M1Fe_adjusted <- glm(Fe_ICP ~ Fe_PXRF, data = dt_M1Fe, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Fe_M1 <- predict(M1Fe_adjusted, newdata = dt, type = "response")
+  #
+  dt_M2Fe <- dt
+  cooks_distance <- cooks.distance(M2Fe)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M2Fe[outliers, "Fe_ICP"] <- NA
+  
+  M2Fe_adjusted <- glm(Fe_ICP ~ Fe_PXRF + Total_Weight, data = dt_M2Fe, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #
+  dt$Predicted_Fe_M2 <- predict(M2Fe_adjusted, newdata = dt, type = "response")
+  #
+  dt_M3Fe <- dt
+  cooks_distance <- cooks.distance(M3Fe)
+  threshold <- 4 / nrow(dt)
+  outliers <- which(cooks_distance > threshold)
+  dt_M3Fe[outliers, "Fe_ICP"] <- NA
+  
+  M3Fe_adjusted <- glm(Fe_ICP ~ Fe_PXRF + Substrate_RT, data = dt_M3Fe, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  
+  #
+  dt$Predicted_Fe_M3 <- predict(M3Fe_adjusted, newdata = dt, type = "response")
+  #
   
   
-  write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New//Final/Modified Final/Manuscript/Solitude2022_RAW_outliers.csv', sep=",", row.names = F)
-  
+  write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New//Final/Modified Final/Manuscript/Solitude2022_Predicted_Cooks.csv', sep=",", row.names = F)
   
 }
 
@@ -123,43 +290,43 @@ dt[,13] <- sapply(dt[,13],as.numeric)
 
 #RMSE with col names and save to excel
 {
-elements <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
-raw_cols <- paste0(elements, "_PXRF")
-icp_cols <- paste0(elements, "_ICP")
-predicted_cols <- lapply(elements, function(el) paste0("Predicted_", el, "_M", 1:3))
-
-# Flattening the list of predicted columns for easier access
-predicted_cols_flat <- unlist(predicted_cols)
-
-library(openxlsx)
-
-# Initialize a data frame to store RMSE results
-rmse_results <- data.frame(Element = character(), Model = character(), RMSE = numeric(), stringsAsFactors = FALSE)
-
-for (i in 1:length(elements)) {
-  # RMSE for RAW
-  rmse_raw <- sqrt(mean((dt[[icp_cols[i]]] - dt[[raw_cols[i]]])^2, na.rm = TRUE))
-  temp_df <- data.frame(Element = elements[i], Model = "RAW", RMSE = rmse_raw, stringsAsFactors = FALSE)
-  rmse_results <- rbind(rmse_results, temp_df)
+  elements <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
+  raw_cols <- paste0(elements, "_PXRF")
+  icp_cols <- paste0(elements, "_ICP")
+  predicted_cols <- lapply(elements, function(el) paste0("Predicted_", el, "_M", 1:3))
   
-  # RMSE for Predicted models
-  for (j in 1:3) {
-    pred_col_name <- predicted_cols[[i]][j]
-    rmse_pred <- sqrt(mean((dt[[icp_cols[i]]] - dt[[pred_col_name]])^2, na.rm = TRUE))
-    temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), RMSE = rmse_pred, stringsAsFactors = FALSE)
+  # Flattening the list of predicted columns for easier access
+  predicted_cols_flat <- unlist(predicted_cols)
+  
+  library(openxlsx)
+  
+  # Initialize a data frame to store RMSE results
+  rmse_results <- data.frame(Element = character(), Model = character(), RMSE = numeric(), stringsAsFactors = FALSE)
+  
+  for (i in 1:length(elements)) {
+    # RMSE for RAW
+    rmse_raw <- sqrt(mean((dt[[icp_cols[i]]] - dt[[raw_cols[i]]])^2, na.rm = TRUE))
+    temp_df <- data.frame(Element = elements[i], Model = "RAW", RMSE = rmse_raw, stringsAsFactors = FALSE)
     rmse_results <- rbind(rmse_results, temp_df)
+    
+    # RMSE for Predicted models
+    for (j in 1:3) {
+      pred_col_name <- predicted_cols[[i]][j]
+      rmse_pred <- sqrt(mean((dt[[icp_cols[i]]] - dt[[pred_col_name]])^2, na.rm = TRUE))
+      temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), RMSE = rmse_pred, stringsAsFactors = FALSE)
+      rmse_results <- rbind(rmse_results, temp_df)
+    }
   }
-}
-
-rmse_results$RMSE <- as.numeric(rmse_results$RMSE)
-colnames(rmse_results) <- c("Element", "Model", "RMSE")
-wb <- createWorkbook()
-addWorksheet(wb, "RMSE Results")
-writeData(wb, "RMSE Results", rmse_results)
-
-# Save the workbook
-saveWorkbook(wb, "RMSE_outliers.xlsx", overwrite = TRUE)
-
+  
+  rmse_results$RMSE <- as.numeric(rmse_results$RMSE)
+  colnames(rmse_results) <- c("Element", "Model", "RMSE")
+  wb <- createWorkbook()
+  addWorksheet(wb, "RMSE Results")
+  writeData(wb, "RMSE Results", rmse_results)
+  
+  # Save the workbook
+  saveWorkbook(wb, "RMSE_Cook.xlsx", overwrite = TRUE)
+  
 }
 
 
@@ -191,7 +358,7 @@ for (i in 1:length(elements)) {
 wb_nrmse <- createWorkbook()
 addWorksheet(wb_nrmse, "NRMSE Results")
 writeData(wb_nrmse, "NRMSE Results", nrmse_results)
-saveWorkbook(wb_nrmse, "NRMSE_Statistical_Results.xlsx", overwrite = TRUE)
+saveWorkbook(wb_nrmse, "NRMSE_Cook.xlsx", overwrite = TRUE)
 
 
 
@@ -221,7 +388,7 @@ library(openxlsx)
 wb_mae <- createWorkbook()
 addWorksheet(wb_mae, "MAE Results")
 writeData(wb_mae, "MAE Results", mae_results)
-saveWorkbook(wb_mae, "MAE_Statistical_Results.xlsx", overwrite = TRUE)
+saveWorkbook(wb_mae, "MAE_Cook.xlsx", overwrite = TRUE)
 
 
 
@@ -252,7 +419,7 @@ for (i in 1:length(elements)) {
 wb_r_squared <- createWorkbook()
 addWorksheet(wb_r_squared, "R-squared Results")
 writeData(wb_r_squared, "R-squared Results", r_squared_results)
-saveWorkbook(wb_r_squared, "R_squared_Statistical_Results.xlsx", overwrite = TRUE)
+saveWorkbook(wb_r_squared, "R_Cook.xlsx", overwrite = TRUE)
 
 
 
@@ -285,7 +452,7 @@ for (i in 1:length(elements)) {
 wb_rpd <- createWorkbook()
 addWorksheet(wb_rpd, "RPD Results")
 writeData(wb_rpd, "RPD Results", rpd_results)
-saveWorkbook(wb_rpd, "RPD_Statistical_Results.xlsx", overwrite = TRUE)
+saveWorkbook(wb_rpd, "RPD_Cook.xlsx", overwrite = TRUE)
 
 
 #ICC
@@ -319,5 +486,6 @@ for (i in 1:length(elements)) {
 wb_icc <- createWorkbook()
 addWorksheet(wb_icc, "ICC Results")
 writeData(wb_icc, "ICC Results", icc_results)
-saveWorkbook(wb_icc, "ICC_Statistical_Results.xlsx", overwrite = TRUE)
+saveWorkbook(wb_icc, "ICC_Cook.xlsx", overwrite = TRUE)
+
 
