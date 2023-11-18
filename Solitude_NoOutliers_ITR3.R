@@ -77,7 +77,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
     
     return(output)
   }
- 
+  
   
   #without_outliers <- replace_outliers(tol_medians[,6:12],1.5)
   #tol_medians_without_outl <- cbind(tol_medians[,1:5],without_outliers[[1]])
@@ -86,11 +86,11 @@ dt[,13] <- sapply(dt[,13],as.numeric)
 }
 
 
-without_outliers_19_29 <- replace_outliers(dt[, 19:29], 1.5)
+without_outliers_19_29 <- replace_outliers(dt[, 19:29], 3)
 dt_without_outliers_19_29 <- cbind(dt[, 1:18], without_outliers_19_29[[1]], dt[, 30:ncol(dt)])
-without_outliers_58_68 <- replace_outliers(dt[, 58:68], 1.5)
+without_outliers_58_68 <- replace_outliers(dt[, 58:68], 3)
 dt_without_outliers_final <- cbind(dt_without_outliers_19_29[, 1:57], without_outliers_58_68[[1]], dt_without_outliers_19_29[, 69:ncol(dt)])
-write.xlsx(dt_without_outliers_final, "Solitude2022_RAW_No_outliers_ITR1.5.xlsx", overwrite = TRUE)
+write.xlsx(dt_without_outliers_final, "Solitude2022_RAW_No_outliers_ITR3.xlsx", overwrite = TRUE)
 
 
 dt <- dt_without_outliers_final
@@ -105,9 +105,9 @@ dt <- dt_without_outliers_final
   summary(M1Cu)
   summary(M2Cu)
   summary(M3Cu)
-  dt$Predicted_Cu_M1 = 8.7256 + (1.4731* dt$Cu_PXRF) 
-  dt$Predicted_Cu_M2 = 17.2460 + (1.4251* dt$Cu_PXRF) + (-11.0988 * dt$Total_Weight) 
-  dt$Predicted_Cu_M3 = 29.3845 + (1.3768* dt$Cu_PXRF) + (-319.4721 * dt$Substrate_RT) 
+  dt$Predicted_Cu_M1 = 8.3412 + (1.5127* dt$Cu_PXRF) 
+  dt$Predicted_Cu_M2 = 16.8502 + (1.4671* dt$Cu_PXRF) + (-11.0945 * dt$Total_Weight) 
+  dt$Predicted_Cu_M3 = 28.63373 + (1.42440* dt$Cu_PXRF) + (-314.59753 * dt$Substrate_RT) 
   cooks_distances <- cooks.distance(M1Cu)
   plot(cooks_distances, type="h", ylab="Cook's Distance", xlab="Index")
   abline(h=4/(nrow(dt)), col="red")  # Add a threshold line
@@ -124,9 +124,9 @@ dt <- dt_without_outliers_final
   summary(M1Se)
   summary(M2Se)
   summary(M3Se)
-  dt$Predicted_Se_M1 = -0.16900 + (1.57741* dt$Se_PXRF) 
-  dt$Predicted_Se_M2 = 0.09374 + (1.55489* dt$Se_PXRF) + (-0.32323 * dt$Total_Weight) 
-  dt$Predicted_Se_M3 = 0.45286 + (1.53591* dt$Se_PXRF) + (-8.68182 * dt$Substrate_RT) 
+  dt$Predicted_Se_M1 = -0.18698 + (1.60642* dt$Se_PXRF) 
+  dt$Predicted_Se_M2 = 0.07854 + (1.58342* dt$Se_PXRF) + (-0.32523 * dt$Total_Weight) 
+  dt$Predicted_Se_M3 = 0.44740 + (1.56333* dt$Se_PXRF) + (-8.83631 * dt$Substrate_RT) 
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Re <- glm(Re_ICP ~ Re_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
@@ -135,9 +135,9 @@ dt <- dt_without_outliers_final
   summary(M1Re)
   summary(M2Re)
   summary(M3Re)
-   dt$Predicted_Re_M1 = 2.1430  + (0.8871* dt$Re_PXRF) 
-  dt$Predicted_Re_M2 = 4.2235 + (0.9727* dt$Re_PXRF) + (-3.8688 * dt$Total_Weight) 
-  dt$Predicted_Re_M3 = 3.7748 + (0.9539* dt$Re_PXRF) + (-36.6249 * dt$Substrate_RT) 
+  dt$Predicted_Re_M1 = 2.25363  + (0.86889* dt$Re_PXRF) 
+  dt$Predicted_Re_M2 = 4.21351 + (0.95966* dt$Re_PXRF) + (-3.75341 * dt$Total_Weight) 
+  dt$Predicted_Re_M3 = 3.8246 + (0.9195* dt$Re_PXRF) + (-33.8513 * dt$Substrate_RT) 
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Zn <- glm(Zn_ICP ~ Zn_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
@@ -147,9 +147,9 @@ dt <- dt_without_outliers_final
   summary(M1Zn)
   summary(M2Zn)
   summary(M3Zn)
-  dt$Predicted_Zn_M1 = 20.2063 + (0.8766* dt$Zn_PXRF) 
-  dt$Predicted_Zn_M2 = 31.5719 + (0.8729* dt$Zn_PXRF) + (-15.1932 * dt$Total_Weight) 
-  dt$Predicted_Zn_M3 = 47.1552 + (0.8997* dt$Zn_PXRF) + (-426.5507 * dt$Substrate_RT) 
+  dt$Predicted_Zn_M1 = 22.6387 + (0.8533* dt$Zn_PXRF) 
+  dt$Predicted_Zn_M2 = 34.5681 + (0.8565* dt$Zn_PXRF) + (-16.8979 * dt$Total_Weight) 
+  dt$Predicted_Zn_M3 = 51.9525 + (0.8772* dt$Zn_PXRF) + (-478.2824 * dt$Substrate_RT) 
   
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Mn <- glm(Mn_ICP ~ Mn_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
@@ -158,10 +158,10 @@ dt <- dt_without_outliers_final
   summary(M1Mn)
   summary(M2Mn)
   summary(M3Mn)
-   dt$Predicted_Mn_M1 = 26.5498 + (1.0338* dt$Mn_PXRF) 
-  dt$Predicted_Mn_M2 = 40.3087 + (1.0532* dt$Mn_PXRF) + (-20.3937 * dt$Total_Weight) 
-  dt$Predicted_Mn_M3 = 50.6509 + (1.0863* dt$Mn_PXRF) + (-424.4465 * dt$Substrate_RT) 
-  
+  dt$Predicted_Mn_M1 = 26.783 + (1.030* dt$Mn_PXRF) 
+  dt$Predicted_Mn_M2 = 40.6027 + (1.0494* dt$Mn_PXRF) + (-20.5045 * dt$Total_Weight) 
+  dt$Predicted_Mn_M3 = 51.4943 + (1.0760* dt$Mn_PXRF) + (-431.8509 * dt$Substrate_RT) 
+
   start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
   M1Fe <- glm(Fe_ICP ~ Fe_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Fe <- glm(Fe_ICP ~ Fe_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
@@ -169,14 +169,14 @@ dt <- dt_without_outliers_final
   summary(M1Fe)
   summary(M2Fe)
   summary(M3Fe)
-   dt$Predicted_Fe_M1 = 1.00793 + (1.03498* dt$Fe_PXRF) 
-  dt$Predicted_Fe_M2 = 5.43076 + (1.03091* dt$Fe_PXRF) + (-5.30106 * dt$Total_Weight) 
-  dt$Predicted_Fe_M3 = 12.72016 + (1.01510* dt$Fe_PXRF) + (-154.33192 * dt$Substrate_RT) 
+  dt$Predicted_Fe_M1 = -0.09906 + (1.07153* dt$Fe_PXRF) 
+  dt$Predicted_Fe_M2 = 4.4046 + (1.0678* dt$Fe_PXRF) + (-5.4440 * dt$Total_Weight) 
+  dt$Predicted_Fe_M3 = 11.40189 + (1.05251* dt$Fe_PXRF) + (-151.86555 * dt$Substrate_RT) 
   
   
-  write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New//Final/Modified Final/Manuscript/Solitude2022_RAW_No_outliers.csv', sep=",", row.names = F)
+  write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New//Final/Modified Final/Manuscript/Solitude2022_Predicted_No_outliers_ITR3.csv', sep=",", row.names = F)
   
-  }
+}
 
 
 #RMSE with col names and save to excel
