@@ -26,9 +26,9 @@
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/Final/Modified Final/Manuscript")
 dt <- read.delim("Solitude2022_RAW.txt")
 
-dt <- dt[dt$Type_of_Sample != "root", ]
-dt <- dt[dt$Site != "NATURAL", ]
-dt <- dt[dt$Type_of_Sample != "stem", ]
+dt <- dt[dt$Type_of_Sample != "root", ] # tego nie dawaj
+dt <- dt[dt$Site != "NATURAL", ]        # tegp nie dawaj
+dt <- dt[dt$Type_of_Sample != "stem", ] # tego nie dawaj
 
 dt[,19:87] <- sapply(dt[,19:87],as.numeric)
 dt[,13] <- sapply(dt[,13],as.numeric)
