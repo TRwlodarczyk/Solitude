@@ -27,7 +27,7 @@ setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documen
 dt <- read.delim("Solitude2022_RAW.txt")
 
 dt <- dt[dt$Type_of_Sample != "root", ]
-dt <- dt[dt$Site != "CONTROL", ]
+dt <- dt[dt$Site != "NATURAL", ]
 dt <- dt[dt$Type_of_Sample != "stem", ]
 
 dt[,19:87] <- sapply(dt[,19:87],as.numeric)
