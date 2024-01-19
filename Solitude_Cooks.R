@@ -132,7 +132,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   M2Re <- glm(Re_ICP ~ Re_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Re <- glm(Re_ICP ~ Re_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(M1Re)
- 
+  summary(M3Re)
   
   dt_M1Re <- dt
   cooks_distance <- cooks.distance(M1Re)
@@ -141,6 +141,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   dt_M1Re[outliers, "Re_ICP"] <- NA
   
   M1Re_adjusted <- glm(Re_ICP ~ Re_PXRF, data = dt_M1Re, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M1Re_adjusted)
   #
   dt$Predicted_Re_M1 <- predict(M1Re_adjusted, newdata = dt, type = "response")
   #
@@ -161,7 +162,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   dt_M3Re[outliers, "Re_ICP"] <- NA
   
   M3Re_adjusted <- glm(Re_ICP ~ Re_PXRF + Substrate_RT, data = dt_M3Re, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-
+summary(M3Re_adjusted)
   #
   dt$Predicted_Re_M3 <- predict(M3Re_adjusted, newdata = dt, type = "response")
   #
@@ -171,7 +172,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   M2Zn <- glm(Zn_ICP ~ Zn_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Zn <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M4Zn <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-  summary(M1Zn)
+  summary(M3Zn)
 
   dt_M1Zn <- dt
   cooks_distance <- cooks.distance(M1Zn)
@@ -200,7 +201,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   dt_M3Zn[outliers, "Zn_ICP"] <- NA
   
   M3Zn_adjusted <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = dt_M3Zn, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-  
+  summary(M3Zn_adjusted)
   #
   dt$Predicted_Zn_M3 <- predict(M3Zn_adjusted, newdata = dt, type = "response")
   #
@@ -249,6 +250,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   M2Fe <- glm(Fe_ICP ~ Fe_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Fe <- glm(Fe_ICP ~ Fe_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
 
+  summary(M3Fe)
   dt_M1Fe <- dt
   cooks_distance <- cooks.distance(M1Fe)
   threshold <- 4 / nrow(dt)
@@ -256,6 +258,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   dt_M1Fe[outliers, "Fe_ICP"] <- NA
   
   M1Fe_adjusted <- glm(Fe_ICP ~ Fe_PXRF, data = dt_M1Fe, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  summary(M1Fe_adjusted)
   #
   dt$Predicted_Fe_M1 <- predict(M1Fe_adjusted, newdata = dt, type = "response")
   #
@@ -282,7 +285,7 @@ dt[,13] <- sapply(dt[,13],as.numeric)
   #
   
   
-  write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New//Final/Modified Final/Manuscript/Solitude2022_Predicted_Cooks.csv', sep=",", row.names = F)
+  #write.table(dt, file='C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New//Final/Modified Final/Manuscript/Solitude2022_Predicted_Cooks.csv', sep=",", row.names = F)
   
 }
 
