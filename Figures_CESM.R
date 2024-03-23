@@ -716,3 +716,204 @@ p_value <- result$p.value
 length(dt_soil_new$Cu_Concentration) #24
 
 
+
+
+
+
+##############Newestr March 2024 soil figures##########
+
+
+{
+  library(ggplot2)
+  library(ggpubr)
+  library(dplyr)
+  library(data.table)
+  library(reshape2)
+  library(reshape)
+  library("readxl")
+  library(ggpubr)
+  library(agricolae)
+  library(tidyverse)
+  library (readr) #to read URL
+  library(stringr) # For str_replace_all
+  library(forrats)
+}
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/Data/Solitude New/")
+dt <-read.delim("SLT_Soil_Brookside.txt")
+dt_S <- subset(dt, Layer== "S")
+dt_T <- subset(dt, Layer=="T")
+dt_S_P2P6 <- subset(dt_S, Plot=="P2" | Plot=="P6")
+
+
+dt[,8:64] <- sapply(dt[,8:64],as.numeric)
+
+dt[,"Sample.ID"] <- sapply(dt[,"Sample.ID"],as.character)
+
+
+dt_long <- dt %>%
+  pivot_longer(cols = c(TEC, pH, OM, ENR, S_ext, P_ext, Ca_ext, K_ext, Fe_ext, Mn_ext, Cu_ext, Zn_ext, Mg_ext, Soluble_Salts, `NO3.N`, `NH4.N`, Na_ext, Cu, Se, Re, Zn, Fe, Mn, Al),
+               names_to = "Variable", values_to = "Value")
+# Corrected from the previous mistake, it's actually 'forcats' for factor functions
+
+# Define the plotting function correctly using 'dt' and including variable names
+plot_variable <- function(dt, variable_name) {
+  # Check if there are any data points for the variable
+  if(sum(dt$Variable == variable_name) == 0) {
+    return(NULL) # Skip plotting if no data points exist
+  }
+  
+  variable_label <- str_replace_all(variable_name, "_", " ") # Replace underscores with spaces
+  
+  plot <- dt %>%
+    filter(Variable == variable_name) %>%
+    ggplot(aes(x = Plot, y = Value, fill = Layer)) + # Plot on the x-axis, Value on the y-axis
+    geom_boxplot() + # 
+    scale_fill_manual(values = c("#0070C0", "#E69F00", "#D9D9B1")) +
+    theme_classic() +
+    labs(y = paste(variable_label, "(unit)"))
+  
+  
+  return(plot)
+}
+
+# List of variable names to plot, assuming this was provided correctly before
+variable_names <- c(
+  "TEC", "pH", "OM", "ENR", "S_ext", "P_ext", "Ca_ext", "K_ext", 
+  "Fe_ext", "Mn_ext", "Cu_ext", "Zn_ext", "Mg_ext", "Soluble_Salts", 
+  "NO3.N", "NH4.N", "Cu", "Se", "Re", "Zn", "Fe", "Na_ext", "Al"
+)
+
+# Assuming 'dt_long' is your long-format dataset prepared earlier
+plots <- lapply(variable_names, function(var) plot_variable(dt_long, var))
+
+# Filter out NULL values returned for variables with no data
+plots <- Filter(Negate(is.null), plots)
+
+# If there are any plots to display, arrange them using ggarrange
+if(length(plots) > 0) {
+  n_cols = 4
+  n_rows = ceiling(length(plots) / n_cols) # Adjust number of rows based on actual number of plots
+  
+  # Use do.call with ggarrange
+  do.call(ggarrange, c(plots, list(ncol = n_cols, nrow = n_rows, common.legend = TRUE, legend = "bottom")))
+} else {
+  cat("No valid plots to display.")
+}
+
+#SAVE PDF 10X13 PORTRAIT
+
+
+
+library(agricolae)
+print(kruskal(dt_S$TEC, dt_S$Plot, group=TRUE,p.adj="bonferroni"))
+print(kruskal(dt_S$pH, dt_S$Plot, group=TRUE,p.adj="bonferroni"))
+print(kruskal(dt_S$Ca_ext, dt_S$Plot, group=TRUE,p.adj="bonferroni"))
+print(kruskal(dt_S$Cu_ext, dt_S$Plot, group=TRUE,p.adj="bonferroni"))
+print(kruskal(dt_S$Cu, dt_S$Plot, group=TRUE,p.adj="bonferroni"))
+
+
+
+
+library(FSA)
+library(rcompanion)
+
+
+#TEC
+PT <- dunnTest(TEC ~ Plot, data=dt_S, method="bh") 
+
+print(PT)
+PTD <- PT$res
+cldResults <- cldList(comparison = PTD$Comparison,
+                      p.value    = PTD$P.adj,
+                      threshold  = 0.05) # The significance level threshold
+
+print(cldResults)
+
+
+
+
+#Only for Surface
+library(FSA)
+library(rcompanion)
+library(openxlsx)
+
+variables <- c("TEC", "pH", "OM", "ENR", "S_ext", "P_ext", "Ca_ext", "K_ext", 
+               "Fe_ext", "Mn_ext", "Cu_ext", "Zn_ext", "Mg_ext", "Soluble_Salts", 
+               "NO3.N", "NH4.N", "Cu", "Se", "Re", "Zn", "Fe", "Na_ext", "Al")
+
+# Initialize a dataframe to store all CLD results
+all_cld_results <- data.frame(Variable = character(),
+                              Group = character(),
+                              Letter = character(),
+                              stringsAsFactors = FALSE)
+
+# Loop through each variable to perform the Dunn's Test and extract CLD results
+for(variable in variables) {
+  formula <- as.formula(paste(variable, "~ Plot"))
+  PT <- dunnTest(formula, data=dt_S, method="bh")
+  
+  # Check if the result is not empty
+  if(!is.null(PT$res)) {
+    PTD <- PT$res
+    cldResults <- cldList(comparison = PTD$Comparison,
+                          p.value    = PTD$P.adj,
+                          threshold  = 0.05)
+    
+    # Create a dataframe of CLD results for the current variable
+    cld_df <- data.frame(Variable = rep(variable, length(cldResults$Group)),
+                         Group = cldResults$Group,
+                         Letter = cldResults$Letter)
+    
+    # Append the results for the current variable to the master dataframe
+    all_cld_results <- rbind(all_cld_results, cld_df)
+  }
+}
+
+# Save the combined CLD results to an Excel file
+write.xlsx(all_cld_results, "CLD_Results.xlsx")
+
+
+
+#For Surface and Tailings at once
+
+#Only for Surface
+library(FSA)
+library(rcompanion)
+library(openxlsx)
+
+variables <- c("TEC", "pH", "OM", "ENR", "S_ext", "P_ext", "Ca_ext", "K_ext", 
+               "Fe_ext", "Mn_ext", "Cu_ext", "Zn_ext", "Mg_ext", "Soluble_Salts", 
+               "NO3.N", "NH4.N", "Cu", "Se", "Re", "Zn", "Fe", "Na_ext", "Al")
+
+# Initialize a dataframe to store all CLD results
+all_cld_results <- data.frame(Variable = character(),
+                              Group = character(),
+                              Letter = character(),
+                              stringsAsFactors = FALSE)
+
+# Loop through each variable to perform the Dunn's Test and extract CLD results
+for(variable in variables) {
+  formula <- as.formula(paste(variable, "~ Plot_L"))
+  PT <- dunnTest(formula, data=dt, method="bh")
+  
+  # Check if the result is not empty
+  if(!is.null(PT$res)) {
+    PTD <- PT$res
+    cldResults <- cldList(comparison = PTD$Comparison,
+                          p.value    = PTD$P.adj,
+                          threshold  = 0.05)
+    
+    # Create a dataframe of CLD results for the current variable
+    cld_df <- data.frame(Variable = rep(variable, length(cldResults$Group)),
+                         Group = cldResults$Group,
+                         Letter = cldResults$Letter)
+    
+    # Append the results for the current variable to the master dataframe
+    all_cld_results <- rbind(all_cld_results, cld_df)
+  }
+}
+
+# Save the combined CLD results to an Excel file
+write.xlsx(all_cld_results, "CLD_Results_All_layers.xlsx")
+
