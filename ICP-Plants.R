@@ -129,6 +129,11 @@ summary_dt <- dt %>%
    theme_minimal() +
    theme(axis.text.x = element_text(hjust = 1))
  
+ a2 <- ggplot(results2_median, aes(x = Cu_PXRF, y = Cu_error, color = Total_Weight)) +
+   geom_point() +  # Plot points
+   labs(x = "Cu PXRF", y = "Cu_Error", title="Median") +
+   theme_minimal() +
+   theme(axis.text.x = element_text(hjust = 1))
  
  b <- ggplot(results2_median, aes(x = Total_Weight, y = Cu_error, color = Cu_PXRF)) +
    geom_point() +  # Plot points
@@ -1190,3 +1195,319 @@ saveWorkbook(wb_icc, "ICC_Cook.xlsx", overwrite = TRUE)
   saveWorkbook(wb_icc, "ICC_Cook.xlsx", overwrite = TRUE)
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Check how ICP deviate from pXRF
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/")
+dt <-read.delim("Solitude_pXRF_ICP_AllPoints.txt")
+
+
+
+#Creating new datasets
+library(dplyr)
+
+# Assume 'dt' is your original dataset
+dt_ICP <- dt %>% filter(Method == "ICP")
+dt_PXRF <- dt %>% filter(Method == "PXRF")
+
+results3 <- data.frame()
+unique_sample_ids <- unique(dt_ICP$SampleID)
+
+for (sample_id in unique_sample_ids) {
+  icp_rows <- dt_ICP %>% filter(SampleID == sample_id)
+  pxrf_row <- dt_PXRF %>% filter(SampleID == sample_id)
+  
+  if (nrow(pxrf_row) == 1) {
+    for (i in 1:nrow(icp_rows)) {
+      # Calculating percent error
+      difference <- (pxrf_row[, 4:15] - icp_rows[i, 4:15]) 
+      
+      # Naming the percent error columns with '_error' suffix
+      names(difference) <- paste0(names(icp_rows)[4:15], "_difference")
+      
+      # Extracting the element concentration columns from the ICP and PXRF rows
+      icp_element_concentration <- icp_rows[i, 4:15]
+      pxrf_element_concentration <- pxrf_row[, 4:15]
+      
+      # Naming the concentration columns to distinguish between ICP and PXRF
+      names(icp_element_concentration) <- paste0(names(icp_rows)[4:15], "_ICP")
+      names(pxrf_element_concentration) <- paste0(names(pxrf_row)[4:15], "_PXRF")
+      
+      # Combining the ICP and PXRF concentrations, and percent error into a single row
+      temp_result <- c(icp_rows[i, c("SampleID", "SampleID2", "Method", "Total_Weight", "Substrate_RT")], 
+                       icp_element_concentration, 
+                       pxrf_element_concentration, 
+                       difference)
+      
+      # Append the results
+      results3 <- rbind(results3, temp_result)
+    }
+  }
+}
+
+# Convert row names to a proper column if needed and check the results
+results3 <- data.frame(ID = row.names(results3), results3)
+rownames(results3) <- NULL
+print(results3)
+
+
+
+cor(results3$Cu_difference, results3$Total_Weight, method = "spearman", use = "complete.obs")
+cor(results3$Cu_difference, results3$Substrate_RT, method = "spearman", use = "complete.obs")
+
+results3 <- results3 %>%
+  mutate(Category = case_when(
+    grepl("_1$", SampleID2) ~ "_1",
+    grepl("_2$", SampleID2) ~ "_2",
+    grepl("_3$", SampleID2) ~ "_3",
+    TRUE ~ "Other"
+  ))
+
+
+
+
+
+results3 <- results3[order(results3$Total_Weight),]
+
+
+results3_1 <- subset(results3, Category=="_1")
+results3_2 <- subset(results3, Category=="_2")
+results3_3 <- subset(results3, Category=="_3")
+
+
+
+#
+cor(results3$Cu_difference, results3$Total_Weight, method = "spearman", use = "complete.obs")
+cor(results3$Cu_difference, results3$Substrate_RT, method = "spearman", use = "complete.obs")
+
+cor(results3_1$Cu_difference, results3_1$Total_Weight, method = "spearman", use = "complete.obs")
+cor(results3_2$Cu_difference, results3_2$Total_Weight, method = "spearman", use = "complete.obs")
+cor(results3_3$Cu_difference, results3_3$Total_Weight, method = "spearman", use = "complete.obs")
+
+cor(results3_1$Cu_difference, results3_1$Substrate_RT, method = "spearman", use = "complete.obs")
+cor(results3_2$Cu_difference, results3_2$Substrate_RT, method = "spearman", use = "complete.obs")
+cor(results3_3$Cu_difference, results3_3$Substrate_RT, method = "spearman", use = "complete.obs")
+
+#
+
+
+a <- ggplot(results3, aes(x = Total_Weight, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Total_Weight", y = "Cu_difference", title="All points") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+aa <- ggplot(results3, aes(x = Substrate_RT, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Substrate_RT", y = "Cu_difference", title="All points") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+aaa <- ggplot(results3, aes(x = Substrate_RT, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Substrate_RT", y = "Cu_difference", title="All points") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+b1 <- ggplot(results3_1, aes(x = Total_Weight, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Total_Weight", y = "Cu_difference", title="_1 point") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+b2 <- ggplot(results3_2, aes(x = Total_Weight, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Total_Weight", y = "Cu_difference", title="_2 point") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+b3 <- ggplot(results3_3, aes(x = Total_Weight, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Total_Weight", y = "Cu_difference", title="_3 point") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+
+c1 <- ggplot(results3_1, aes(x = Substrate_RT, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Substrate_RT", y = "Cu_difference", title="_1 point") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+c2 <- ggplot(results3_2, aes(x = Substrate_RT, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +
+  labs(x = "Substrate_RT", y = "Cu_difference", title="_2 point") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+c3 <- ggplot(results3_3, aes(x = Substrate_RT, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Substrate_RT", y = "Cu_difference", title="_3 point") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+#
+cor(results3$Cu_difference, results3$Cu_PXRF, method = "spearman", use = "complete.obs")
+cor(results3$Cu_difference, results3$Cu_ICP, method = "spearman", use = "complete.obs")
+
+cor(results3_1$Cu_difference, results3_1$Cu_PXRF, method = "spearman", use = "complete.obs")
+cor(results3_2$Cu_difference, results3_2$Cu_PXRF, method = "spearman", use = "complete.obs")
+cor(results3_3$Cu_difference, results3_3$Cu_PXRF, method = "spearman", use = "complete.obs")
+cor(results3_1$Cu_difference, results3_1$Cu_ICP, method = "spearman", use = "complete.obs")
+cor(results3_2$Cu_difference, results3_2$Cu_ICP, method = "spearman", use = "complete.obs")
+cor(results3_3$Cu_difference, results3_3$Cu_ICP, method = "spearman", use = "complete.obs")
+
+d <- ggplot(results3, aes(x = Cu_PXRF, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_PXRF", y = "Cu_difference", title="All") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+dd <- ggplot(results3, aes(x = Cu_ICP, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_ICP", y = "Cu_difference", title="All") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+ddd <- ggplot(results3, aes(x = Cu_ICP, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_ICP", y = "Cu_difference", title="All") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+d1 <- ggplot(results3_1, aes(x = Cu_PXRF, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_PXRF", y = "Cu_difference", title="_1") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+d2 <- ggplot(results3_2, aes(x = Cu_PXRF, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_PXRF", y = "Cu_difference", title="_2") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+
+d3 <- ggplot(results3_3, aes(x = Cu_PXRF, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_PXRF", y = "Cu_difference", title="_3") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+e1 <- ggplot(results3_1, aes(x = Cu_ICP, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_ICP", y = "Cu_difference", title="_1") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+e2 <- ggplot(results3_2, aes(x = Cu_ICP, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_ICP", y = "Cu_difference", title="_2") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+
+e3 <- ggplot(results3_3, aes(x = Cu_ICP, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_ICP", y = "Cu_difference", title="_3") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+
+ggarrange(a,aa,aaa,b1,b2,b3,c1,c2,c3,
+          ncol = 3, nrow = 3, 
+          common.legend = FALSE, legend = "bottom")
+
+ggarrange(d,dd,ddd,d1,d2,d3,e1,e2,e3,
+          
+          ncol = 3, nrow = 3, 
+          common.legend = FALSE, legend = "bottom")
+
+
+
+
+
+# Assuming results3 already has the 'Category' column created from the previous step
+results3 <- results3 %>%
+  group_by(SampleID) %>%
+  mutate(
+    Unique_Category_Count = n_distinct(Category),  # Count unique categories per SampleID
+    Single_Category = if_else(Unique_Category_Count == 1, "Y", "N")  # Mark 'Y' if only one unique category
+  ) %>%
+  ungroup() %>%
+  select(-Unique_Category_Count)  # Optionally, remove the temporary count column
+
+# View the updated dataset
+print(results3)
+
+
+
+results3_single <- subset(results3, Single_Category=="Y")
+
+
+cor(results3_single$Cu_difference, results3_single$Cu_PXRF, method = "spearman", use = "complete.obs")
+cor(results3_single$Cu_difference, results3_single$Cu_ICP, method = "spearman", use = "complete.obs")
+
+cor(results3_single$Cu_difference, results3_single$Total_Weight, method = "spearman", use = "complete.obs")
+cor(results3_single$Cu_difference, results3_single$Substrate_RT, method = "spearman", use = "complete.obs")
+
+singl1 <- ggplot(results3_single, aes(x = Cu_PXRF, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_PXRF", y = "Cu_difference", title="_3") +
+  scale_y_continuous(limits = c(-300, 0), breaks = seq(-300, 0, by = 50)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+singl2 <- ggplot(results3_single, aes(x = Cu_ICP, y = Cu_difference, size = Total_Weight)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Cu_ICP", y = "Cu_difference", title="_3") +
+  scale_y_continuous(limits = c(-300, 0), breaks = seq(-300, 0, by = 50)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+
+singl3 <- ggplot(results3_single, aes(x = Total_Weight, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Total_Weight", y = "Cu_difference", title="1to1") +
+  scale_y_continuous(limits = c(-300, 0), breaks = seq(-300, 0, by = 50)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+singl4 <- ggplot(results3_single, aes(x = Substrate_RT, y = Cu_difference, size = Cu_PXRF)) +
+  geom_point(shape=21, stroke=1) +  # Plot points
+  labs(x = "Substrate_RT", y = "Cu_difference", title="1to1") +
+  scale_y_continuous(limits = c(-300, 0), breaks = seq(-300, 0, by = 50)) +
+  theme_classic() +
+  theme(axis.text.x = element_text(hjust = 1))
+
+
+ggarrange(singl1, singl2,singl3,singl4,
+          ncol = 2, nrow = 2, 
+          common.legend = FALSE, legend = "bottom")
