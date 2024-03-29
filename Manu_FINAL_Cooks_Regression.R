@@ -80,7 +80,7 @@ dt[,12] <- sapply(dt[,12],as.numeric)
   M1Se <- glm(Se_ICP ~ Se_PXRF, data = dt, family = Gamma(link = "identity"), start = start_vals) # gamma family is for modeling continuous, positive response variables with right-skewed distributions, The link function is typically "log" or "inverse.
   M2Se <- glm(Se_ICP ~ Se_PXRF + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   M3Se <- glm(Se_ICP ~ Se_PXRF + Substrate_RT, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-  M4Se <- glm(Se_ICP ~ Se_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+  #M4Se <- glm(Se_ICP ~ Se_PXRF + Substrate_RT + Total_Weight, data = dt, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
   summary(M1Se)
   
   
@@ -488,4 +488,5 @@ wb_icc <- createWorkbook()
 addWorksheet(wb_icc, "ICC Results")
 writeData(wb_icc, "ICC Results", icc_results)
 saveWorkbook(wb_icc, "ICC_Cook.xlsx", overwrite = TRUE)
+
 
