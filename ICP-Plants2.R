@@ -106,6 +106,11 @@ ggplot(results2, aes(x = Total_Weight, y = Cu_error, color = Tube_No, size = Cu_
 
 
 
+results2_mean <- results2 %>%
+  group_by(SampleID) %>%
+  mutate(across(where(is.numeric), mean, na.rm = TRUE)) %>%
+  distinct(SampleID, .keep_all = TRUE) %>%
+  ungroup()
 
 #Wilcoxon
 {
@@ -148,7 +153,8 @@ library(dplyr)
        Cu = mean(Cu, na.rm = TRUE),  # Directly naming the mean as 'Cu'
        Total_Weight = first(Total_Weight),  # Assuming Total_Weight doesn't vary within SampleID
        Tube_No = first(Tube_No),             # Assuming Tube_No doesn't vary within SampleID
-       Form = first(Form),                   # Assuming Form doesn't vary within SampleID
+       Form = first(Form), 
+       Type_of_Sample=first(Type_of_Sample),
        .groups = 'drop'
      ) %>%
      mutate(Method = "ICP_Averaged")  # Add method as a new column
@@ -156,16 +162,31 @@ library(dplyr)
    # Select PXRF data, ensuring to include the same columns for consistency
    dt_PXRF <- dt %>%
      filter(Method == "PXRF") %>%
-     select(SampleID, Cu, Total_Weight, Tube_No, Form, Method)
+     select(SampleID, Cu, Total_Weight, Tube_No, Form, Method, Type_of_Sample)
    
-   # Combine the datasets
+
    combined_dt <- bind_rows(dt_ICP_means, dt_PXRF)
+
+   
+   
+   #change three to two in tubes
+   combined_dt <- combined_dt %>%
+     mutate(Tube_No = if_else(Tube_No == "three", "two", Tube_No))
+   
+   
+   
+   # Plotting with customized shapes
+   ggplot(combined_dt, aes(x = Tube_No, y = Cu)) +
+     geom_boxplot()   # Plot points
+   cu_one <- combined_dt$Cu[combined_dt$Tube_No == "one"]
+   cu_two <- combined_dt$Cu[combined_dt$Tube_No == "two"]
+   wilcox.test(cu_one, cu_two) # there's no difference
 
    
    library(car)
    
-   # Fit a linear model
-   lm_model <- lm(Cu ~ Method + Total_Weight + Tube_No + Form, data = combined_dt)
+ head(combined_dt)
+   lm_model <- lm(Cu ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = combined_dt)
    
    # Conduct Type II ANOVA on the linear model
    anova_result <- Anova(lm_model, type="II")
@@ -175,6 +196,77 @@ library(dplyr)
    
    # You might also be interested in checking the summary of the linear model
    print(summary(lm_model))
+   
+   
+   results2_mean <- results2_mean %>%
+     mutate(Tube_No = if_else(Tube_No == "three", "two", Tube_No))
+   
+   lm_model2 <- lm(Cu_ICP~Cu_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   
+   lm_model2 <- lm(Zn_ICP~Zn_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   
+   lm_model2 <- lm(Fe_ICP~Fe_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   lm_model2 <- lm(Se_ICP~Se_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   lm_model2 <- lm(Mn_ICP~Mn_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   lm_model2 <- lm(Re_ICP~Re_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   lm_model2 <- lm(Ti_ICP~Ti_PXRF + Total_Weight + Tube_No + Form + Type_of_Sample, data = results2_mean)
+   anova_result2 <- Anova(lm_model2, type="II")
+   print(anova_result2)
+   print(summary(lm_model2))
+   
+   
+   #Tidyverse again to have a column method but I want to keep all my columns and elements
+   
+   dt_ICP_means <- dt %>%
+     filter(Method == "ICP") %>%
+     group_by(SampleID) %>%
+     summarise(
+       across(c(Cu, Zn, Se, Re, Fe, Mn, P, S, Ti,Cr, As), mean, na.rm = TRUE), # Calculate mean for specified elements
+       across(c(Total_Weight, Tube_No, Form, Type_of_Sample, Scientific_Name, Family, Status, Duration, Site, Group, Plot, Sample_Name, Substrate_RT, SampleID2), first), # Directly carry over these metadata columns
+       .groups = 'drop'
+     ) %>%
+     mutate(Method = "ICP_Averaged")  # Add method as a new column
+   
+   # Select same columns here because pxrf was missing in anova!!!!!!!!!!!!!!!!@!!!!!!!!!!!!!!!!!
+   dt_PXRF <- dt %>%
+     filter(Method == "PXRF") %>%
+     select(SampleID, Cu, Total_Weight, Tube_No, Form, Method, Type_of_Sample)
+   
+   lm_model <- lm(Cu ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = dt_ICP_means)
+   anova_result <- Anova(lm_model, type="II")
+   print(anova_result)
+   print(summary(lm_model))
+   
+   lm_model <- lm(Zn ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = combined_dt)
+   anova_result <- Anova(lm_model, type="II")
+   print(anova_result)
+   print(summary(lm_model))
+   
+   
    
 ###############
    #Anova only for ICP data to check variability. No mean.
