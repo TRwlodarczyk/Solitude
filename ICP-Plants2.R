@@ -20,6 +20,8 @@
   library (readr) #to read URL
   library(stringr) # For str_replace_all
   library(psych)
+  library(car)
+  
 }
 
 
@@ -187,14 +189,8 @@ library(dplyr)
    
  head(combined_dt)
    lm_model <- lm(Cu ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = combined_dt)
-   
-   # Conduct Type II ANOVA on the linear model
    anova_result <- Anova(lm_model, type="II")
-   
-   # Display the ANOVA table
    print(anova_result)
-   
-   # You might also be interested in checking the summary of the linear model
    print(summary(lm_model))
    
    
@@ -240,31 +236,187 @@ library(dplyr)
    
    
    #Tidyverse again to have a column method but I want to keep all my columns and elements
+   ## Summarize ICP data in to have Method column and all elements
+
+   {
+   library(dplyr)
    
+   # Calculate mean values for ICP data for each SampleID
    dt_ICP_means <- dt %>%
      filter(Method == "ICP") %>%
      group_by(SampleID) %>%
-     summarise(
-       across(c(Cu, Zn, Se, Re, Fe, Mn, P, S, Ti,Cr, As), mean, na.rm = TRUE), # Calculate mean for specified elements
-       across(c(Total_Weight, Tube_No, Form, Type_of_Sample, Scientific_Name, Family, Status, Duration, Site, Group, Plot, Sample_Name, Substrate_RT, SampleID2), first), # Directly carry over these metadata columns
-       .groups = 'drop'
-     ) %>%
-     mutate(Method = "ICP_Averaged")  # Add method as a new column
+     summarise(across(everything(), ~ if(is.numeric(.x)) mean(.x, na.rm = TRUE) else first(.x)),
+               .groups = 'drop')
    
-   # Select same columns here because pxrf was missing in anova!!!!!!!!!!!!!!!!@!!!!!!!!!!!!!!!!!
+   # Ensure that the Method column reflects the averaged ICP data
+   dt_ICP_means <- dt_ICP_means %>%
+     mutate(Method = "ICP_Averaged")
+   
+   # Select PXRF data
+   # No need to summarise PXRF data as it assumes only one row per SampleID
    dt_PXRF <- dt %>%
-     filter(Method == "PXRF") %>%
-     select(SampleID, Cu, Total_Weight, Tube_No, Form, Method, Type_of_Sample)
+     filter(Method == "PXRF")
    
-   lm_model <- lm(Cu ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = dt_ICP_means)
+   # Combine the averaged ICP data with PXRF data
+   combined_dt <- bind_rows(dt_ICP_means, dt_PXRF)
+   
+
+   
+   ## Add Percent Error to combined_dt
+   library(dplyr)
+   
+   # Split data into ICP and PXRF
+   dt_ICP <- combined_dt %>% filter(Method == "ICP_Averaged")
+   dt_PXRF <- combined_dt %>% filter(Method == "PXRF")
+   
+   # Initialize an empty list to store the results
+   results_list <- list()
+   
+   unique_sample_ids <- unique(dt_ICP$SampleID)
+   
+   for (sample_id in unique_sample_ids) {
+     icp_rows <- dt_ICP %>% filter(SampleID == sample_id)
+     pxrf_row <- dt_PXRF %>% filter(SampleID == sample_id)
+     
+     if (nrow(pxrf_row) == 1) {
+       for (i in 1:nrow(icp_rows)) {
+         # Calculating percent error for each element
+         percent_error <- abs((icp_rows[i, 17:27] - pxrf_row[, 17:27]) / icp_rows[i, 17:27]) * 100
+         names(percent_error) <- paste0(names(icp_rows)[17:27], "_error")
+         
+         # Combine metadata, ICP and PXRF concentrations, and percent error into a single row
+         temp_result <- c(icp_rows[i, 1:16], icp_rows[i, 17:27], pxrf_row[, 17:27], percent_error)
+         names(temp_result)[17:27] <- paste0(names(temp_result)[17:27], "_ICP")
+         names(temp_result)[28:38] <- paste0(names(temp_result)[17:27], "_PXRF", sep = "")
+         
+         # Append the temp_result to the results_list
+         results_list[[length(results_list) + 1]] <- temp_result
+       }
+     }
+   }
+   
+   # Combine all rows in the list into a single data frame
+   results3 <- do.call(rbind, results_list)
+   
+   # Convert the results into a data frame and assign row names as ID
+   results3 <- data.frame(ID = 1:nrow(results3), results3)
+   rownames(results3) <- NULL
+   
+   # Print the results
+   print(head(results3))
+   
+}
+   
+   results3[,18:50] <- sapply(results3[,18:50],as.numeric)
+   results3[,1:17] <- sapply(results3[,1:17],as.character)
+   results3[,14:15] <- sapply(results3[,14:15],as.numeric)
+   
+   results3 <- results3 %>%
+     mutate(Tube_No = if_else(Tube_No == "three", "two", Tube_No))
+   
+   #lm_model <- lm(Cu ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = dt_ICP_means)
+   #anova_result <- Anova(lm_model, type="II")
+   #print(anova_result)
+   #print(summary(lm_model))
+   
+   #lm_model <- lm(Zn ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = combined_dt)
+   #anova_result <- Anova(lm_model, type="II")
+   #print(anova_result)
+   #print(summary(lm_model))
+   
+   
+   lm_model <- lm(Cu_error ~ Tube_No, data = results3)
    anova_result <- Anova(lm_model, type="II")
    print(anova_result)
    print(summary(lm_model))
+   aov1 <- aov(Cu_error~Tube_No, data=results3)
+   summary(aov1)
    
-   lm_model <- lm(Zn ~ Method + Total_Weight + Tube_No + Form + Type_of_Sample, data = combined_dt)
-   anova_result <- Anova(lm_model, type="II")
-   print(anova_result)
-   print(summary(lm_model))
+#Checking tube 1 vs tube 2
+   {
+  ggplot(results3, aes(x = Total_Weight, y = Cu_error, color = Tube_No)) +
+     geom_point() +  # Plot points
+     labs(x = "Total Weight", y = "Cu", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+  
+  #ggplot(results2, aes(x = S_PXRF, y = Scientific_Name, color = Plot)) +
+  #  geom_boxplot() +  # Plot points
+  #  labs(x = "Total Weight", y = "Cu", title = "All Points") +
+  #  theme_minimal() +
+  #  theme(axis.text.x = element_text(hjust = 1))
+   
+   Cu <- ggplot(results3, aes(x = Tube_No, y =Cu_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Cu Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   Se <- ggplot(results3, aes(x = Tube_No, y = Se_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Se Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   Re <- ggplot(results3, aes(x = Tube_No, y = Re_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Re Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   Zn <- ggplot(results3, aes(x = Tube_No, y = Zn_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Zn Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   Mn <- ggplot(results3, aes(x = Tube_No, y = Mn_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Mn Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   Fe <-  ggplot(results3, aes(x = Tube_No, y = Fe_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Fe Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   Ti <-  ggplot(results3, aes(x = Tube_No, y = Ti_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "Ti Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   P <-  ggplot(results3, aes(x = Tube_No, y = P_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "P Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   S <-  ggplot(results3, aes(x = Tube_No, y = S_error, color = Tube_No)) +
+     geom_boxplot() +  # Plot points
+     labs(x = "number of tubes", y = "S Error", title = "All Points") +
+     theme_minimal() +
+     theme(axis.text.x = element_text(hjust = 1))
+   
+   
+   ggarrange(Cu,Se,Re,Zn,Mn,Fe,Ti,P,S,
+             ncol = 3, nrow = 3, 
+             common.legend = FALSE, legend = "bottom")
+   
+   wilcox.test(Cu_error~Tube_No, data=results3)
+   wilcox.test(Se_error~Tube_No, data=results3)
+   wilcox.test(Re_error~Tube_No, data=results3)
+   wilcox.test(Zn_error~Tube_No, data=results3)
+   wilcox.test(Mn_error~Tube_No, data=results3)
+   wilcox.test(Fe_error~Tube_No, data=results3)
+   wilcox.test(Ti_error~Tube_No, data=results3)
+   wilcox.test(P_error~Tube_No, data=results3)
+   wilcox.test(S_error~Tube_No, data=results3)
+   
+   str(results3)
+   
+   }
    
    
    
