@@ -113,13 +113,78 @@ dt <- dt %>%
   mutate(Tube_No = if_else(Tube_No == "three", "two", Tube_No))
 
 
-write.xlsx(dt, "ICP-PXRF-MEAN.xlsx")
+#write.xlsx(dt, "ICP-PXRF-MEAN.xlsx")
 ##############
 
 
 dt <- dt %>%
   filter(Type_of_Sample != "stem", Type_of_Sample != "root")
 
+
+dt <- dt %>%
+  filter(Site == "TAILINGS", ICP == "y")
+
+#For PLS-R - sprawdzam 0-25 quartile, 25-50 etc.
+##TWRT etc
+library(dplyr)
+
+# Add the categorical column based on quartiles
+dt <- dt %>%
+  mutate(TW_Q = cut(Total_Weight,
+                    breaks = quantile(Total_Weight, probs = c(0, 0.25, 0.5, 0.75, 1)),
+                    labels = c("TW.VSMALL", "TW.SMALL", "TW.MEDIUM", "TW.LARGE"),
+                    include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(RT_Q = cut(Substrate_RT,
+                    breaks = quantile(Substrate_RT, probs = c(0, 0.25, 0.5, 0.75, 1)),
+                    labels = c("RT.VSMALL", "RT.SMALL", "RT.MEDIUM", "RT.LARGE"),
+                    include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(Cu_ICP_Q = cut(Cu_ICP,
+                        breaks = quantile(Cu_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("Cu.VSMALL", "Cu.SMALL", "Cu.MEDIUM", "Cu.LARGE"),
+                        include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(Re_ICP_Q = cut(Re_ICP,
+                        breaks = quantile(Re_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("Re.VSMALL", "Re.SMALL", "Re.MEDIUM", "Re.LARGE"),
+                        include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(Se_ICP_Q = cut(Se_ICP,
+                        breaks = quantile(Se_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("Se.VSMALL", "Se.SMALL", "Se.MEDIUM", "Se.LARGE"),
+                        include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(Zn_ICP_Q = cut(Zn_ICP,
+                        breaks = quantile(Zn_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("Zn.VSMALL", "Zn.SMALL", "Zn.MEDIUM", "Zn.LARGE"),
+                        include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(Mn_ICP_Q = cut(Mn_ICP,
+                        breaks = quantile(Mn_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("Mn.VSMALL", "Mn.SMALL", "Mn.MEDIUM", "Mn.LARGE"),
+                        include.lowest = TRUE))
+
+
+dt <- dt %>%
+  mutate(Fe_ICP_Q = cut(Fe_ICP,
+                        breaks = quantile(Fe_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("Fe.VSMALL", "Fe.SMALL", "Fe.MEDIUM", "Fe.LARGE"),
+                        include.lowest = TRUE))
+
+dt <- dt %>%
+  mutate(S_ICP_Q = cut(S_ICP,
+                        breaks = quantile(S_ICP, probs = c(0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
+                        labels = c("S.VSMALL", "S.SMALL", "S.MEDIUM", "S.LARGE"),
+                        include.lowest = TRUE))
+
+write.xlsx(dt, "ICP-PXRF-MEAN-PLSR2.xlsx")
 
 
 # Add a new column 'Shape' to the dataset based on conditions
