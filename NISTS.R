@@ -1,0 +1,931 @@
+#NISTS TEST
+
+
+
+{
+  library(ggplot2)
+  library(ggpubr)
+  library(dplyr)
+  library(data.table)
+  library(reshape2)
+  library(reshape)
+  library("readxl")
+  library(ggpubr)
+  library(agricolae)
+  library(tidyverse)
+  library (readr) #to read URL
+  library(stringr) # For str_replace_all
+  library(psych)
+  library(car)
+  library(openxlsx)
+  
+}
+
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/NIST-test")
+dt <-read.delim("NISTS_04.18.2024_trimmed.txt")
+
+dt1 <- dt %>% 
+  filter(Sample != "QA")
+
+dt2 <- dt1 %>% 
+  filter(Optimization == "T1.5")
+dt3 <- dt2 %>% 
+  filter(Method == "cup")
+
+
+str(dt3)
+
+dt3[, 9:33] <- sapply(dt3[, 9:33], as.numeric)
+
+
+dt3 <- dt3 %>%
+  mutate(across(everything(), ~replace_na(., 0)))
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+# Ensure Total_Weight is treated as a categorical variable
+dt3 <- dt3 %>%
+  mutate(Total_Weight = as.factor(Total_Weight))
+
+# Create a boxplot
+ggplot(dt3, aes(x = Total_Weight, y = Cu)) +
+  geom_boxplot() +
+  facet_wrap(~Sample_ID, scales = "free") +
+  theme_minimal() +
+  labs(title = "Boxplot of Cu by Total Weight for each Sample ID",
+       x = "Total Weight",
+       y = "Cu")
+
+
+dt3_NIST1515 <- subset(dt3, Sample_ID=="NIST1515")
+
+ggplot(dt3_NIST1515, aes(x = Total_Weight, y = Cu)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Boxplot of Cu by Total Weight for each Sample ID",
+       x = "Total Weight",
+       y = "Cu")
+
+
+library(tidyr)
+
+dt1[, 9:33] <- sapply(dt1[, 9:33], as.numeric)
+
+
+dt1 <- dt1 %>%
+  mutate(across(everything(), ~replace_na(., 0)))
+
+dt1 <- dt1 %>%
+  mutate(Total_Weight = as.factor(Total_Weight))
+
+#Test with ribbon
+#NIST1573a <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+#  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+#  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+#  geom_hline(yintercept = 5.69, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+#  geom_ribbon(aes(ymin = 5.69 - 3.13, ymax = 5.69 + 0.13), fill = "grey", alpha = 0.2) + # Shaded area for ±0.13
+#  theme_minimal() +
+#  labs(title = "Apple Leaves NIST 1573a",
+#       x = "Total Weight",
+#       y = "Cu [ppm]",
+#       color = "Method & Optimization") +
+#  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+#Cu-NISTS
+{
+#NIST 1515 Cu
+dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+dt1_NIST1515 <- dt1_NIST1515 %>%
+  mutate(Interaction = interaction(Method, Optimization))
+
+NIST1515_Cu <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+  geom_hline(yintercept = 5.69, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+  geom_hline(yintercept = 5.56, color = "grey", size = 0.5) + # 
+  geom_hline(yintercept = 5.82, color = "grey", size = 0.5) + #
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  labs(title = "Apple Leaves NIST 1515",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+#NIST 1573a Cu
+
+dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+dt1_NIST1573a <- dt1_NIST1573a %>%
+  mutate(Interaction = interaction(Method, Optimization))
+
+NIST1573a_Cu <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+  geom_hline(yintercept = 4.7, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+  geom_hline(yintercept = 4.84, color = "grey", size = 0.5) + # 
+  geom_hline(yintercept = 4.56, color = "grey", size = 0.5) + #
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  labs(title = "Tomato Leaves NIST 1573a",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+
+#NIST 1568b Cu
+dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+dt1_NIST1568b <- dt1_NIST1568b %>%
+  mutate(Interaction = interaction(Method, Optimization))
+
+NIST1568b_Cu <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+  geom_hline(yintercept = 2.35, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+  geom_hline(yintercept = 2.51, color = "grey", size = 0.5) + # 
+  geom_hline(yintercept = 2.19, color = "grey", size = 0.5) + #
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 4.5), breaks = seq(0, 4.5, by = 0.5)) +
+  labs(title = "Rice Flour NIST 1568b",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+
+#NIST 1570a Cu
+dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+dt1_NIST1570a <- dt1_NIST1570a %>%
+  mutate(Interaction = interaction(Method, Optimization))
+
+NIST1570a_Cu <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+  geom_hline(yintercept = 12.22, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+  geom_hline(yintercept = 13.08, color = "grey", size = 0.5) + # 
+  geom_hline(yintercept = 11.36, color = "grey", size = 0.5) + #
+  theme_classic() +
+  scale_y_continuous(limits = c(5, 16), breaks = seq(5, 16, by = 2)) +
+  labs(title = "Spinach leaves NIST 1570",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+#NIST 1575a Cu
+dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+dt1_NIST1575a <- dt1_NIST1575a %>%
+  mutate(Interaction = interaction(Method, Optimization))
+
+NIST1575a_Cu <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+  geom_hline(yintercept = 2.8, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+  geom_hline(yintercept = 3.0, color = "grey", size = 0.5) + # 
+  geom_hline(yintercept = 2.6, color = "grey", size = 0.5) + #
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 4), breaks = seq(0, 4, by = 0.5)) +
+  labs(title = "Pine Needles NIST 1575a",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu,
+          ncol = 3, nrow = 2, 
+          common.legend = TRUE, legend = "bottom")
+  }
+
+#Zn-NISTS
+{
+  #NIST 1515 Zn
+  dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+  dt1_NIST1515 <- dt1_NIST1515 %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1515_Zn <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Zn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 12.45, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 12.88, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 12.02, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(5, 15), breaks = seq(5, 15, by = 1)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "Zn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette  
+  
+  
+  #NIST 1573a Zn
+  
+  dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+  dt1_NIST1573a <- dt1_NIST1573a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1573a_Zn <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Zn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 30.94, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 31.49, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 30.39, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(20, 35), breaks = seq(20, 35, by = 1)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "Zn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1568b Zn
+  dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+  dt1_NIST1568b <- dt1_NIST1568b %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1568b_Zn <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Zn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 19.42, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 19.68, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 19.16, color = "grey", size = 0.5) + #
+    theme_classic() +
+   scale_y_continuous(limits = c(0, 25), breaks = seq(0, 25, by = 2.5)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "Zn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1570a Zn
+  dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+  dt1_NIST1570a <- dt1_NIST1570a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1570a_Zn <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Zn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 82.3, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 86.2, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 78.4, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(60, 100), breaks = seq(60, 100, by = 5)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "Zn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  #NIST 1575a Zn
+  dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+  dt1_NIST1575a <- dt1_NIST1575a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1575a_Zn <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Zn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 38, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 40, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 36, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(20, 45), breaks = seq(20, 45, by = 5)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "Zn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  ggarrange(NIST1515_Zn,NIST1573a_Zn,NIST1568b_Zn,NIST1570a_Zn,NIST1575a_Zn,
+            ncol = 3, nrow = 2, 
+            common.legend = TRUE, legend = "bottom")
+  
+}
+
+#Mn-NISTS
+{
+  #NIST 1515 Mn
+  dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+  dt1_NIST1515 <- dt1_NIST1515 %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1515_Mn <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Mn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 54.1, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 55.2, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 53, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(30, 65), breaks = seq(30, 65, by = 5)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "Mn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette  
+  
+  
+  #NIST 1573a Mn
+  
+  dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+  dt1_NIST1573a <- dt1_NIST1573a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1573a_Mn <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Mn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 246.3, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 253.4, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 239.2, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(180, 290), breaks = seq(180, 290, by = 10)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "Mn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1568b Mn
+  dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+  dt1_NIST1568b <- dt1_NIST1568b %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1568b_Mn <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Mn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 19.2, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 21, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 17.4, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 5)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "Mn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1570a Zn
+  dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+  dt1_NIST1570a <- dt1_NIST1570a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1570a_Mn <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Mn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 76, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 77.2, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 74.8, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(55, 92), breaks = seq(55, 100, by = 5)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "Mn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  #NIST 1575a Zn
+  dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+  dt1_NIST1575a <- dt1_NIST1575a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1575a_Mn <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Mn, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 488, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 500, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 476, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(250, 575), breaks = seq(250, 600, by = 50)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "Mn [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  ggarrange(NIST1515_Mn,NIST1573a_Mn,NIST1568b_Mn,NIST1570a_Mn,NIST1575a_Mn,
+            ncol = 3, nrow = 2, 
+            common.legend = TRUE, legend = "bottom")
+  
+}
+
+#Fe-NISTS
+{
+  #NIST 1515 Fe
+  dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+  dt1_NIST1515 <- dt1_NIST1515 %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1515_Fe <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Fe, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 82.7, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 85.3, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 80.1, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(20, 95), breaks = seq(20, 100, by = 10)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "Fe [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette  
+  
+  
+  #NIST 1573a Fe
+  
+  dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+  dt1_NIST1573a <- dt1_NIST1573a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1573a_Fe <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Fe, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 367.5, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 371.8, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 363.2, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(240, 420), breaks = seq(240, 440, by = 20)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "Fe [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1568b Fe
+  dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+  dt1_NIST1568b <- dt1_NIST1568b %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1568b_Fe <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Fe, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 7.42, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 7.86, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 6.98, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "Fe [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1570a Fe - NA in NIST
+  #dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+  #dt1_NIST1570a <- dt1_NIST1570a %>%
+  #  mutate(Interaction = interaction(Method, Optimization))
+  
+  #NIST1570a_Fe <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Fe, color = Interaction)) +
+   # geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    #geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    #geom_hline(yintercept = 76, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    #geom_hline(yintercept = 77.2, color = "grey", size = 0.5) + # 
+    #geom_hline(yintercept = 74.8, color = "grey", size = 0.5) + #
+    #theme_classic() +
+    #scale_y_continuous(limits = c(55, 92), breaks = seq(55, 100, by = 5)) +
+    #labs(title = "Spinach leaves NIST 1570",
+     #    x = "Total Weight",
+      #   y = "Fe [ppm]",
+       #  color = "Method & Optimization") +
+    #scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  #NIST 1575a Fe
+  dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+  dt1_NIST1575a <- dt1_NIST1575a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1575a_Fe <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Fe, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 46, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 48, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 44, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(10, 120), breaks = seq(10, 120, by = 20)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "Fe [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  ggarrange(NIST1515_Fe,NIST1573a_Fe,NIST1568b_Fe,NIST1575a_Fe,
+            ncol = 2, nrow = 2, 
+            common.legend = TRUE, legend = "bottom")
+  
+}
+
+
+#Mn-NISTS
+{
+  #NIST 1515 K
+  dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+  dt1_NIST1515 <- dt1_NIST1515 %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1515_K <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = K, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    #geom_hline(yintercept = 54.1, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    #geom_hline(yintercept = 55.2, color = "grey", size = 0.5) + # 
+    #geom_hline(yintercept = 53, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(30, 65), breaks = seq(30, 65, by = 5)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "K [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette  
+  
+  
+  #NIST 1573a K
+  
+  dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+  dt1_NIST1573a <- dt1_NIST1573a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1573a_K <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = K, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    #geom_hline(yintercept = 246.3, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    #geom_hline(yintercept = 253.4, color = "grey", size = 0.5) + # 
+    #geom_hline(yintercept = 239.2, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(180, 290), breaks = seq(180, 290, by = 10)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "K [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1568b K
+  dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+  dt1_NIST1568b <- dt1_NIST1568b %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1568b_K <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = K, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    #geom_hline(yintercept = 19.2, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    #geom_hline(yintercept = 21, color = "grey", size = 0.5) + # 
+    #geom_hline(yintercept = 17.4, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 5)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "K [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1570a K
+  dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+  dt1_NIST1570a <- dt1_NIST1570a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1570a_K <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = K, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    #geom_hline(yintercept = 76, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    #geom_hline(yintercept = 77.2, color = "grey", size = 0.5) + # 
+    #geom_hline(yintercept = 74.8, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(55, 92), breaks = seq(55, 100, by = 5)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "K [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  #NIST 1575a K
+  dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+  dt1_NIST1575a <- dt1_NIST1575a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1575a_K <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = K, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    #geom_hline(yintercept = 488, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    #geom_hline(yintercept = 500, color = "grey", size = 0.5) + # 
+    #geom_hline(yintercept = 476, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(250, 575), breaks = seq(250, 600, by = 50)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "K [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  ggarrange(NIST1515_Mn,NIST1573a_Mn,NIST1568b_Mn,NIST1570a_Mn,NIST1575a_Mn,
+            ncol = 3, nrow = 2, 
+            common.legend = TRUE, legend = "bottom")
+  
+}
+
+
+#### Median
+{
+  
+  library(dplyr)
+  
+  # Assuming dt3 is your dataset and columns are named appropriately
+  element_columns <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
+  metadata_columns <- c("Sample", "Sample_ID", "Date", "File", "Total_Weight", "Method", "Material", "Optimization")
+  
+  # Compute the median for each element within the specified groups and add metadata
+  dt_median <- dt1 %>%
+    group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+    summarise(across(all_of(element_columns), median, na.rm = TRUE), .groups = "drop") %>%
+    # Ensure each group is represented once for the join to prevent duplicates
+    distinct(Sample_ID, Total_Weight, Method, Optimization, .keep_all = TRUE) %>%
+    # Join metadata based on the most frequent occurrence or a specific entry for each group
+    left_join(dt1 %>%
+                select(Sample_ID, Total_Weight, Method, Optimization, all_of(metadata_columns)) %>%
+                group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+                slice(1), # Assuming the first row is representative for the metadata
+              by = c("Sample_ID", "Total_Weight", "Method", "Optimization"))
+  
+  # Checking if all 'Method' types are present
+  print(unique(dt_median$Method))
+  
+  # Check the resulting dataframe
+  print(dt_median)
+
+  #write.xlsx(dt_median, 'NISTS_04.18.2024-MEDIAN.xlsx')
+  
+}
+
+
+####Error calculation
+{
+dt_error <-read.delim("NISTS_04.18.2024_trimmed_MEDIAN_NIST.txt")
+
+dt_error[, 5:28] <- sapply(dt_error[, 5:28], as.numeric)
+
+dt_error <- dt_error %>%
+  mutate(across(where(is.numeric), ~na_if(., 0)))
+
+
+
+dt_error <- dt_error %>%
+  mutate(
+    P_error = 100 * abs(P - P_NIST) / P_NIST,
+    S_error = 100 * abs(S - S_NIST) / S_NIST,
+    K_error = 100 * abs(K - K_NIST) / K_NIST,
+    Ca_error = 100 * abs(Ca - Ca_NIST) / Ca_NIST,
+    Mn_error = 100 * abs(Mn - Mn_NIST) / Mn_NIST,
+    Fe_error = 100 * abs(Fe - Fe_NIST) / Fe_NIST,
+    Ni_error = 100 * abs(Ni - Ni_NIST) / Ni_NIST,
+    Cu_error = 100 * abs(Cu - Cu_NIST) / Cu_NIST,
+    Zn_error = 100 * abs(Zn - Zn_NIST) / Zn_NIST,
+    As_error = ifelse(!is.na(As_NIST), 100 * abs(As - As_NIST) / As_NIST, NA),  # Handle NAs
+    Se_error = ifelse(!is.na(Se_NIST), 100 * abs(Se - Se_NIST) / Se_NIST, NA),  # Handle NAs
+    Re_error = ifelse(!is.na(Re_NIST), 100 * abs(Re - Re_NIST) / Re_NIST, NA)   # Handle NAs
+  )
+
+
+#dt_error <- dt_error %>%
+#  mutate(Total_Weight = as.factor(Total_Weight))
+
+dt_error <- subset(dt_error, Optimization=="T1.5")
+
+Cu_error <- ggplot(dt_error, aes(x = Total_Weight, y = Cu_error, color = Sample_ID, shape=Method)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Cu Error",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+
+
+Zn_error <- ggplot(dt_error, aes(x = Total_Weight, y = Zn_error, color = Sample_ID, shape=Method)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  labs(title = "Zn Error",
+       x = "Total Weight",
+       y = "Zn [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+Mn_error <- ggplot(dt_error, aes(x = Total_Weight, y = Mn_error, color = Sample_ID, shape=Method)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  labs(title = "Mn Error",
+       x = "Total Weight",
+       y = "Mn [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+Fe_error <- ggplot(dt_error, aes(x = Total_Weight, y = Fe_error, color = Sample_ID, shape=Method)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  labs(title = "Fe Error",
+       x = "Total Weight",
+       y = "Fe [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+}
+########
+
+#### RMSE ERROR
+{
+dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNIST.txt")
+
+
+dt_error_rmse <- dt_error_rmse %>% 
+  filter(Sample != "QA")
+
+dt_error_rmse <- dt_error_rmse %>% 
+  filter(Optimization == "T1.5")
+
+dt_error_rmse <- dt_error_rmse %>% 
+  filter(Method == "cup")
+
+
+str(dt_error_rmse)
+
+dt_error_rmse[, 9:45] <- sapply(dt_error_rmse[, 9:45], as.numeric)
+
+
+
+
+dt_error_rmse <- dt_error_rmse %>%
+  select(-matches("_unc"))
+  
+
+rmsd_data <- dt_error_rmse %>%
+  rowwise() %>%
+  mutate(across(P:Re, ~ (. - get(paste0(cur_column(), "_NIST")))^2, .names = "diff_{col}")) %>%
+  group_by(Sample_ID, Total_Weight) %>%
+  summarise(across(starts_with("diff_"), ~ sqrt(mean(., na.rm = TRUE)), .names = "rmsd_{col}")) %>%
+  ungroup()
+
+
+
+Cu_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_Cu, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Cu RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+Zn_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_Zn, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Zn RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+Mn_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_Mn, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Mn RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+Fe_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_Fe, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Fe RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+Se_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_Se, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Se RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+S_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_S, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "S RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+P_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_P, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "P RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+K_error_RMSE <- ggplot(rmsd_data, aes(x = Total_Weight, y = rmsd_diff_K, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "K RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+cor.test(rmsd_data$Total_Weight, rmsd_data$rmsd_diff_Fe, method = "spearman")
+cor.test(rmsd_data$Total_Weight, rmsd_data$rmsd_diff_Cu, method = "spearman")
+cor.test(rmsd_data$Total_Weight, rmsd_data$rmsd_diff_Zn, method = "spearman")
+cor.test(rmsd_data$Total_Weight, rmsd_data$rmsd_diff_Mn, method = "spearman")
+cor.test(rmsd_data$Total_Weight, rmsd_data$rmsd_diff_Se, method = "spearman")
+
+
+RMSE_NIST1515 <- subset(rmsd_data, Sample_ID=="NIST1515")
+
+Zn_error_RMSE <- ggplot(RMSE_NIST1515, aes(x = Total_Weight, y = rmsd_diff_Zn, color = Sample_ID)) +
+  geom_point() +
+  theme_classic() +
+  #scale_y_continuous(limits = c(0, 45), breaks = seq(0, 45, by = 5)) +
+  labs(title = "Zn RMSE",
+       x = "Total Weight",
+       y = "RMSE [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+
+
+
+# Assuming your dataframe is called rmsd_data
+# Filter out unnecessary columns and standardize the RMSE values
+rmsd_data_long <- rmsd_data %>%
+  pivot_longer(cols = starts_with("rmsd_diff_"), names_to = "Element", values_to = "RMSE") %>%
+  group_by(Element) %>%
+  mutate(
+    Mean_RMSE = mean(RMSE, na.rm = TRUE),
+    SD_RMSE = sd(RMSE, na.rm = TRUE),
+    Std_RMSE = (RMSE - Mean_RMSE) / SD_RMSE
+  ) %>%
+  ungroup() %>%
+  select(Sample_ID, Total_Weight, Element, Std_RMSE) %>%
+  mutate(Element = sub("rmsd_diff_", "", Element))  # Clean element names
+
+# Create the heatmap
+ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Std_RMSE)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,
+                       na.value = "grey50", limits = c(-3, 3)) +  # Adjust limits as needed
+  labs(title = "Standardized RMSE Heatmap", x = "Total Weight", y = "Element") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+}
