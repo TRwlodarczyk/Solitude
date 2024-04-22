@@ -929,3 +929,68 @@ ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Std_
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 }
+
+{
+dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNIST_TWSAME.txt")
+dt_error_rmse <- dt_error_rmse %>% 
+  filter(Sample != "QA")
+dt_error_rmse <- dt_error_rmse %>% 
+  filter(Optimization == "T1.5")
+dt_error_rmse <- dt_error_rmse %>% 
+  filter(Method == "cup")
+dt_error_rmse[, 9:45] <- sapply(dt_error_rmse[, 9:45], as.numeric)
+dt_error_rmse <- dt_error_rmse %>%
+  select(-matches("_unc"))
+
+rmsd_data <- dt_error_rmse %>%
+  rowwise() %>%
+  mutate(across(P:Re, ~ (. - get(paste0(cur_column(), "_NIST")))^2, .names = "diff_{col}")) %>%
+  group_by(Sample_ID, Total_Weight) %>%
+  summarise(across(starts_with("diff_"), ~ sqrt(mean(., na.rm = TRUE)), .names = "rmsd_{col}")) %>%
+  ungroup()
+
+
+# Updated normalization function
+normalize <- function(x) {
+  # Check if all values are NA or if max equals min
+  if(all(is.na(x)) || max(x, na.rm = TRUE) == min(x, na.rm = TRUE)) {
+    return(rep(NA, length(x))) # Return NA if not possible to normalize
+  } else {
+    return((x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE)))
+  }
+}
+
+# Apply normalization to each RMSE column in your dataframe
+rmsd_data_normalized <- rmsd_data %>%
+  mutate(across(starts_with("rmsd_diff_"), normalize, .names = "norm_{.col}"))
+
+rmsd_data_long <- rmsd_data_normalized %>%
+  pivot_longer(
+    cols = starts_with("norm_rmsd_diff_"), 
+    names_to = "Element", 
+    values_to = "Normalized_RMSE",
+    names_prefix = "norm_rmsd_diff_"
+  ) %>%
+  mutate(Element = gsub("_", " ", Element))  # Optional: replace underscores with spaces for better label readability
+
+# View the long format data
+print(rmsd_data_long)
+
+ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Normalized_RMSE)) +
+  geom_tile() +  # Use geom_tile for heatmap
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,
+                       na.value = "grey50", limits = c(0, 1)) +  # Adjust limits and colors as needed
+  labs(title = "Normalized RMSE Heatmap", x = "Total Weight", y = "Element") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+}
+  
+  
+  dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNIST.txt")
+  
+  
+  
