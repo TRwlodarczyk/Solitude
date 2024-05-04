@@ -652,6 +652,228 @@ ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu,
 }
 
 
+#P-NISTS
+{
+  #NIST 1515 P
+  dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+  dt1_NIST1515 <- dt1_NIST1515 %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1515_P <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = P, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 1593, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 1661, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 1525, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(30, 65), breaks = seq(30, 65, by = 5)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "P [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette  
+  
+  
+  #NIST 1573a P
+  
+  dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+  dt1_NIST1573a <- dt1_NIST1573a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1573a_P <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = P, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 2161, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 2189, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 2133, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(180, 290), breaks = seq(180, 290, by = 10)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "P [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1568b P
+  dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+  dt1_NIST1568b <- dt1_NIST1568b %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1568b_P <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = P, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 1530, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 1570, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 1490, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 5)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "P [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1570a P
+  dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+  dt1_NIST1570a <- dt1_NIST1570a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1570a_P <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = P, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 5187, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 5254, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 5120, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(55, 92), breaks = seq(55, 100, by = 5)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "K [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  #NIST 1575a P
+  dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+  dt1_NIST1575a <- dt1_NIST1575a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1575a_P <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = P, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 1070, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 990, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 1150, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(250, 575), breaks = seq(250, 600, by = 50)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "P [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  ggarrange(NIST1515_P,NIST1573a_P,NIST1568b_P,NIST1570a_P,NIST1575a_P,
+            ncol = 3, nrow = 2, 
+            common.legend = TRUE, legend = "bottom")
+  
+}
+
+#Se-NISTS
+{
+  #NIST 1515 Se
+  dt1_NIST1515 <- subset(dt1, Sample_ID=="NIST1515")
+  dt1_NIST1515 <- dt1_NIST1515 %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1515_Se <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Se, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 1593, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 1661, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 1525, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(30, 65), breaks = seq(30, 65, by = 5)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "Se [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette  
+  
+  
+  #NIST 1573a P
+  
+  dt1_NIST1573a <- subset(dt1, Sample_ID=="NIST1573a")
+  dt1_NIST1573a <- dt1_NIST1573a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1573a_Se <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Se, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 2161, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 2189, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 2133, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(180, 290), breaks = seq(180, 290, by = 10)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "Se [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1568b P
+  dt1_NIST1568b <- subset(dt1, Sample_ID=="NIST1568b")
+  dt1_NIST1568b <- dt1_NIST1568b %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1568b_Se <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Se, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 1530, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 1570, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 1490, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 5)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "Se [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  
+  #NIST 1570a P
+  dt1_NIST1570a <- subset(dt1, Sample_ID=="NIST1570")
+  dt1_NIST1570a <- dt1_NIST1570a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1570a_Se <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Se, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 5187, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 5254, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 5120, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(55, 92), breaks = seq(55, 100, by = 5)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "Se [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  #NIST 1575a P
+  dt1_NIST1575a <- subset(dt1, Sample_ID=="NIST1575a")
+  dt1_NIST1575a <- dt1_NIST1575a %>%
+    mutate(Interaction = interaction(Method, Optimization))
+  
+  NIST1575a_Se <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Se, color = Interaction)) +
+    geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+    geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 1070, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 990, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 1150, color = "grey", size = 0.5) + #
+    theme_classic() +
+    #scale_y_continuous(limits = c(250, 575), breaks = seq(250, 600, by = 50)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "Se [ppm]",
+         color = "Method & Optimization") +
+    scale_color_brewer(palette = "Set1") # Adjust the color palette
+  
+  
+  ggarrange(NIST1515_Se,NIST1573a_Se,NIST1568b_Se,NIST1570a_Se,NIST1575a_Se,
+            ncol = 3, nrow = 2, 
+            common.legend = TRUE, legend = "bottom")
+  
+}
+
 #### Median
 {
   
@@ -930,6 +1152,7 @@ ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Std_
 
 }
 
+
 {
 dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNIST_TWSAME.txt")
 dt_error_rmse <- dt_error_rmse %>% 
@@ -990,7 +1213,174 @@ ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Norm
 }
   
   
-  dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNIST.txt")
+  dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNISTandSD.txt")
+  
+  
+  dt_error_rmse <- dt_error_rmse %>% 
+    filter(Sample != "QA")
+  
+  dt_error_rmse <- dt_error_rmse %>% 
+    filter(Optimization == "T1.5")
+  
+  dt_error_rmse <- dt_error_rmse %>% 
+    filter(Method == "cup")
+  
+  
+  str(dt_error_rmse)
+  
+  dt_error_rmse[, 9:45] <- sapply(dt_error_rmse[, 9:45], as.numeric)
+  
+  
+  dt_error_rmse <- dt_error_rmse %>%
+    select(-matches("_unc"))
   
   
   
+  dt_error_rmse <- dt_error_rmse %>%
+    mutate(across(.cols = 9:20, ~replace_na(., 0)))
+  
+  dt_error_rmse$Cu[dt_error_rmse$Cu == 0] <- 0.5/2
+  dt_error_rmse$Ca[dt_error_rmse$Ca == 0] <- 10/2
+  dt_error_rmse$Mn[dt_error_rmse$Mn == 0] <- 1/2
+  dt_error_rmse$Fe[dt_error_rmse$Fe == 0] <- 5/2
+  dt_error_rmse$Ni[dt_error_rmse$Ni == 0] <- 0.2/2
+  dt_error_rmse$Zn[dt_error_rmse$Zn == 0] <- 0.6/2
+  dt_error_rmse$As[dt_error_rmse$As == 0] <- 0.1/2
+  dt_error_rmse$Se[dt_error_rmse$Se == 0] <- 0.1/2
+  dt_error_rmse$Re[dt_error_rmse$Re == 0] <- 0.5/2
+  dt_error_rmse$Re[dt_error_rmse$Re == 0] <- 0.5/2
+  dt_error_rmse$P[dt_error_rmse$P == 0] <- 5
+
+dt_0.05 <- subset(dt_error_rmse, Total_Weight=="0.05")
+difference <- dt_0.05$Cu_NIST - dt_0.05$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.1 <- subset(dt_error_rmse, Total_Weight=="0.1")
+difference <- dt_0.1$Cu_NIST - dt_0.1$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.2 <- subset(dt_error_rmse, Total_Weight=="0.2")
+difference <- dt_0.2$Cu_NIST - dt_0.2$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.3 <- subset(dt_error_rmse, Total_Weight=="0.3")
+difference <- dt_0.3$Cu_NIST - dt_0.3$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.4 <- subset(dt_error_rmse, Total_Weight=="0.4")
+difference <- dt_0.4$Cu_NIST - dt_0.4$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.5 <- subset(dt_error_rmse, Total_Weight=="0.5")
+difference <- dt_0.5$Cu_NIST - dt_0.5$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.6 <- subset(dt_error_rmse, Total_Weight=="0.6")
+difference <- dt_0.6$Cu_NIST - dt_0.6$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_0.7 <- subset(dt_error_rmse, Total_Weight=="0.7")
+difference <- dt_0.7$Cu_NIST - dt_0.7$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_1 <- subset(dt_error_rmse, Total_Weight=="1")
+difference <- dt_1$Cu_NIST - dt_1$Cu
+t_test <- t.test(difference, mu = 0) 
+
+
+dt_1.5 <- subset(dt_error_rmse, Total_Weight=="1.5")
+difference <- dt_1.5$Cu_NIST - dt_1.5$Cu
+t_test <- t.test(difference, mu = 0) 
+
+dt_1.9 <- subset(dt_error_rmse, Total_Weight=="1.9")
+difference <- dt_1.9$Cu_NIST - dt_1.9$Cu
+t_test <- t.test(difference, mu = 0) 
+
+
+
+# List of elements to perform t-test on
+elements <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
+
+# Function to perform one-sample t-test for a given element
+perform_t_test <- function(data, element, weight) {
+  # Subset data for the specific Total_Weight
+  dt_weight <- subset(data, Total_Weight == weight)
+  
+  # Calculate the difference (assumes NIST values and sample measurements are already correct)
+  difference <- dt_weight[[paste0(element, "_NIST")]] - dt_weight[[element]]
+  
+  # Perform t-test if there are enough non-NA differences
+  if(sum(!is.na(difference)) >= 3) {
+    t_test_result <- t.test(difference, mu = 0)
+    p_value <- t_test_result$p.value
+  } else {
+    p_value <- NA  # Not enough data to perform t-test
+  }
+  return(p_value)
+}
+
+# DataFrame to store results
+results <- data.frame(Element = character(),
+                      Weight = numeric(),
+                      P_Value = numeric())
+
+# Loop through each element and weight
+for (element in elements) {
+  for (weight in unique(dt_error_rmse$Total_Weight)) {
+    p_value <- perform_t_test(dt_error_rmse, element, weight)
+    results <- rbind(results, data.frame(Element = element, Weight = weight, P_Value = p_value))
+  }
+}
+
+# View results
+print(results)
+
+# Save results to Excel
+write.xlsx(results, "T_Test_Results.xlsx")
+
+
+
+#############At the individual level
+
+# List of elements to perform t-test on
+elements <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
+
+# Function to perform one-sample t-test for a given element and sample
+perform_t_test <- function(data, element, weight, sample_id) {
+  # Subset data for the specific Total_Weight and Sample_ID
+  dt_weight_sample <- subset(data, Total_Weight == weight & Sample_ID == sample_id)
+  
+  # Calculate the difference (assumes NIST values and sample measurements are already correct)
+  difference <- dt_weight_sample[[paste0(element, "_NIST")]] - dt_weight_sample[[element]]
+  
+  # Check if variance is non-zero and there are enough non-NA differences to perform a t-test
+  if(var(difference, na.rm = TRUE) > 0 && sum(!is.na(difference)) >= 3) {
+    t_test_result <- t.test(difference, mu = 0)
+    p_value <- t_test_result$p.value
+  } else {
+    p_value <- NA  # Not enough variation or data to perform t-test
+  }
+  return(p_value)
+}
+
+# DataFrame to store results
+results <- data.frame(Sample_ID = character(),
+                      Element = character(),
+                      Weight = numeric(),
+                      P_Value = numeric())
+
+# Loop through each element, weight, and sample
+for (element in elements) {
+  for (weight in unique(dt_error_rmse$Total_Weight)) {
+    for (sample_id in unique(dt_error_rmse$Sample_ID)) {
+      p_value <- perform_t_test(dt_error_rmse, element, weight, sample_id)
+      results <- rbind(results, data.frame(Sample_ID = sample_id, Element = element, Weight = weight, P_Value = p_value))
+    }
+  }
+}
+
+# View results
+print(results)
+
+
+write.xlsx(results, "T_Test_Results_SampleID.xlsx")
