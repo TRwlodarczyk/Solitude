@@ -1383,4 +1383,19 @@ for (element in elements) {
 print(results)
 
 
-write.xlsx(results, "T_Test_Results_SampleID.xlsx")
+#write.xlsx(results, "T_Test_Results_SampleID.xlsx")
+
+
+
+
+#### Adding mass from ICP
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/ICP-Data")
+dt <-read.delim("ICP-MASS.txt")
+
+
+
+aggregated_data <- dt %>%
+  group_by(Sample_ID) %>%
+  summarize(Sample_mass = sum(Sample_mass, na.rm = TRUE))
+
+write.xlsx(aggregated_data, "Aggregated_Sample_Mass.xlsx")
