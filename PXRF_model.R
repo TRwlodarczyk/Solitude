@@ -34,26 +34,26 @@ dt_Cu_best <- dt %>%
       TubeTW == "oneTW.SMALL" |
         Qpercent_mass.TW == "80to100TW.SMALL" |
         Tube_No == "one" |
-        TWCuTube == "TW.SMALLCu.LARGEone" |
+        ####TWCuTube == "TW.SMALLCu.LARGEone" |
         TW_Q == "TW.SMALL" |
         TubeTW == "oneTW.MEDIUM" |
         Scientific_Name == "Xanthisma gracile" |
-        TWCu == "TW.SMALLCu.LARGE" |
+        ####TWCu == "TW.SMALLCu.LARGE" |
         Form == "Shrub" |
-        TWCu == "TW.VSMALLCu.MEDIUM" |
+        ####TWCu == "TW.VSMALLCu.MEDIUM" |
         ScieNamePlot == "P5Xanthisma gracile" |
         ScieNamePlot == "P5Gutierrezia sarothrae" |
-        TWCuTube == "TW.SMALLCu.VSMALLone" |
-        TWCuTube == "TW.SMALLCu.SMALLone" |
+        ####TWCuTube == "TW.SMALLCu.VSMALLone" |
+        ####TWCuTube == "TW.SMALLCu.SMALLone" |
         TubeTW == "oneTW.LARGE" |
         ScieNamePlot == "P2Xanthisma gracile" |
-        TWCuTube == "TW.SMALLCu.MEDIUMone" |
-        TWCuTube == "TW.LARGECu.SMALLone" |
+        ####TWCuTube == "TW.SMALLCu.MEDIUMone" |
+        ####TWCuTube == "TW.LARGECu.SMALLone" |
         Scientific_Name == "Ceanothus greggii" |
         ScieNamePlot == "P6Xanthisma gracile" |
         ScieNamePlot == "P1Euphorbia melanadenia" |
-        TWCuTube == "TW.MEDIUMCu.LARGEone" |
-        TWCuTube == "TW.MEDIUMCu.SMALLone" |
+        ####TWCuTube == "TW.MEDIUMCu.LARGEone" |
+        ####TWCuTube == "TW.MEDIUMCu.SMALLone" |
         Scientific_Name == "Mimosa biuncifera (=aculeaticarpa)" |
         Plot == "P5" |
         Scientific_Name == "Pectis papposa" |
@@ -63,8 +63,8 @@ dt_Cu_best <- dt %>%
         Scientific_Name == "Bouteloua aristidoides" |
         ScieNamePlot == "P5Bouteloua aristidoides" |
         Type_of_Sample == "leaf-stem" |
-        TWCu == "TW.SMALLCu.MEDIUM" |
-        TWCu == "TW.MEDIUMCu.LARGE" |
+        ####TWCu == "TW.SMALLCu.MEDIUM" |
+        ####TWCu == "TW.MEDIUMCu.LARGE" |
         Mn_ICP_Q == "Mn.MEDIUM" |
         ScieNamePlot == "P5Ceanothus greggii" |
         ScieNamePlot == "P2Baccharis sarothroides" |
@@ -83,12 +83,12 @@ dt_Cu_best <- dt %>%
         TubeTW == "oneTW.VSMALL" |
         Scientific_Name == "Allionia incarnata" |
        # Tube_No == "two" |
-        TWCu == "TW.VSMALLCu.LARGE" |        
-        TWCuTube == "TW.MEDIUMCu.SMALLtwo" |
-        TWCuTube == "TW.VSMALLCu.LARGEone" |
+        ####TWCu == "TW.VSMALLCu.LARGE" |        
+        ####TWCuTube == "TW.MEDIUMCu.SMALLtwo" |
+        ####TWCuTube == "TW.VSMALLCu.LARGEone" |
         Scientific_Name == "Solanum elaeagnifolium" |
-        TWCuTube == "TW.VSMALLCu.MEDIUMone" |
-        TWCu == "TW.VSMALLCu.MEDIUM" |    
+        ####TWCuTube == "TW.VSMALLCu.MEDIUMone" |
+        ####TWCu == "TW.VSMALLCu.MEDIUM" |    
         Scientific_Name == "Populus fremontii" |
         ScieNamePlot == "P2Populus fremontii" |
         Scientific_Name == "Fraxinus velutina" |
@@ -103,15 +103,15 @@ dt_Cu_best <- dt %>%
         ScieNamePlot == "P6Amaranthus palmeri" |  
         ScieNamePlot == "P1Eragrostis lehmanniana" |  
         TubeTW == "twoTW.SMALL" |
-        TWCuTube == "TW.SMALLCu.SMALLtwo" |
-        TWCuTube == "TW.SMALLCu.VSMALLtwo" |
+        ####TWCuTube == "TW.SMALLCu.SMALLtwo" |
+        ####TWCuTube == "TW.SMALLCu.VSMALLtwo" |
         Scientific_Name == "Eragrostis lehmanniana" |
         ScieNamePlot == "P1Xanthisma gracile" |   
         #Type_of_Sample == "leaf" |
        # Form == "Forb" |
         ScieNamePlot == "P2Portulaca suffrutescens" |   
         TubeTW == "twoTW.VSMALL" |
-        TWCuTube == "TW.VSMALLCu.LARGEtwo" |
+        ####TWCuTube == "TW.VSMALLCu.LARGEtwo" |
         #Plot == "P2" |
         Scientific_Name == "Mentzelia longiloba" |
         ScieNamePlot == "P6Mentzelia longiloba" 
@@ -340,43 +340,43 @@ dt_Se_best <- dt %>%
     (
       Type_of_Sample == "leaf" |
         Mn_ICP_Q == "Mn.LARGE" |
-        Se_ICP_Q == "Se.LARGE" |
-        Se_ICP_Q == "Se.MEDIUM" |
+        ####Se_ICP_Q == "Se.LARGE" |
+        ####Se_ICP_Q == "Se.MEDIUM" |
         Form == "Tree" |
         Plot == "P6" |
-        TWSe == "TW.LARGESe.MEDIUM" |
-        TWSeTube == "TW.LARGESe.MEDIUMtwo" |
+        ####TWSe == "TW.LARGESe.MEDIUM" |
+        ####TWSeTube == "TW.LARGESe.MEDIUMtwo" |
         Plot == "P2" |
-        TWSeTube == "TW.LARGESe.LARGEtwo" |
-        TWSeTube == "TW.SMALLSe.LARGEone" |
-        TWSeTube == "TW.SMALLSe.SMALLone" |
-        TWSe == "TW.LARGESe.LARGE" |
-        TWSe == "TW.SMALLSe.LARGE" |
+        ####TWSeTube == "TW.LARGESe.LARGEtwo" |
+        ####TWSeTube == "TW.SMALLSe.LARGEone" |
+        ####TWSeTube == "TW.SMALLSe.SMALLone" |
+        ####TWSe == "TW.LARGESe.LARGE" |
+        ####TWSe == "TW.SMALLSe.LARGE" |
         ScieNamePlot == "P6Xanthisma gracile" 
 
     ) &
       # Exclude those with '+' sign
       !(
-        Se_ICP_Q == "Se.VSMALL" |
+        ####Se_ICP_Q == "Se.VSMALL" |
           Scientific_Name == "Bouteloua curtipendula" |
           ScieNamePlot == "P1Bouteloua curtipendula" |
-          TWSe == "TW.MEDIUMSe.VSMALL" |
+          ####TWSe == "TW.MEDIUMSe.VSMALL" |
           Scientific_Name == "Amaranthus palmeri" |
           ScieNamePlot == "P5Amaranthus palmeri" |
-          TWSeTube == "TW.MEDIUMSe.VSMALLtwo" |
-          TWSeTube == "TW.LARGESe.VSMALLtwo" |
-          TWSe == "TW.LARGESe.VSMALL" |
+          ####TWSeTube == "TW.MEDIUMSe.VSMALLtwo" |
+          ####TWSeTube == "TW.LARGESe.VSMALLtwo" |
+          ####TWSe == "TW.LARGESe.VSMALL" |
           Mn_ICP_Q == "Mn.VSMALL" |
-          TWSeTube == "TW.SMALLSe.VSMALLone" |
+          ####TWSeTube == "TW.SMALLSe.VSMALLone" |
           Type_of_Sample == "leaf-stem" |
           ScieNamePlot == "P1Euphorbia melanadenia" |
-          TWSe == "TW.SMALLSe.VSMALL" |
+          ####TWSe == "TW.SMALLSe.VSMALL" |
           Scientific_Name == "Pectis papposa" |
           ScieNamePlot == "P5Pectis papposa" |
           Scientific_Name == "Euphorbia melanadenia" |
-          TWSeTube == "TW.MEDIUMSe.VSMALLone" |
+          ####TWSeTube == "TW.MEDIUMSe.VSMALLone" |
           Plot == "P1" |
-          TWSeTube == "TW.LARGESe.SMALLone" |
+          ####TWSeTube == "TW.LARGESe.SMALLone" |
           Form == "Grass" |
           Plot == "P5" 
       )
@@ -906,3 +906,37 @@ ggplot(data=dt_NA_Se, aes(x = Total_Weight, y = Se_ICP)) +
   theme_classic() 
 
   }
+
+
+
+
+#####Se wykres
+
+
+Se <- ggplot(data=dt, aes(x = Se_PXRF, y = Se_ICP)) +
+  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
+  #geom_point(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), color = "#FEB941", size=2.5, stroke=0.6, shape=3) + # New points
+  geom_smooth(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  #geom_smooth(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), method = "lm", se = FALSE, color = "#FEB941", linetype = "solid", size=0.65) +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
+  #geom_point(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  #geom_smooth(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
+  labs(x = "pXRF Cu", y = "ICP concentration Cu") +
+  scale_y_continuous(limits = c(0, 80), breaks = seq(0, 80, by = 10)) +
+  scale_x_continuous(limits = c(0, 80), breaks = seq(0, 80, by = 10)) +
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(Se)
