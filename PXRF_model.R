@@ -26,251 +26,6 @@ setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documen
 dt <-read.delim("PXRF_models.txt")
 
 
-#Best Cu - OLD
-{
-dt_Cu_best <- dt %>% 
-  filter(
-    !(TW_Q == "TW.VSMALL" |
-        TubeTW == "oneTW.VSMALL" |
-        Scientific_Name == "Allionia incarnata" |
-        Tube_No == "two" |
-        TWCu == "TW.VSMALLCu.LARGE" |
-        TWCuTube == "TW.MEDIUMCu.SMALLtwo" |
-        Scientific_Name == "Solanum elaeagnifolium" |
-        Scientific_Name == "Populus fremontii" |
-        ScieNamePlot == "P2Populus fremontii" |
-        Scientific_Name == "Fraxinus velutina" |
-        ScieNamePlot == "P2Fraxinus velutina" |
-        Scientific_Name == "Phyla nodiflora" |
-        ScieNamePlot == "P2Phyla nodiflora" |
-        ScieNamePlot == "P1Allionia incarnata" |
-        ScieNamePlot == "P5Allionia incarnata" |
-        Mn_ICP_Q == "Mn.VSMALL" |
-        ScieNamePlot == "P6Amaranthus palmeri" |
-        TubeTW == "twoTW.MEDIUM" |
-        TWCuTube == "TW.SMALLCu.SMALLtwo" |
-        TWCuTube == "TW.SMALLCu.VSMALLtwo" |
-        Qpercent_mass.TW == "80to100TW.VSMALL" |
-        ScieNamePlot == "P1Xanthisma gracile" |
-        Scientific_Name == "Eragrostis lehmanniana") &
-      (TubeTW == "oneTW.SMALL" |
-         TW_Q == "TW.SMALL" |
-         TubeTW == "oneTW.MEDIUM" |
-         Scientific_Name == "Xanthisma gracile" |
-         TWCu == "TW.SMALLCu.LARGE" |
-         ScieNamePlot == "P5Xanthisma gracile" |
-         ScieNamePlot == "P5Gutierrezia sarothrae" |
-         TWCuTube == "TW.SMALLCu.VSMALLone" |
-         TWCuTube == "TW.SMALLCu.SMALLone" |
-         Scientific_Name == "Ceanothus greggii" |
-         TWCuTube == "TW.MEDIUMCu.LARGEone" |
-         Scientific_Name == "Mimosa biuncifera (=aculeaticarpa)" |
-         ScieNamePlot == "P1Xanthisma gracile" |
-         TWCuTube == "TW.MEDIUMCu.SMALLone" |
-         ScieNamePlot == "P1Euphorbia melanadenia" |
-         ScieNamePlot == "P6Xanthisma gracile" |
-         Qpercent_mass.TW == "80to100TW.SMALL" )
-  )
-
-
-dt_Cu_worst <- dt %>% 
-  filter(
-    (TW_Q == "TW.VSMALL" |
-        TubeTW == "oneTW.VSMALL" |
-        Scientific_Name != "Allionia incarnata" |
-        Tube_No == "two" |
-        TWCu == "TW.VSMALLCu.LARGE" |
-        TWCuTube == "TW.MEDIUMCu.SMALLtwo" |
-        Scientific_Name != "Solanum elaeagnifolium" |
-        Scientific_Name == "Populus fremontii" |
-        ScieNamePlot == "P2Populus fremontii" |
-        Scientific_Name == "Fraxinus velutina" |
-        ScieNamePlot == "P2Fraxinus velutina" |
-        Scientific_Name != "Phyla nodiflora" |
-        ScieNamePlot != "P2Phyla nodiflora" |
-        ScieNamePlot != "P1Allionia incarnata" |
-        ScieNamePlot != "P5Allionia incarnata" |
-        Mn_ICP_Q == "Mn.VSMALL" |
-        ScieNamePlot == "P6Amaranthus palmeri" |
-        TubeTW == "twoTW.MEDIUM" |
-        TWCuTube == "TW.SMALLCu.SMALLtwo" |
-        TWCuTube == "TW.SMALLCu.VSMALLtwo" |
-        Qpercent_mass.TW == "80to100TW.VSMALL" |
-        ScieNamePlot == "P1Xanthisma gracile" |
-        Scientific_Name == "Eragrostis lehmanniana") &
-      !(TubeTW == "oneTW.SMALL" |
-         TW_Q == "TW.SMALL" |
-         TubeTW == "oneTW.MEDIUM" |
-         Scientific_Name == "Xanthisma gracile" |
-         TWCu == "TW.SMALLCu.LARGE" |
-         ScieNamePlot == "P5Xanthisma gracile" |
-         ScieNamePlot == "P5Gutierrezia sarothrae" |
-         TWCuTube == "TW.SMALLCu.VSMALLone" |
-         TWCuTube == "TW.SMALLCu.SMALLone" |
-         Scientific_Name == "Ceanothus greggii" |
-         TWCuTube == "TW.MEDIUMCu.LARGEone" |
-         Scientific_Name == "Mimosa biuncifera (=aculeaticarpa)" |
-         ScieNamePlot == "P1Xanthisma gracile" |
-         TWCuTube == "TW.MEDIUMCu.SMALLone" |
-         ScieNamePlot == "P1Euphorbia melanadenia" |
-         ScieNamePlot == "P6Xanthisma gracile" |
-         Qpercent_mass.TW == "80to100TW.SMALL" )
-  )
-
-
-dt_remaining <- dt %>%
-  filter(!(row_number() %in% c(dt_Cu_best$row_number(), dt_Cu_worst$row_number())))
-
-# Print or inspect the new dataframe
-print(dt_remaining)
-
-#RMSE Cu worst
-{
-  elements <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
-  raw_cols <- paste0(elements, "_PXRF")
-  icp_cols <- paste0(elements, "_ICP")
-  predicted_cols <- lapply(elements, function(el) paste0("Predicted_", el, "_M", 1:3))
-  
-  # Flattening the list of predicted columns for easier access
-  predicted_cols_flat <- unlist(predicted_cols)
-  
-  library(openxlsx)
-  
-  # Initialize a data frame to store RMSE results
-  rmse_results <- data.frame(Element = character(), Model = character(), RMSE = numeric(), stringsAsFactors = FALSE)
-  
-  for (i in 1:length(elements)) {
-    # RMSE for RAW
-    rmse_raw <- sqrt(mean((dt_Cu_worst[[icp_cols[i]]] - dt_Cu_worst[[raw_cols[i]]])^2, na.rm = TRUE))
-    temp_df <- data.frame(Element = elements[i], Model = "RAW", RMSE = rmse_raw, stringsAsFactors = FALSE)
-    rmse_results <- rbind(rmse_results, temp_df)
-    
-    # RMSE for Predicted models
-    for (j in 1:3) {
-      pred_col_name <- predicted_cols[[i]][j]
-      rmse_pred <- sqrt(mean((dt_Cu_worst[[icp_cols[i]]] - dt_Cu_worst[[pred_col_name]])^2, na.rm = TRUE))
-      temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), RMSE = rmse_pred, stringsAsFactors = FALSE)
-      rmse_results <- rbind(rmse_results, temp_df)
-    }
-  }
-  
-  rmse_results$RMSE <- as.numeric(rmse_results$RMSE)
-  colnames(rmse_results) <- c("Element", "Model", "RMSE")
-  wb <- createWorkbook()
-  addWorksheet(wb, "RMSE Results")
-  writeData(wb, "RMSE Results", rmse_results)
-  
-  # Save the workbook
-  saveWorkbook(wb, "RMSE_Cook.xlsx", overwrite = TRUE)
-  
-}
-
-#RMSE Cu best
-{
-  elements <- c("Cu", "Se", "Re", "Zn", "Mn", "Fe")
-  raw_cols <- paste0(elements, "_PXRF")
-  icp_cols <- paste0(elements, "_ICP")
-  predicted_cols <- lapply(elements, function(el) paste0("Predicted_", el, "_M", 1:3))
-  
-  # Flattening the list of predicted columns for easier access
-  predicted_cols_flat <- unlist(predicted_cols)
-  
-  library(openxlsx)
-  
-  # Initialize a data frame to store RMSE results
-  rmse_results <- data.frame(Element = character(), Model = character(), RMSE = numeric(), stringsAsFactors = FALSE)
-  
-  for (i in 1:length(elements)) {
-    # RMSE for RAW
-    rmse_raw <- sqrt(mean((dt_Cu_best[[icp_cols[i]]] - dt_Cu_best[[raw_cols[i]]])^2, na.rm = TRUE))
-    temp_df <- data.frame(Element = elements[i], Model = "RAW", RMSE = rmse_raw, stringsAsFactors = FALSE)
-    rmse_results <- rbind(rmse_results, temp_df)
-    
-    # RMSE for Predicted models
-    for (j in 1:3) {
-      pred_col_name <- predicted_cols[[i]][j]
-      rmse_pred <- sqrt(mean((dt_Cu_best[[icp_cols[i]]] - dt_Cu_best[[pred_col_name]])^2, na.rm = TRUE))
-      temp_df <- data.frame(Element = elements[i], Model = paste("M", j, sep=""), RMSE = rmse_pred, stringsAsFactors = FALSE)
-      rmse_results <- rbind(rmse_results, temp_df)
-    }
-  }
-  
-  rmse_results$RMSE <- as.numeric(rmse_results$RMSE)
-  colnames(rmse_results) <- c("Element", "Model", "RMSE")
-  wb <- createWorkbook()
-  addWorksheet(wb, "RMSE Results")
-  writeData(wb, "RMSE Results", rmse_results)
-  
-  # Save the workbook
-  saveWorkbook(wb, "RMSE_Cook_best.xlsx", overwrite = TRUE)
-  
-}
-
-
-# Filtering out rows where Cu_PXRF is NA
-dt_Cu_best <- dt_Cu_best %>% 
-  filter(!is.na(Cu_PXRF))
-
-dt_Cu_worst <- dt_Cu_worst %>% 
-  filter(!is.na(Cu_PXRF))
-
-# Splitting the data into training (80%) and testing (20%) sets
-set.seed(123)  # For reproducibility
-train_indices <- sample(1:nrow(dt_Cu_worst), 0.8 * nrow(dt_Cu_worst))
-train_data <- dt_Cu_worst[train_indices, ]
-test_data <- dt_Cu_worst[-train_indices, ]
-
-# Fit the model on the training data
-start_vals <- c(coeff_cu_concentration = 0, coeff_intercept = 18.4)
-M1Cu_train <- glm(Cu_ICP ~ Cu_PXRF, data = train_data, family = Gamma(link = "identity"), start = start_vals)
-test_data$Predicted_Cu_M1 <- predict(M1Cu_train, newdata = test_data, type = "response")
-
-M2Cu_train <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = train_data, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-test_data$Predicted_Cu_M2 <- predict(M2Cu_train, newdata = test_data, type = "response")
-
-M3Cu_train <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = train_data, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
-test_data$Predicted_Cu_M3 <- predict(M3Cu_train, newdata = test_data, type = "response")
-
-# Model Performance - RMSE
-rmse_best_RAW <- sqrt(mean((dt_Cu_best$Cu_ICP - dt_Cu_best$Cu_PXRF)^2))
-rmse_worst_RAW <- sqrt(mean((dt_Cu_worst$Cu_ICP - dt_Cu_worst$Cu_PXRF)^2))
-rmse_M1 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M1)^2))
-rmse_M2 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M2)^2))
-rmse_M3 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M3)^2))
-
-
-
-p <- ggplot(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP)) +
-  geom_point(data=dt_Cu_best, color = "#003f5c", size=2.5, stroke=0.6, shape=1) +
-  geom_point(data=test_data, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
-  geom_smooth(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid", size=0.65) +   # Regression line for the first model
-  geom_smooth(data=test_data, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
-  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
-  geom_point(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), color = "green", size=2.5, stroke=0.6, shape=4) + # New points
-  geom_smooth(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "darkgreen", linetype = "solid", size=0.65) +  
-  labs(x = "pXRF Cu", y = "ICP concentration Cu") +
-  scale_y_continuous(limits = c(0, 600), breaks = seq(0, 600, by = 100)) +
-  scale_x_continuous(limits = c(0, 600), breaks = seq(0, 600, by = 100)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
-  theme(panel.grid.major = element_blank(), # Removing major grid lines
-        panel.grid.minor = element_blank(), # Removing minor grid lines
-        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
-        axis.line = element_line(linewidth = 0.5, colour = "black"),
-        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
-        axis.title = element_text(size = 20),  # Customize axis labels
-        axis.text.x = element_text(size = 16),
-        axis.title.x = element_text(size = 20),
-        axis.text.y = element_text(size = 16),
-        axis.title.y = element_text(size = 20),
-        legend.text = element_text(size = 8),
-        legend.title = element_text(size = 16, face = "bold"),
-        legend.position = "top")
-
-print(p)
-}
-
-
-##############################################################################
 # Apply filter conditions based on your criteria
 dt_Cu_best <- dt %>%
   filter(
@@ -363,9 +118,6 @@ dt_Cu_best <- dt %>%
       )
   )
 
-# Print the filtered data to inspect results
-print(dt_Cu_best)
-
 
 
 
@@ -379,7 +131,7 @@ dt_Cu_worst <- dt_Cu_worst %>%
 dt_Cu_best <- dt_Cu_best %>% 
   filter(!is.na(Cu_PXRF))
 
-#Remove errorous plants from dt_Cu_worst
+#Remove errorous plants from dt_Cu_worst - YES
 
 dt_Cu_worst <- dt_Cu_worst %>% 
   filter(
@@ -416,7 +168,7 @@ dt_Cu_worst <- dt_Cu_worst %>%
     set.seed(123 + i)  # Ensure reproducibility
     
     # Randomly split the data into training and testing sets
-    train_indices <- sample(1:nrow(dt_Cu_worst), 0.8 * nrow(dt_Cu_worst))
+    train_indices <- sample(1:nrow(dt_Cu_worst), 0.75 * nrow(dt_Cu_worst))
     train_data <- dt_Cu_worst[train_indices, ]
     test_data <- dt_Cu_worst[-train_indices, ]
     
@@ -424,22 +176,24 @@ dt_Cu_worst <- dt_Cu_worst %>%
     M1Cu_train <- glm(Cu_ICP ~ Cu_PXRF, data = train_data, family = Gamma(link = "identity"))
     M2Cu_train <- glm(Cu_ICP ~ Cu_PXRF + Total_Weight, data = train_data, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
     M3Cu_train <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT, data = train_data, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
+    M4Cu_train <- glm(Cu_ICP ~ Cu_PXRF + Substrate_RT + Mn_ICP, data = train_data, family = Gamma(link = "identity"), control = glm.control(maxit = 50))
     
     # Make predictions on the test set
     test_data$Predicted_Cu_M1 <- predict(M1Cu_train, newdata = test_data, type = "response")
     test_data$Predicted_Cu_M2 <- predict(M2Cu_train, newdata = test_data, type = "response")
     test_data$Predicted_Cu_M3 <- predict(M3Cu_train, newdata = test_data, type = "response")
+    test_data$Predicted_Cu_M4 <- predict(M4Cu_train, newdata = test_data, type = "response")
     
     # Calculate RMSE for each model
     rmse_M1 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M1)^2))
     rmse_M2 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M2)^2))
     rmse_M3 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M3)^2))
-    
+    rmse_M4 <- sqrt(mean((test_data$Cu_ICP - test_data$Predicted_Cu_M4)^2))
     # Store RMSE scores for each iteration
     results$M1 <- c(results$M1, rmse_M1)
     results$M2 <- c(results$M2, rmse_M2)
     results$M3 <- c(results$M3, rmse_M3)
-    
+    results$M4 <- c(results$M4, rmse_M4)
     # Check if the model includes points above the ICP threshold (e.g., 200) and update the top models
     if (rmse_M3 < rmse_threshold && any(test_data$Cu_ICP > 200)) {
       top_models[[length(top_models) + 1]] <- list(train = train_data, test = test_data, rmse = rmse_M3)
@@ -458,7 +212,8 @@ dt_Cu_worst <- dt_Cu_worst %>%
     Iteration = 1:iterations,
     RMSE_M1 = results$M1,
     RMSE_M2 = results$M2,
-    RMSE_M3 = results$M3
+    RMSE_M3 = results$M3,
+    RMSE_M4 = results$M4
   )
   
   #write_xlsx(rmse_df, "RMSE_Results.xlsx")
@@ -468,22 +223,29 @@ dt_Cu_worst <- dt_Cu_worst %>%
   
   # You can now select any model in `best_models` for plotting purposes
   # For example, to use the first model in the list:
-  best_train <- best_models[[2]]$train
-  best_test <- best_models[[2]]$test
+  best_train <- best_models[[1]]$train
+  best_test <- best_models[[1]]$test
+  
+ #write_xlsx(best_train, "Cu_best_train.xlsx") 
+#  write_xlsx(best_test, "Cu_best_test.xlsx")
   
   }
 
 
+cor.test(dt_Cu_best$Cu_ICP, dt_Cu_best$Cu_PXRF, method="spearman") # 0.97158, p-val < 2.2e-16
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M1, method="spearman") # 0.7942799, p-value = 0.0006912
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M2, method="spearman") # 0.7934066 , p-value = 0.001151
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M3, method="spearman") # 0.8769231 , p-value = < 2.2e-16
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M4, method="spearman") # 0.8725275  ,  p-value < 2.2e-16
 
-
-p <- ggplot(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP)) +
-  geom_point(data=dt_Cu_best, color = "#003f5c", size=2.5, stroke=0.6, shape=1) +
-  geom_point(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
-  geom_smooth(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid", size=0.65) +   # Regression line for the first model
-  geom_smooth(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
+Cu <- ggplot(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP)) +
+  geom_point(data=dt_Cu_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
+  geom_point(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#FEB941", size=2.5, stroke=0.6, shape=3) + # New points
+  geom_smooth(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_smooth(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#FEB941", linetype = "solid", size=0.65) +  # Regression line for the second model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
-  geom_point(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), color = "green", size=2.5, stroke=0.6, shape=4) + # New points
-  geom_smooth(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "darkgreen", linetype = "solid", size=0.65) +  
+  geom_point(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  geom_smooth(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
   labs(x = "pXRF Cu", y = "ICP concentration Cu") +
   scale_y_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
   scale_x_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
@@ -502,20 +264,21 @@ p <- ggplot(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP)) +
         legend.title = element_text(size = 16, face = "bold"),
         legend.position = "top")
 
-print(p)
+print(Cu)
 
 
 pzoom <- ggplot(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP)) +
-  geom_point(data=dt_Cu_best, color = "#003f5c", size=2.5, stroke=0.6, shape=1) +
-  geom_point(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
-  geom_smooth(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid", size=0.65) +   # Regression line for the first model
-  geom_smooth(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
+  geom_point(data=dt_Cu_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
+  geom_point(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#FEB941", size=2.5, stroke=0.6, shape=3) + # New points
+  geom_smooth(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_smooth(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#FEB941", linetype = "solid", size=0.65) +  # Regression line for the second model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
-  geom_point(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), color = "green", size=2.5, stroke=0.6, shape=4) + # New points
-  geom_smooth(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "darkgreen", linetype = "solid", size=0.65) +  
+  geom_point(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  geom_smooth(data=dt_Cu_worst, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
   labs(x = "pXRF Cu", y = "ICP concentration Cu") +
-  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 10)) +
-  scale_x_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 10)) +
+  coord_cartesian(xlim = c(0, 150), ylim = c(0, 150)) +
+  scale_x_continuous(breaks = seq(0, 150, by = 25)) +  # Set x-axis breaks
+  scale_y_continuous(breaks = seq(0, 150, by = 25)) +
   theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
@@ -569,7 +332,7 @@ print(summary(M3Cu_train))
 
 ##### Se modele
 {
-
+  dt <-read.delim("PXRF_models.txt")
 # Define the filter criteria for conditions with '-' sign (included) and '+' sign (excluded)
 dt_Se_best <- dt %>% 
   filter(
@@ -653,28 +416,33 @@ for (i in 1:iterations) {
   start_vals <- c("(Intercept)" = 1, "Se_PXRF" = 0.1)
   start_vals2 <- c("(Intercept)" = 1, "Se_PXRF" = 0.1, "Total_Weight" = 0.1)
   start_vals3 <- c("(Intercept)" = 1, "Se_PXRF" = 0.1, "Substrate_RT" = 0.1)
-  
+  start_vals4 <- c("(Intercept)" = 1, "Se_PXRF" = 0.1, "Substrate_RT" = 0.1, "Mn_ICP" = 0.1)
   
 
 
   M1Se_train <- glm(Se_ICP ~ Se_PXRF, data = train_data, family = Gamma(link = "identity"), start = start_vals)
   M2Se_train <- glm(Se_ICP ~ Se_PXRF + Total_Weight, data = train_data, family = Gamma(link = "identity"),  start = start_vals2, control = glm.control(maxit = 50))
   M3Se_train <- glm(Se_ICP ~ Se_PXRF + Substrate_RT, data = train_data, family = Gamma(link = "identity"), start = start_vals3,  control = glm.control(maxit = 50))
+  M4Se_train <- glm(Se_ICP ~ Se_PXRF + Substrate_RT + Mn_ICP, data = train_data, family = Gamma(link = "identity"), start = start_vals4,  control = glm.control(maxit = 50))
+  
   
   # Make predictions on the test set
   test_data$Predicted_Se_M1 <- predict(M1Se_train, newdata = test_data, type = "response")
   test_data$Predicted_Se_M2 <- predict(M2Se_train, newdata = test_data, type = "response")
   test_data$Predicted_Se_M3 <- predict(M3Se_train, newdata = test_data, type = "response")
+  test_data$Predicted_Se_M4 <- predict(M4Se_train, newdata = test_data, type = "response")
   
   # Calculate RMSE for each model
   rmse_M1 <- sqrt(mean((test_data$Se_ICP - test_data$Predicted_Se_M1)^2))
   rmse_M2 <- sqrt(mean((test_data$Se_ICP - test_data$Predicted_Se_M2)^2))
   rmse_M3 <- sqrt(mean((test_data$Se_ICP - test_data$Predicted_Se_M3)^2))
+  rmse_M4 <- sqrt(mean((test_data$Se_ICP - test_data$Predicted_Se_M4)^2))
   
   # Store RMSE scores for each iteration
   results$M1 <- c(results$M1, rmse_M1)
   results$M2 <- c(results$M2, rmse_M2)
   results$M3 <- c(results$M3, rmse_M3)
+  results$M4 <- c(results$M4, rmse_M4)
   
   # Check if the model includes points above the ICP threshold (e.g., 200) and update the top models
   if (rmse_M3 < rmse_threshold) {
@@ -694,34 +462,42 @@ rmse_df <- data.frame(
   Iteration = 1:iterations,
   RMSE_M1 = results$M1,
   RMSE_M2 = results$M2,
-  RMSE_M3 = results$M3
+  RMSE_M3 = results$M3,
+  RMSE_M4 = results$M4
 )
 
-#write_xlsx(rmse_df, "RMSE_Results.xlsx")
+#write_xlsx(rmse_df, "RMSE_Results_Se.xlsx")
 
 # Extract the best set of models for plotting or further analysis
 best_models <- top_models  # List of top models
 
 # You can now select any model in `best_models` for plotting purposes
 # For example, to use the first model in the list:
-best_train <- best_models[[2]]$train
-best_test <- best_models[[2]]$test
+best_train <- best_models[[3]]$train
+best_test <- best_models[[3]]$test
 
 
+#write_xlsx(best_train, "Se_best_train.xlsx")
+#write_xlsx(best_test, "Se_best_test.xlsx")
 
 
+cor.test(dt_Se_best$Se_ICP, dt_Se_best$Se_PXRF, method="spearman") # 0.9010794 ,  p-value = 1.139e-11
+cor.test(best_test$Se_ICP, best_test$Predicted_Se_M1, method="spearman") # 0.8376766, p-value = 9.708e-05
+cor.test(best_test$Se_ICP, best_test$Predicted_Se_M2, method="spearman") # 0.8964286  , p-value < 2.2e-16
+cor.test(best_test$Se_ICP, best_test$Predicted_Se_M3, method="spearman") # 0.9071429  , p-value = < 2.2e-16
+cor.test(best_test$Se_ICP, best_test$Predicted_Se_M4, method="spearman") # 0.9178571  ,  p-value < 2.2e-16
 
-p <- ggplot(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP)) +
-  geom_point(data=dt_Se_best, color = "#003f5c", size=2.5, stroke=0.6, shape=1) +
-  geom_point(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
-  geom_smooth(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid", size=0.65) +   # Regression line for the first model
-  geom_smooth(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
+Se <- ggplot(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP)) +
+  geom_point(data=dt_Se_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
+  geom_point(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), color = "#FEB941", size=2.5, stroke=0.6, shape=3) + # New points
+  geom_smooth(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_smooth(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), method = "lm", se = FALSE, color = "#FEB941", linetype = "solid", size=0.65) +  # Regression line for the second model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
-  geom_point(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), color = "green", size=2.5, stroke=0.6, shape=4) + # New points
-  geom_smooth(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "darkgreen", linetype = "solid", size=0.65) +  
+  geom_point(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  geom_smooth(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
   labs(x = "pXRF Cu", y = "ICP concentration Cu") +
-  #scale_y_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
-  #scale_x_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
+  scale_y_continuous(limits = c(0, 80), breaks = seq(0, 80, by = 10)) +
+  scale_x_continuous(limits = c(0, 80), breaks = seq(0, 80, by = 10)) +
   theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
@@ -737,22 +513,23 @@ p <- ggplot(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP)) +
         legend.title = element_text(size = 16, face = "bold"),
         legend.position = "top")
 
-print(p)
+print(Se)
 
 
 
 
-pzoom <- ggplot(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP)) +
-  geom_point(data=dt_Se_best, color = "#003f5c", size=2.5, stroke=0.6, shape=1) +
-  geom_point(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
-  geom_smooth(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid", size=0.65) +   # Regression line for the first model
-  geom_smooth(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
+Sezoom <- ggplot(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP)) +
+  geom_point(data=dt_Se_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
+  geom_point(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), color = "#FEB941", size=2.5, stroke=0.6, shape=3) + # New points
+  geom_smooth(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_smooth(data=best_test, aes(x = Predicted_Se_M3, y = Se_ICP), method = "lm", se = FALSE, color = "#FEB941", linetype = "solid", size=0.65) +  # Regression line for the second model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
-  geom_point(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), color = "green", size=2.5, stroke=0.6, shape=4) + # New points
-  geom_smooth(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "darkgreen", linetype = "solid", size=0.65) +  
+  geom_point(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  geom_smooth(data=dt_Se_worst, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
   labs(x = "pXRF Cu", y = "ICP concentration Cu") +
-  scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
-  scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 10)) +
+  scale_x_continuous(breaks = seq(0, 10, by = 2)) +  # Set x-axis breaks
+  scale_y_continuous(breaks = seq(0, 10, by = 2)) +
   theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
@@ -768,7 +545,7 @@ pzoom <- ggplot(data=dt_Se_best, aes(x = Se_PXRF, y = Se_ICP)) +
         legend.title = element_text(size = 16, face = "bold"),
         legend.position = "top")
 
-print(pzoom)
+print(Sezoom)
 
 
 
@@ -777,6 +554,8 @@ print(pzoom)
 
 
 ##### Re modele
+{
+dt <-read.delim("PXRF_models.txt")
 
 dt_Re_best <- dt %>%
   filter(
@@ -815,17 +594,17 @@ rmse_worst_RAW <- sqrt(mean((dt_Re_worst$Re_ICP - dt_Re_worst$Re_PXRF)^2))
 
 
 
-p <- ggplot(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP)) +
-  geom_point(data=dt_Re_best, color = "#003f5c", size=2.5, stroke=0.6, shape=1) +
+Re <- ggplot(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP)) +
+  geom_point(data=dt_Re_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
  # geom_point(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
-  geom_smooth(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#003f5c", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_smooth(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
  # geom_smooth(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
-  geom_point(data=dt_Re_worst, aes(x = Re_PXRF, y = Re_ICP), color = "green", size=2.5, stroke=0.6, shape=4) + # New points
-  geom_smooth(data=dt_Re_worst, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "darkgreen", linetype = "solid", size=0.65) +  
+  geom_point(data=dt_Re_worst, aes(x = Re_PXRF, y = Re_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  geom_smooth(data=dt_Re_worst, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
   labs(x = "pXRF Re", y = "ICP concentration Re") +
-  #scale_y_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
- # scale_x_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25)) +
+  scale_x_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25)) +
   theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
@@ -841,8 +620,39 @@ p <- ggplot(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP)) +
         legend.title = element_text(size = 16, face = "bold"),
         legend.position = "top")
 
-print(p)
+print(Re)
 
+
+Re <- ggplot(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP)) +
+  geom_point(data=dt_Re_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
+  # geom_point(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), color = "#AD0B0B", size=2.5, stroke=0.6, shape=3) + # New points
+  geom_smooth(data=dt_Re_best, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  # geom_smooth(data=best_test, aes(x = Predicted_Cu_M3, y = Cu_ICP), method = "lm", se = FALSE, color = "#AD0B0B", linetype = "solid", size=0.65) +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
+  geom_point(data=dt_Re_worst, aes(x = Re_PXRF, y = Re_ICP), color = "#8B322C", size=2.5, stroke=0.6, shape=4) + # New points
+  geom_smooth(data=dt_Re_worst, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.65) +  
+  labs(x = "pXRF Re", y = "ICP concentration Re") +
+  coord_cartesian(xlim = c(0, 25), ylim = c(0, 25)) +
+  scale_x_continuous(breaks = seq(0, 25, by = 5)) +  # Set x-axis breaks
+  scale_y_continuous(breaks = seq(0, 25, by = 5)) +
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.5, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(Re)
+
+}
 
 
 ##################Zn Models
