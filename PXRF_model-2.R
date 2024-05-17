@@ -497,6 +497,9 @@ summary(lm1)
 }
 
 
+
+############ ZN
+{
 dt <-read.delim("PXRF_models.txt")
 
 
@@ -679,16 +682,16 @@ best_train <- best_models[[1]]$train
 best_test <- best_models[[1]]$test
 
 
-write_xlsx(best_train, "Zn_best_train.xlsx") 
-write_xlsx(best_test, "Zn_best_test.xlsx")
-write_xlsx(dt_Zn_best, "Zn_best_dt.xlsx")
-write_xlsx(dt_Zn_worst, "Zn_worst_dt.xlsx")
+#write_xlsx(best_train, "Zn_best_train.xlsx") 
+#write_xlsx(best_test, "Zn_best_test.xlsx")
+#write_xlsx(dt_Zn_best, "Zn_best_dt.xlsx")
+#write_xlsx(dt_Zn_worst, "Zn_worst_dt.xlsx")
 
 
-write.table(best_train, "Zn_best_train.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
-write.table(best_test, "Zn_best_test.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
-write.table(dt_Zn_best, "Zn_best_dt.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
-write.table(dt_Zn_worst, "Zn_worst_dt.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
+#write.table(best_train, "Zn_best_train.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
+#write.table(best_test, "Zn_best_test.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
+#write.table(dt_Zn_best, "Zn_best_dt.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
+#write.table(dt_Zn_worst, "Zn_worst_dt.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
 
 
 
@@ -766,6 +769,8 @@ M3Zn_train <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = train_data, family = G
 summary(M1Zn_train)
 summary(M2Zn_train)
 summary(M3Zn_train)
+
+}
 
 
 ######### Mn
@@ -887,7 +892,7 @@ for (i in 1:iterations) {
   set.seed(123 + i)  # Ensure reproducibility
   
   # Randomly split the data into training and testing sets
-  train_indices <- sample(1:nrow(dt_Mn_worst), 0.8 * nrow(dt_Mn_worst))
+  train_indices <- sample(1:nrow(dt_Mn_worst), 0.75 * nrow(dt_Mn_worst))
   train_data <- dt_Mn_worst[train_indices, ]
   test_data <- dt_Mn_worst[-train_indices, ]
   
@@ -939,8 +944,8 @@ best_models <- top_models  # List of top models
 
 # You can now select any model in `best_models` for plotting purposes
 # For example, to use the first model in the list:
-best_train <- best_models[[2]]$train
-best_test <- best_models[[2]]$test
+best_train <- best_models[[1]]$train
+best_test <- best_models[[1]]$test
 
 
 #write_xlsx(best_train, "Mn_best_train.xlsx") 
@@ -995,6 +1000,20 @@ M3Zn_train <- glm(Zn_ICP ~ Zn_PXRF + Substrate_RT, data = train_data, family = G
 summary(M1Zn_train)
 summary(M2Zn_train)
 summary(M3Zn_train)
+
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Figures and datasets MODELS/Mn datasets")
+dt_Mn_best <-read.delim("Mn_best_dt.txt")
+dt_Mn_worst <-read.delim("Mn_worst_dt.txt")
+best_test <-read.delim("Mn_best_test.txt")
+
+cor.test(dt_Mn_best$Mn_ICP, dt_Mn_best$Mn_PXRF, method="spearman") # 0.9644, p-val < 2.2e-16
+cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M1, method="spearman") # 1, p-value = 0.0006912
+cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M2, method="spearman") # 0.7934066 , p-value = 0.001151
+cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M3, method="spearman") # 0.8769231 , p-value = < 2.2e-16
+
+
+
 
 
 }
