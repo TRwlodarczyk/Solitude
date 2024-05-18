@@ -246,10 +246,10 @@ summary(lm1)
 
 
 cor.test(dt_Cu_best$Cu_ICP, dt_Cu_best$Cu_PXRF, method="spearman") # 0.97158, p-val < 2.2e-16
-cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M1, method="spearman") # 0.7942799, p-value = 0.0006912
-cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M2, method="spearman") # 0.7934066 , p-value = 0.001151
-cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M3, method="spearman") # 0.8769231 , p-value = < 2.2e-16
-cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M4, method="spearman") # 0.8725275  ,  p-value < 2.2e-16
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M1, method="spearman") # 0.9607843, p-value = 4.605e-07
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M2, method="spearman") # 0.9534314  , p-value < 2.2e-16
+cor.test(best_test$Cu_ICP, best_test$Predicted_Cu_M3, method="spearman") # 0.9583333 , p-value = < 2.2e-16
+cor.test(dt_Cu_worst$Cu_ICP, dt_Cu_worst$Cu_PXRF, method="spearman") # 0.9404  ,  p-value < 2.2e-16
 
 Cu <- ggplot(data=dt_Cu_best, aes(x = Cu_PXRF, y = Cu_ICP)) +
   geom_point(data=dt_Cu_best, color = "#4793AF", size=2.5, stroke=0.6, shape=1) +
@@ -383,7 +383,8 @@ summary(lm1)
   print(Sezoom)
   
   
-  
+  dt_Se <- dt %>% 
+    filter(!is.na(Se_PXRF))
   
 }
 
@@ -430,6 +431,8 @@ summary(lm1)
   dt_Re_best <- dt_Re_best %>% 
     filter(!is.na(Re_PXRF))
   
+  dt_Re <- dt %>% 
+    filter(!is.na(Re_PXRF))
   
   # Model Performance - RMSE
   #rmse_best_RAW <- sqrt(mean((dt_Re_best$Re_ICP - dt_Re_best$Re_PXRF)^2)) # not much difference between those two, 2 values of RMSE
@@ -492,7 +495,7 @@ summary(lm1)
   
   print(Rezoom)
   
-  
+  cor.test(dt$Re_ICP, dt$Re_PXRF, method="spearman") # 0.9382305 ,  p-value = 1.971e-14
   
 }
 
@@ -604,6 +607,7 @@ ggplot(data=dt_Zn_best, aes(x = Zn_PXRF, y = Zn_ICP)) +
 
 rmse_best_RAW <- sqrt(mean((dt_Zn_best$Zn_ICP - dt_Zn_best$Zn_PXRF)^2)) # 9.5 jak zostawiam Fe.MEDIUM i Fe.VSMALL, 9.02 jak filtruje tylko VSMALL a zostawiam MEDIUM, 9.04 jak calkowicie nie ma Fe_ICP
 rmse_worst_RAW <- sqrt(mean((dt_Zn_worst$Zn_ICP - dt_Zn_worst$Zn_PXRF)^2)) # 26.5 jak zostawiam Fe.MEDIUM i Fe.VSMALL, 28.57 jak filtruje ylko VSMALL a zostawiam MEDIUM, 31 jak calkowicie nie ma Fe_ICP
+rmse_worst_RAW <- sqrt(mean((best_test$Zn_ICP - best_test$Predicted_Zn_M3)^2))
 
 lm1 <- lm(dt_Zn_best$Zn_ICP~dt_Zn_best$Zn_PXRF) #R2 = 0.917 jak filtruje Fe.MEDIUM i Fe.VSMALL, 0.927 jak filtruje ylko VSMALL a zostawiam MEDIUM, 0.9136 jak calkowicie nie ma Fe_ICP
 summary(lm1)
@@ -626,7 +630,7 @@ for (i in 1:iterations) {
   set.seed(123 + i)  # Ensure reproducibility
   
   # Randomly split the data into training and testing sets
-  train_indices <- sample(1:nrow(dt_Zn_worst), 0.8 * nrow(dt_Zn_worst))
+  train_indices <- sample(1:nrow(dt_Zn_worst), 0.75 * nrow(dt_Zn_worst))
   train_data <- dt_Zn_worst[train_indices, ]
   test_data <- dt_Zn_worst[-train_indices, ]
   
@@ -770,6 +774,15 @@ summary(M1Zn_train)
 summary(M2Zn_train)
 summary(M3Zn_train)
 
+
+
+cor.test(dt_Zn_best$Zn_ICP, dt_Zn_best$Zn_PXRF, method="spearman") # 0.902973, p-val < 2.2e-16
+cor.test(best_test$Zn_ICP, best_test$Predicted_Zn_M1, method="spearman") # 0.80419, p-value = 0.002746
+cor.test(best_test$Zn_ICP, best_test$Predicted_Zn_M2, method="spearman") # 0.8461538  , pval = 0.0009695
+cor.test(best_test$Zn_ICP, best_test$Predicted_Zn_M3, method="spearman") # 0.9230769  , p-value = < 2.2e-16
+cor.test(dt_Cu_worst$Zn_ICP, dt_Cu_worst$Zn_PXRF, method="spearman") #0.6052184 p-value = 3.185e-05
+
+
 }
 
 
@@ -869,6 +882,9 @@ ggplot(data=dt_Mn_best, aes(x = Mn_PXRF, y = Mn_ICP)) +
 
 rmse_best_RAW <- sqrt(mean((dt_Mn_best$Mn_ICP - dt_Mn_best$Mn_PXRF)^2)) # 9.5 jak zostawiam Fe.MEDIUM i Fe.VSMALL, 9.02 jak filtruje tylko VSMALL a zostawiam MEDIUM, 9.04 jak calkowicie nie ma Fe_ICP
 rmse_worst_RAW <- sqrt(mean((dt_Mn_worst$Mn_ICP - dt_Mn_worst$Mn_PXRF)^2)) # 26.5 jak zostawiam Fe.MEDIUM i Fe.VSMALL, 28.57 jak filtruje ylko VSMALL a zostawiam MEDIUM, 31 jak calkowicie nie ma Fe_ICP
+rmse_M1 <- sqrt(mean((best_test$Mn_ICP - best_test$Predicted_Mn_M1)^2))
+rmse_M2 <- sqrt(mean((best_test$Mn_ICP - best_test$Predicted_Mn_M2)^2))
+rmse_M3 <- sqrt(mean((best_test$Mn_ICP - best_test$Predicted_Mn_M3)^2))
 
 lm1 <- lm(dt_Mn_best$Mn_ICP~dt_Mn_best$Mn_PXRF) #R2 = 0.917 jak filtruje Fe.MEDIUM i Fe.VSMALL, 0.927 jak filtruje ylko VSMALL a zostawiam MEDIUM, 0.9136 jak calkowicie nie ma Fe_ICP
 summary(lm1)
@@ -990,6 +1006,36 @@ Mn<- ggplot(data=dt_Mn_best, aes(x = Mn_PXRF, y = Mn_ICP)) +
 print(Mn)
 
 
+MnZoom<- ggplot(data=dt_Mn_best, aes(x = Mn_PXRF, y = Mn_ICP)) +
+  geom_point(data=dt_Mn_best, color = "#4793AF", size=2.5, stroke=0.45, shape=1) +
+  geom_point(data=best_test, aes(x = Predicted_Mn_M3, y = Mn_ICP), color = "#FEB941", size=2.5, stroke=0.45, shape=3) + # New points
+  geom_smooth(data=dt_Mn_best, aes(x = Mn_PXRF, y = Mn_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.45) +   # Regression line for the first model
+  geom_smooth(data=best_test, aes(x = Predicted_Mn_M3, y = Mn_ICP), method = "lm", se = FALSE, color = "#FEB941", linetype = "solid", size=0.45) +  # Regression line for the second model
+  geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.45) +
+  geom_point(data=dt_Mn_worst, aes(x = Mn_PXRF, y = Mn_ICP), color = "#8B322C", size=2.5, stroke=0.45, shape=4) + # New points
+  geom_smooth(data=dt_Mn_worst, aes(x = Mn_PXRF, y = Mn_ICP), method = "lm", se = FALSE, color = "#8B322C", linetype = "solid", size=0.45) +  
+  labs(x = "pXRF Mn", y = "ICP concentration Mn") +
+  coord_cartesian(xlim = c(0, 70), ylim = c(0, 70)) +
+  scale_x_continuous(breaks = seq(0, 180, by = 10)) +  # Set x-axis breaks
+  scale_y_continuous(breaks = seq(0, 180, by = 10)) +
+  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme(panel.grid.major = element_blank(), # Removing major grid lines
+        panel.grid.minor = element_blank(), # Removing minor grid lines
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=0.3), # Adding border around the plot using updated argument
+        axis.line = element_line(linewidth = 0.3, colour = "black"),
+        plot.title = element_text(size = 16, face = "bold"),  # Customize plot title
+        axis.title = element_text(size = 20),  # Customize axis labels
+        axis.text.x = element_text(size = 16),
+        axis.title.x = element_text(size = 20),
+        axis.text.y = element_text(size = 16),
+        axis.title.y = element_text(size = 20),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.position = "top")
+
+print(MnZoom)
+
+
 
 
 
@@ -1008,11 +1054,10 @@ dt_Mn_worst <-read.delim("Mn_worst_dt.txt")
 best_test <-read.delim("Mn_best_test.txt")
 
 cor.test(dt_Mn_best$Mn_ICP, dt_Mn_best$Mn_PXRF, method="spearman") # 0.9644, p-val < 2.2e-16
-cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M1, method="spearman") # 1, p-value = 0.0006912
-cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M2, method="spearman") # 0.7934066 , p-value = 0.001151
-cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M3, method="spearman") # 0.8769231 , p-value = < 2.2e-16
-
-
+cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M1, method="spearman") # 0.8928, p-value = 0.0123
+cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M2, method="spearman") # 0.8928, p-value = 0.0123
+cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M3, method="spearman") # 0.8571429, p-value = 0.02381
+cor.test(dt_Mn_worst$Mn_ICP, dt_Mn_worst$Mn_PXRF, method="spearman") #804597 p-value = 1.777e-06
 
 
 
@@ -1023,7 +1068,7 @@ cor.test(best_test$Mn_ICP, best_test$Predicted_Mn_M3, method="spearman") # 0.876
 dt <-read.delim("PXRF_models.txt")
 
 
-cor.test(dt$Fe_ICP, dt$Fe_PXRF, method="spearman") # 0.8972659 ,  p-value < 2.2e-16
+cor.test(dt$Fe_ICP, dt$Fe_PXRF, method="spearman") # 0.97758 ,  p-value < 2.2e-16
 
 
 Fe <- ggplot(data=dt, aes(x = Fe_PXRF, y = Fe_ICP)) +
@@ -1162,5 +1207,602 @@ print(FeZoom)
 
 
 
+### Model Performances
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf")
+dt <-read.delim("PXRF_models.txt")
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Figures and datasets MODELS/Cu datasets")
+dt_Cu_best <-read.delim("Cu_best_dt.txt")
+dt_Cu_worst <-read.delim("Cu_worst_dt.txt")
+Cu_best_test <-read.delim("Cu_best_test.txt")
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Figures and datasets MODELS/Zn datasets")
+dt_Zn_best <-read.delim("Zn_best_dt.txt")
+dt_Zn_worst <-read.delim("Zn_worst_dt.txt")
+Zn_best_test <-read.delim("Zn_best_test.txt")
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Figures and datasets MODELS/Mn datasets")
+dt_Mn_best <-read.delim("Mn_best_dt.txt")
+dt_Mn_worst <-read.delim("Mn_worst_dt.txt")
+Mn_best_test <-read.delim("Mn_best_test.txt")
+
+
+
+
+# Load necessary libraries
+library(Metrics)
+library(psych)    # For ICC calculation
+library(openxlsx) # For Excel operations
+library(dplyr)    # For data manipulation
+library(tidyr)    # For pivoting data
+
+
+# Define columns
+icp_col <- "Cu_ICP"
+pxrf_col <- "Cu_PXRF"
+predicted_cols <- c("Predicted_Cu_M1", "Predicted_Cu_M2", "Predicted_Cu_M3")
+
+calculate_metrics_df <- function(data, icp_col, pxrf_col, predicted_cols) {
+  # Initialize a list for results
+  results_list <- list()
+  
+  # Basic calculations
+  rmse <- sqrt(mean((data[[icp_col]] - data[[pxrf_col]])^2, na.rm = TRUE))
+  mae <- mean(abs(data[[icp_col]] - data[[pxrf_col]]), na.rm = TRUE)
+  mean_icp <- mean(data[[icp_col]], na.rm = TRUE)
+  nrmse <- rmse / mean_icp
+  sd_icp <- sd(data[[icp_col]], na.rm = TRUE)
+  rpd <- sd_icp / rmse
+  lm_model <- lm(data[[icp_col]] ~ data[[pxrf_col]], data = data, na.action = na.exclude)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # ICC calculation for raw data
+  icc_data <- na.omit(data.frame(data[[icp_col]], data[[pxrf_col]]))
+  if (nrow(icc_data) > 1) {
+    icc_result <- ICC(icc_data)
+    icc_value <- icc_result$results["Single_random_raters", "ICC"]
+  } else {
+    icc_value <- NA  # Default to NA if not enough data
+  }
+  
+  # Store base metrics
+  results_list$RMSE <- rmse
+  results_list$MAE <- mae
+  results_list$NRMSE <- nrmse
+  results_list$RPD <- rpd
+  results_list$R_squared <- r_squared
+  results_list$ICC <- icc_value
+  
+  # Metrics for predicted models
+  for (pred_col in predicted_cols) {
+    if (pred_col %in% names(data)) {
+      pred_data <- na.omit(data.frame(data[[icp_col]], data[[pred_col]]))
+      if (nrow(pred_data) > 1) {
+        pred_rmse <- sqrt(mean((data[[icp_col]] - data[[pred_col]])^2, na.rm = TRUE))
+        pred_mae <- mean(abs(data[[icp_col]] - data[[pred_col]]), na.rm = TRUE)
+        pred_nrmse <- pred_rmse / mean_icp
+        pred_rpd <- sd_icp / pred_rmse
+        lm_model_pred <- lm(data[[icp_col]] ~ data[[pred_col]], data = data, na.action = na.exclude)
+        pred_r_squared <- summary(lm_model_pred)$r.squared
+        icc_pred_result <- ICC(pred_data)
+        pred_icc_value <- icc_pred_result$results["Single_random_raters", "ICC"]
+        
+        # Store predicted model metrics
+        results_list[[paste("RMSE", pred_col)]] <- pred_rmse
+        results_list[[paste("MAE", pred_col)]] <- pred_mae
+        results_list[[paste("NRMSE", pred_col)]] <- pred_nrmse
+        results_list[[paste("RPD", pred_col)]] <- pred_rpd
+        results_list[[paste("R_squared", pred_col)]] <- pred_r_squared
+        results_list[[paste("ICC", pred_col)]] <- pred_icc_value
+      } else {
+        # Handle case where not enough data is available for prediction column
+        results_list[[paste("RMSE", pred_col)]] <- NA
+        results_list[[paste("MAE", pred_col)]] <- NA
+        results_list[[paste("NRMSE", pred_col)]] <- NA
+        results_list[[paste("RPD", pred_col)]] <- NA
+        results_list[[paste("R_squared", pred_col)]] <- NA
+        results_list[[paste("ICC", pred_col)]] <- NA
+      }
+    }
+  }
+  
+  # Convert list to data frame for easier handling in Excel
+  results_df <- as.data.frame(t(unlist(results_list)))
+  colnames(results_df) <- names(results_list)
+  
+  return(results_df)
+}
+
+# Apply to datasets
+results_best <- calculate_metrics_df(dt_Cu_best, "Cu_ICP", "Cu_PXRF", c("Predicted_Cu_M1", "Predicted_Cu_M2", "Predicted_Cu_M3"))
+results_worst <- calculate_metrics_df(dt_Cu_worst, "Cu_ICP", "Cu_PXRF", c("Predicted_Cu_M1", "Predicted_Cu_M2", "Predicted_Cu_M3"))
+results_test <- calculate_metrics_df(Cu_best_test, "Cu_ICP", "Cu_PXRF", c("Predicted_Cu_M1", "Predicted_Cu_M2", "Predicted_Cu_M3"))
+
+
+# Create Excel workbook and add sheets with results
+wb <- createWorkbook()
+addWorksheet(wb, "Cu Metrics Best")
+writeData(wb, "Cu Metrics Best", results_best)
+addWorksheet(wb, "Cu Metrics Worst")
+writeData(wb, "Cu Metrics Worst", results_worst)
+addWorksheet(wb, "Cu Metrics Test")
+writeData(wb, "Cu Metrics Test", results_test)
+
+# Save the workbook with the full path
+full_path <- "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Cu_Metrics_Analysis.xlsx"
+saveWorkbook(wb, full_path, overwrite = TRUE)
+
+
+
+###### Zn
+
+
+
+
+# Define columns
+icp_col <- "Zn_ICP"
+pxrf_col <- "Zn_PXRF"
+predicted_cols <- c("Predicted_Zn_M1", "Predicted_Zn_M2", "Predicted_Zn_M3")
+
+calculate_metrics_df <- function(data, icp_col, pxrf_col, predicted_cols) {
+  # Initialize a list for results
+  results_list <- list()
+  
+  # Basic calculations
+  rmse <- sqrt(mean((data[[icp_col]] - data[[pxrf_col]])^2, na.rm = TRUE))
+  mae <- mean(abs(data[[icp_col]] - data[[pxrf_col]]), na.rm = TRUE)
+  mean_icp <- mean(data[[icp_col]], na.rm = TRUE)
+  nrmse <- rmse / mean_icp
+  sd_icp <- sd(data[[icp_col]], na.rm = TRUE)
+  rpd <- sd_icp / rmse
+  lm_model <- lm(data[[icp_col]] ~ data[[pxrf_col]], data = data, na.action = na.exclude)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # ICC calculation for raw data
+  icc_data <- na.omit(data.frame(data[[icp_col]], data[[pxrf_col]]))
+  if (nrow(icc_data) > 1) {
+    icc_result <- ICC(icc_data)
+    icc_value <- icc_result$results["Single_random_raters", "ICC"]
+  } else {
+    icc_value <- NA  # Default to NA if not enough data
+  }
+  
+  # Store base metrics
+  results_list$RMSE <- rmse
+  results_list$MAE <- mae
+  results_list$NRMSE <- nrmse
+  results_list$RPD <- rpd
+  results_list$R_squared <- r_squared
+  results_list$ICC <- icc_value
+  
+  # Metrics for predicted models
+  for (pred_col in predicted_cols) {
+    if (pred_col %in% names(data)) {
+      pred_data <- na.omit(data.frame(data[[icp_col]], data[[pred_col]]))
+      if (nrow(pred_data) > 1) {
+        pred_rmse <- sqrt(mean((data[[icp_col]] - data[[pred_col]])^2, na.rm = TRUE))
+        pred_mae <- mean(abs(data[[icp_col]] - data[[pred_col]]), na.rm = TRUE)
+        pred_nrmse <- pred_rmse / mean_icp
+        pred_rpd <- sd_icp / pred_rmse
+        lm_model_pred <- lm(data[[icp_col]] ~ data[[pred_col]], data = data, na.action = na.exclude)
+        pred_r_squared <- summary(lm_model_pred)$r.squared
+        icc_pred_result <- ICC(pred_data)
+        pred_icc_value <- icc_pred_result$results["Single_random_raters", "ICC"]
+        
+        # Store predicted model metrics
+        results_list[[paste("RMSE", pred_col)]] <- pred_rmse
+        results_list[[paste("MAE", pred_col)]] <- pred_mae
+        results_list[[paste("NRMSE", pred_col)]] <- pred_nrmse
+        results_list[[paste("RPD", pred_col)]] <- pred_rpd
+        results_list[[paste("R_squared", pred_col)]] <- pred_r_squared
+        results_list[[paste("ICC", pred_col)]] <- pred_icc_value
+      } else {
+        # Handle case where not enough data is available for prediction column
+        results_list[[paste("RMSE", pred_col)]] <- NA
+        results_list[[paste("MAE", pred_col)]] <- NA
+        results_list[[paste("NRMSE", pred_col)]] <- NA
+        results_list[[paste("RPD", pred_col)]] <- NA
+        results_list[[paste("R_squared", pred_col)]] <- NA
+        results_list[[paste("ICC", pred_col)]] <- NA
+      }
+    }
+  }
+  
+  # Convert list to data frame for easier handling in Excel
+  results_df <- as.data.frame(t(unlist(results_list)))
+  colnames(results_df) <- names(results_list)
+  
+  return(results_df)
+}
+
+# Apply to datasets
+results_best <- calculate_metrics_df(dt_Zn_best, "Zn_ICP", "Zn_PXRF", c("Predicted_Zn_M1", "Predicted_Zn_M2", "Predicted_Zn_M3"))
+results_worst <- calculate_metrics_df(dt_Zn_worst, "Zn_ICP", "Zn_PXRF", c("Predicted_Zn_M1", "Predicted_Zn_M2", "Predicted_Zn_M3"))
+results_test <- calculate_metrics_df(Zn_best_test, "Zn_ICP", "Zn_PXRF", c("Predicted_Zn_M1", "Predicted_Zn_M2", "Predicted_Zn_M3"))
+
+
+# Create Excel workbook and add sheets with results
+wb <- createWorkbook()
+addWorksheet(wb, "Zn Metrics Best")
+writeData(wb, "Zn Metrics Best", results_best)
+addWorksheet(wb, "Zn Metrics Worst")
+writeData(wb, "Zn Metrics Worst", results_worst)
+addWorksheet(wb, "Zn Metrics Test")
+writeData(wb, "Zn Metrics Test", results_test)
+
+# Save the workbook with the full path
+full_path <- "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Zn_Metrics_Analysis.xlsx"
+saveWorkbook(wb, full_path, overwrite = TRUE)
+
+
+
+
+
+
+
+###### Mn
+
+
+
+
+# Define columns
+icp_col <- "Mn_ICP"
+pxrf_col <- "Mn_PXRF"
+predicted_cols <- c("Predicted_Mn_M1", "Predicted_Mn_M2", "Predicted_Mn_M3")
+
+calculate_metrics_df <- function(data, icp_col, pxrf_col, predicted_cols) {
+  # Initialize a list for results
+  results_list <- list()
+  
+  # Basic calculations
+  rmse <- sqrt(mean((data[[icp_col]] - data[[pxrf_col]])^2, na.rm = TRUE))
+  mae <- mean(abs(data[[icp_col]] - data[[pxrf_col]]), na.rm = TRUE)
+  mean_icp <- mean(data[[icp_col]], na.rm = TRUE)
+  nrmse <- rmse / mean_icp
+  sd_icp <- sd(data[[icp_col]], na.rm = TRUE)
+  rpd <- sd_icp / rmse
+  lm_model <- lm(data[[icp_col]] ~ data[[pxrf_col]], data = data, na.action = na.exclude)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # ICC calculation for raw data
+  icc_data <- na.omit(data.frame(data[[icp_col]], data[[pxrf_col]]))
+  if (nrow(icc_data) > 1) {
+    icc_result <- ICC(icc_data)
+    icc_value <- icc_result$results["Single_random_raters", "ICC"]
+  } else {
+    icc_value <- NA  # Default to NA if not enough data
+  }
+  
+  # Store base metrics
+  results_list$RMSE <- rmse
+  results_list$MAE <- mae
+  results_list$NRMSE <- nrmse
+  results_list$RPD <- rpd
+  results_list$R_squared <- r_squared
+  results_list$ICC <- icc_value
+  
+  # Metrics for predicted models
+  for (pred_col in predicted_cols) {
+    if (pred_col %in% names(data)) {
+      pred_data <- na.omit(data.frame(data[[icp_col]], data[[pred_col]]))
+      if (nrow(pred_data) > 1) {
+        pred_rmse <- sqrt(mean((data[[icp_col]] - data[[pred_col]])^2, na.rm = TRUE))
+        pred_mae <- mean(abs(data[[icp_col]] - data[[pred_col]]), na.rm = TRUE)
+        pred_nrmse <- pred_rmse / mean_icp
+        pred_rpd <- sd_icp / pred_rmse
+        lm_model_pred <- lm(data[[icp_col]] ~ data[[pred_col]], data = data, na.action = na.exclude)
+        pred_r_squared <- summary(lm_model_pred)$r.squared
+        icc_pred_result <- ICC(pred_data)
+        pred_icc_value <- icc_pred_result$results["Single_random_raters", "ICC"]
+        
+        # Store predicted model metrics
+        results_list[[paste("RMSE", pred_col)]] <- pred_rmse
+        results_list[[paste("MAE", pred_col)]] <- pred_mae
+        results_list[[paste("NRMSE", pred_col)]] <- pred_nrmse
+        results_list[[paste("RPD", pred_col)]] <- pred_rpd
+        results_list[[paste("R_squared", pred_col)]] <- pred_r_squared
+        results_list[[paste("ICC", pred_col)]] <- pred_icc_value
+      } else {
+        # Handle case where not enough data is available for prediction column
+        results_list[[paste("RMSE", pred_col)]] <- NA
+        results_list[[paste("MAE", pred_col)]] <- NA
+        results_list[[paste("NRMSE", pred_col)]] <- NA
+        results_list[[paste("RPD", pred_col)]] <- NA
+        results_list[[paste("R_squared", pred_col)]] <- NA
+        results_list[[paste("ICC", pred_col)]] <- NA
+      }
+    }
+  }
+  
+  # Convert list to data frame for easier handling in Excel
+  results_df <- as.data.frame(t(unlist(results_list)))
+  colnames(results_df) <- names(results_list)
+  
+  return(results_df)
+}
+
+# Apply to datasets
+results_best <- calculate_metrics_df(dt_Mn_best, "Mn_ICP", "Mn_PXRF", c("Predicted_Mn_M1", "Predicted_Mn_M2", "Predicted_Mn_M3"))
+results_worst <- calculate_metrics_df(dt_Mn_worst, "Mn_ICP", "Mn_PXRF", c("Predicted_Mn_M1", "Predicted_Mn_M2", "Predicted_Mn_M3"))
+results_test <- calculate_metrics_df(Mn_best_test, "Mn_ICP", "Mn_PXRF", c("Predicted_Mn_M1", "Predicted_Mn_M2", "Predicted_Mn_M3"))
+
+
+# Create Excel workbook and add sheets with results
+wb <- createWorkbook()
+addWorksheet(wb, "Mn Metrics Best")
+writeData(wb, "Mn Metrics Best", results_best)
+addWorksheet(wb, "Mn Metrics Worst")
+writeData(wb, "Mn Metrics Worst", results_worst)
+addWorksheet(wb, "Mn Metrics Test")
+writeData(wb, "Mn Metrics Test", results_test)
+
+# Save the workbook with the full path
+full_path <- "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Mn_Metrics_Analysis.xlsx"
+saveWorkbook(wb, full_path, overwrite = TRUE)
+
+
+
+
+
+
+#### Fe
+
+
+# Define columns
+icp_col <- "Fe_ICP"
+pxrf_col <- "Fe_PXRF"
+
+
+calculate_metrics_df <- function(data, icp_col, pxrf_col) {
+  # Initialize a list for results
+  results_list <- list()
+  
+  # Basic calculations
+  rmse <- sqrt(mean((data[[icp_col]] - data[[pxrf_col]])^2, na.rm = TRUE))
+  mae <- mean(abs(data[[icp_col]] - data[[pxrf_col]]), na.rm = TRUE)
+  mean_icp <- mean(data[[icp_col]], na.rm = TRUE)
+  nrmse <- rmse / mean_icp
+  sd_icp <- sd(data[[icp_col]], na.rm = TRUE)
+  rpd <- sd_icp / rmse
+  lm_model <- lm(data[[icp_col]] ~ data[[pxrf_col]], data = data, na.action = na.exclude)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # ICC calculation for raw data
+  icc_data <- na.omit(data.frame(data[[icp_col]], data[[pxrf_col]]))
+  if (nrow(icc_data) > 1) {
+    icc_result <- ICC(icc_data)
+    icc_value <- icc_result$results["Single_random_raters", "ICC"]
+  } else {
+    icc_value <- NA  # Default to NA if not enough data
+  }
+  
+  # Store base metrics
+  results_list$RMSE <- rmse
+  results_list$MAE <- mae
+  results_list$NRMSE <- nrmse
+  results_list$RPD <- rpd
+  results_list$R_squared <- r_squared
+  results_list$ICC <- icc_value
+  
+
+  # Convert list to data frame for easier handling in Excel
+  results_df <- as.data.frame(t(unlist(results_list)))
+  colnames(results_df) <- names(results_list)
+  
+  return(results_df)
+}
+
+# Apply to datasets
+results_best <- calculate_metrics_df(dt, "Fe_ICP", "Fe_PXRF")
+
+
+
+
+# Create Excel workbook and add sheets with results
+wb <- createWorkbook()
+addWorksheet(wb, "Fe Metrics Best")
+writeData(wb, "Fe Metrics Best", results_best)
+
+
+# Save the workbook with the full path
+full_path <- "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Fe_Metrics_Analysis.xlsx"
+saveWorkbook(wb, full_path, overwrite = TRUE)
+
+
+
+
+#### Se
+
+
+# Define columns
+icp_col <- "Se_ICP"
+pxrf_col <- "Se_PXRF"
+
+
+calculate_metrics_df <- function(data, icp_col, pxrf_col) {
+  # Initialize a list for results
+  results_list <- list()
+  
+  # Basic calculations
+  rmse <- sqrt(mean((data[[icp_col]] - data[[pxrf_col]])^2, na.rm = TRUE))
+  mae <- mean(abs(data[[icp_col]] - data[[pxrf_col]]), na.rm = TRUE)
+  mean_icp <- mean(data[[icp_col]], na.rm = TRUE)
+  nrmse <- rmse / mean_icp
+  sd_icp <- sd(data[[icp_col]], na.rm = TRUE)
+  rpd <- sd_icp / rmse
+  lm_model <- lm(data[[icp_col]] ~ data[[pxrf_col]], data = data, na.action = na.exclude)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # ICC calculation for raw data
+  icc_data <- na.omit(data.frame(data[[icp_col]], data[[pxrf_col]]))
+  if (nrow(icc_data) > 1) {
+    icc_result <- ICC(icc_data)
+    icc_value <- icc_result$results["Single_random_raters", "ICC"]
+  } else {
+    icc_value <- NA  # Default to NA if not enough data
+  }
+  
+  # Store base metrics
+  results_list$RMSE <- rmse
+  results_list$MAE <- mae
+  results_list$NRMSE <- nrmse
+  results_list$RPD <- rpd
+  results_list$R_squared <- r_squared
+  results_list$ICC <- icc_value
+  
+  
+  # Convert list to data frame for easier handling in Excel
+  results_df <- as.data.frame(t(unlist(results_list)))
+  colnames(results_df) <- names(results_list)
+  
+  return(results_df)
+}
+
+# Apply to datasets
+results_best <- calculate_metrics_df(dt, "Se_ICP", "Se_PXRF")
+
+
+
+
+# Create Excel workbook and add sheets with results
+wb <- createWorkbook()
+addWorksheet(wb, "Se Metrics Best")
+writeData(wb, "Se Metrics Best", results_best)
+
+
+# Save the workbook with the full path
+full_path <- "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Se_Metrics_Analysis.xlsx"
+saveWorkbook(wb, full_path, overwrite = TRUE)
+
+
+
+
+
+
+#### Re
+
+
+# Define columns
+icp_col <- "Re_ICP"
+pxrf_col <- "Re_PXRF"
+
+
+calculate_metrics_df <- function(data, icp_col, pxrf_col) {
+  # Initialize a list for results
+  results_list <- list()
+  
+  # Basic calculations
+  rmse <- sqrt(mean((data[[icp_col]] - data[[pxrf_col]])^2, na.rm = TRUE))
+  mae <- mean(abs(data[[icp_col]] - data[[pxrf_col]]), na.rm = TRUE)
+  mean_icp <- mean(data[[icp_col]], na.rm = TRUE)
+  nrmse <- rmse / mean_icp
+  sd_icp <- sd(data[[icp_col]], na.rm = TRUE)
+  rpd <- sd_icp / rmse
+  lm_model <- lm(data[[icp_col]] ~ data[[pxrf_col]], data = data, na.action = na.exclude)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # ICC calculation for raw data
+  icc_data <- na.omit(data.frame(data[[icp_col]], data[[pxrf_col]]))
+  if (nrow(icc_data) > 1) {
+    icc_result <- ICC(icc_data)
+    icc_value <- icc_result$results["Single_random_raters", "ICC"]
+  } else {
+    icc_value <- NA  # Default to NA if not enough data
+  }
+  
+  # Store base metrics
+  results_list$RMSE <- rmse
+  results_list$MAE <- mae
+  results_list$NRMSE <- nrmse
+  results_list$RPD <- rpd
+  results_list$R_squared <- r_squared
+  results_list$ICC <- icc_value
+  
+  
+  # Convert list to data frame for easier handling in Excel
+  results_df <- as.data.frame(t(unlist(results_list)))
+  colnames(results_df) <- names(results_list)
+  
+  return(results_df)
+}
+
+# Apply to datasets
+results_best <- calculate_metrics_df(dt, "Re_ICP", "Re_PXRF")
+
+
+
+
+# Create Excel workbook and add sheets with results
+wb <- createWorkbook()
+addWorksheet(wb, "Re Metrics Best")
+writeData(wb, "Re Metrics Best", results_best)
+
+
+# Save the workbook with the full path
+full_path <- "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf/Re_Metrics_Analysis.xlsx"
+saveWorkbook(wb, full_path, overwrite = TRUE)
+
+
+
+#testing significance
+
+dt_ICC <- dt[, c("Se_ICP", "Se_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- dt[, c("Re_ICP", "Re_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- dt[, c("Fe_ICP", "Fe_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+dt_ICC <- dt_Cu_best[, c("Cu_ICP", "Cu_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- dt_Cu_worst[, c("Cu_ICP", "Cu_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- Cu_best_test[, c("Cu_ICP", "Predicted_Cu_M3")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- Zn_best_test[, c("Zn_ICP", "Predicted_Zn_M3")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- dt_Zn_best[, c("Zn_ICP", "Zn_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- dt_Zn_worst[, c("Zn_ICP", "Zn_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+
+dt_ICC <- Mn_best_test[, c("Mn_ICP", "Predicted_Mn_M3")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+dt_ICC <- dt_Mn_best[, c("Mn_ICP", "Mn_PXRF")]
+ICC(dt_ICC, missing=TRUE, alpha=.05, lmer=TRUE,check.keys=FALSE)
+
+
+lm1 <- lm(dt$Fe_ICP~dt$Fe_PXRF) #R2 = 0.933, 0.934 z Mn
+summary(lm1)
+
+lm1 <- lm(dt_Cu_best$Cu_ICP~dt_Cu_best$Cu_PXRF) #R2 = 0.933, 0.934 z Mn
+summary(lm1)
+
+lm1 <- lm(dt_Zn_worst$Zn_ICP~dt_Zn_worst$Zn_PXRF) #R2 = 0.933, 0.934 z Mn
+summary(lm1)
+
+lm1 <- lm(dt_Mn_best$Mn_ICP~dt_Mn_best$Mn_PXRF) #R2 = 0.933, 0.934 z Mn
+summary(lm1)
+
+lm1 <- lm(Zn_best_test$Zn_ICP~Zn_best_test$Predicted_Zn_M3) #R2 = 0.933, 0.934 z Mn
+summary(lm1)
+
+lm1 <- lm(Mn_best_test$Mn_ICP~Mn_best_test$Predicted_Mn_M3) #R2 = 0.933, 0.934 z Mn
+summary(lm1)
+
+}
+
+
+
+## Round up performance Table
+{
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf")
+dt <-read.delim("Performance_Table_roundup.txt")
+
+# Assuming 'dt' is your data frame
+dt[, 3:8] <- round(dt[, 3:8], digits = 2)  # Replace '2' with the number of decimal places you want
+
+#write_xlsx(dt, "performance-round-3digits.xlsx")
+#write_xlsx(dt, "performance-round-2digits.xlsx")
+}
 
 
