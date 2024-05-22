@@ -396,9 +396,13 @@ glimpse(dt_filtered)
   dt_filtered <- dt %>%
     filter(SampleID %in% dt_count$SampleID)
   
+  dt_filtered$SampleID <- factor(dt_filtered$SampleID)
+  
+glimpse(dt_filtered)
+
+
 
   
-
 #For one tube
 dt_filtered <- dt_filtered[dt_filtered$Tube_No == "one",]
 dt_filtered$SampleID <- factor(dt_filtered$SampleID)
@@ -421,6 +425,283 @@ leveneTest(Re ~ SampleID, data = dt_filtered2)
 leveneTest(Zn ~ SampleID, data = dt_filtered2)
 leveneTest(Mn ~ SampleID, data = dt_filtered2)
 leveneTest(Fe ~ SampleID, data = dt_filtered2)
+
+#Instead, you need to check the homogeneity of variance for Cu within each 
+#SampleID, comparing the technical replicates identified by the Category column
+{
+  # Load necessary libraries
+  library(dplyr)
+  library(car)
+  
+  # Ensure Category is a factor
+  dt_filtered <- dt_filtered %>%
+    mutate(Category = as.factor(Category))
+  
+  # Perform Levene's test for each SampleID
+  levene_results <- dt_filtered %>%
+    group_by(SampleID) %>%
+    summarise(p_value = tryCatch({
+      if (length(unique(Category)) >= 2) {
+        leveneTest(Mn ~ Category, data = ., center = median)$'Pr(>F)'[1]
+      } else {
+        NA
+      }
+    }, error = function(e) {
+      NA
+    }))
+  
+  # Add a column to indicate if the p-value is significant (below 0.05)
+  dt_filtered <- dt_filtered %>%
+    left_join(levene_results, by = "SampleID") %>%
+    mutate(Significant = ifelse(!is.na(p_value) & p_value < 0.05, "Y", "N")) %>%
+    select(-p_value)
+  
+  # View the updated dataframe
+  glimpse(dt_filtered)
+  #the variances of Cu within the Category groups for each SampleID are not significantly different from each other.
+  
+  #for single sampleID
+  dt_filtered2 <- dt_filtered[dt_filtered$SampleID == "4",]
+  dt_filtered2$Category <- factor(dt_filtered2$Category)
+  
+  leveneTest(Cu ~ Category, data = dt_filtered2)
+  
+  
+  
+  # Load necessary libraries
+  library(dplyr)
+  library(car)
+  
+  # Ensure Category is a factor
+  dt_filtered <- dt_filtered %>%
+    mutate(Category = as.factor(Category))
+  
+  # Perform Levene's test for each SampleID
+  levene_results <- dt_filtered %>%
+    group_by(SampleID) %>%
+    summarise(p_value = tryCatch({
+      leveneTest(Cu ~ Category, data = ., center = median)$'Pr(>F)'[1]
+    }, error = function(e) {
+      NA
+    }))
+  
+  # Add a column to indicate if the p-value is significant (below 0.05)
+  dt_filtered <- dt_filtered %>%
+    left_join(levene_results, by = "SampleID") %>%
+    mutate(Significant = ifelse(is.na(p_value), NA, ifelse(p_value < 0.05, "Y", "N"))) %>%
+    select(-p_value)
+  
+  # View the updated dataframe with p-values and significance
+  glimpse(dt_filtered)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # Filter for SampleID 4
+  dt_filtered2 <- dt_filtered[dt_filtered$SampleID == "4",]
+  
+  # Ensure Category is a factor
+  dt_filtered2$Category <- factor(dt_filtered2$Category)
+  
+  # Perform Levene's test on Cu for the given sample
+  levene_test_result <- leveneTest(Cu ~ Category, data = dt_filtered2, center = median)
+  print(levene_test_result)
+  
+  
+  
+  
+
+
+  
+
+  
+  
+  
+}
+
+
+#LEVENE IS WRONG. LETS TRY CV
+
+# Load necessary library -I used the dataset where all samples are here, not only 3 replicates
+library(dplyr)
+
+# Ensure Cu values are numeric
+dt$Cu <- as.numeric(dt$Cu)
+
+# Compute the CV for each SampleID
+cv_results <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_cu = mean(Cu, na.rm = TRUE),
+    sd_cu = sd(Cu, na.rm = TRUE),
+    cv_cu = (sd_cu / mean_cu) * 100
+  ) %>%
+  select(SampleID, cv_cu)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results, by = "SampleID")
+
+
+
+
+
+###Zn
+# Ensure Cu values are numeric
+dt$Zn <- as.numeric(dt$Zn)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_zn = mean(Zn, na.rm = TRUE),
+    sd_zn = sd(Zn, na.rm = TRUE),
+    cv_zn = (sd_zn / mean_zn) * 100
+  ) %>%
+  select(SampleID, cv_zn)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+
+
+###Mn
+
+dt$Mn <- as.numeric(dt$Mn)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_mn = mean(Mn, na.rm = TRUE),
+    sd_mn = sd(Mn, na.rm = TRUE),
+    cv_mn = (sd_mn / mean_mn) * 100
+  ) %>%
+  select(SampleID, cv_mn)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+
+
+
+###Se
+
+dt$Se <- as.numeric(dt$Se)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_se = mean(Se, na.rm = TRUE),
+    sd_se = sd(Se, na.rm = TRUE),
+    cv_se = (sd_se / mean_se) * 100
+  ) %>%
+  select(SampleID, cv_se)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+
+
+
+dt$Re <- as.numeric(dt$Re)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_re = mean(Re, na.rm = TRUE),
+    sd_re = sd(Re, na.rm = TRUE),
+    cv_re = (sd_re / mean_re) * 100
+  ) %>%
+  select(SampleID, cv_re)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+
+
+dt$Fe <- as.numeric(dt$Fe)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_fe = mean(Fe, na.rm = TRUE),
+    sd_fe = sd(Fe, na.rm = TRUE),
+    cv_fe = (sd_fe / mean_fe) * 100
+  ) %>%
+  select(SampleID, cv_fe)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+
+
+
+dt$P <- as.numeric(dt$P)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_p = mean(P, na.rm = TRUE),
+    sd_p = sd(P, na.rm = TRUE),
+    cv_p = (sd_p / mean_p) * 100
+  ) %>%
+  select(SampleID, cv_p)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+
+
+
+dt$S <- as.numeric(dt$S)
+
+# Compute the CV for each SampleID
+cv_results2 <- dt %>%
+  group_by(SampleID) %>%
+  summarise(
+    mean_s = mean(S, na.rm = TRUE),
+    sd_s = sd(S, na.rm = TRUE),
+    cv_s = (sd_s / mean_s) * 100
+  ) %>%
+  select(SampleID, cv_s)
+
+# Merge the CV values back to the original dataframe
+dt <- dt %>%
+  left_join(cv_results2, by = "SampleID")
+
+# Print the updated dataframe
+print(dt)
+library(writexl)
+write_xlsx(dt, "ICP-Plants_CV.xlsx")
+
 
 }
 
@@ -468,3 +749,21 @@ write.xlsx(cor_matrix_spearman_df, 'Error_Correlation.xlsx')
   coef(pls_model)
   
 }
+
+
+
+
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/")
+dt <-read.delim("Solitude_PXRF_ICP_ALL_FINAL.txt")
+
+dt2 <- dt %>%
+  filter(Method != "PXRF")
+
+
+#leveneTest(dt$Cu, dt$Fe) # <0.05, variances are heterogeneous (unequal) (violation of ANOVA)
+
+#leveneTest(dt$Cu_concentration, dt$Cu_ICP)
+
+
+leveneTest(dt$Cu_ICP, dt$Sample_Name)

@@ -24,6 +24,7 @@
 
 setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/NIST-test")
 dt <-read.delim("NISTS_04.18.2024_trimmed.txt")
+dt <-read.delim("NIST_FINAL_May24.txt")
 
 dt1 <- dt %>% 
   filter(Sample != "QA")
@@ -106,11 +107,11 @@ dt1_NIST1515 <- dt1_NIST1515 %>%
 NIST1515_Cu <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Cu, color = Interaction)) +
   geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
   geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
-  geom_hline(yintercept = 5.69, color = "darkgrey", size = 1) + # Horizontal line at 5.69
-  geom_hline(yintercept = 5.56, color = "grey", size = 0.5) + # 
-  geom_hline(yintercept = 5.82, color = "grey", size = 0.5) + #
+  geom_hline(yintercept = 5.69, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  geom_hline(yintercept = 5.56, color = "grey", size = 0.3) + # 
+  geom_hline(yintercept = 5.82, color = "grey", size = 0.3) + #
   theme_classic() +
-  scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  scale_y_continuous(limits = c(0, 8), breaks = seq(0, 8, by = 1)) +
   labs(title = "Apple Leaves NIST 1515",
        x = "Total Weight",
        y = "Cu [ppm]",
@@ -127,11 +128,11 @@ dt1_NIST1573a <- dt1_NIST1573a %>%
 NIST1573a_Cu <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
   geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
   geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
-  geom_hline(yintercept = 4.7, color = "darkgrey", size = 1) + # Horizontal line at 5.69
-  geom_hline(yintercept = 4.84, color = "grey", size = 0.5) + # 
-  geom_hline(yintercept = 4.56, color = "grey", size = 0.5) + #
+  geom_hline(yintercept = 4.7, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  geom_hline(yintercept = 4.84, color = "grey", size = 0.3) + # 
+  geom_hline(yintercept = 4.56, color = "grey", size = 0.3) + #
   theme_classic() +
-  scale_y_continuous(limits = c(0, 7.5), breaks = seq(0, 7.5, by = 0.5)) +
+  scale_y_continuous(limits = c(0, 8), breaks = seq(0, 8, by = 1)) +
   labs(title = "Tomato Leaves NIST 1573a",
        x = "Total Weight",
        y = "Cu [ppm]",
@@ -148,9 +149,9 @@ dt1_NIST1568b <- dt1_NIST1568b %>%
 NIST1568b_Cu <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Cu, color = Interaction)) +
   geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
   geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
-  geom_hline(yintercept = 2.35, color = "darkgrey", size = 1) + # Horizontal line at 5.69
-  geom_hline(yintercept = 2.51, color = "grey", size = 0.5) + # 
-  geom_hline(yintercept = 2.19, color = "grey", size = 0.5) + #
+  geom_hline(yintercept = 2.35, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  geom_hline(yintercept = 2.51, color = "grey", size = 0.3) + # 
+  geom_hline(yintercept = 2.19, color = "grey", size = 0.3) + #
   theme_classic() +
   scale_y_continuous(limits = c(0, 4.5), breaks = seq(0, 4.5, by = 0.5)) +
   labs(title = "Rice Flour NIST 1568b",
@@ -169,9 +170,9 @@ dt1_NIST1570a <- dt1_NIST1570a %>%
 NIST1570a_Cu <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
   geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
   geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
-  geom_hline(yintercept = 12.22, color = "darkgrey", size = 1) + # Horizontal line at 5.69
-  geom_hline(yintercept = 13.08, color = "grey", size = 0.5) + # 
-  geom_hline(yintercept = 11.36, color = "grey", size = 0.5) + #
+  geom_hline(yintercept = 12.22, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  geom_hline(yintercept = 13.08, color = "grey", size = 0.3) + # 
+  geom_hline(yintercept = 11.36, color = "grey", size = 0.3) + #
   theme_classic() +
   scale_y_continuous(limits = c(5, 16), breaks = seq(5, 16, by = 2)) +
   labs(title = "Spinach leaves NIST 1570",
@@ -189,9 +190,9 @@ dt1_NIST1575a <- dt1_NIST1575a %>%
 NIST1575a_Cu <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Cu, color = Interaction)) +
   geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
   geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
-  geom_hline(yintercept = 2.8, color = "darkgrey", size = 1) + # Horizontal line at 5.69
-  geom_hline(yintercept = 3.0, color = "grey", size = 0.5) + # 
-  geom_hline(yintercept = 2.6, color = "grey", size = 0.5) + #
+  geom_hline(yintercept = 2.8, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  geom_hline(yintercept = 3.0, color = "grey", size = 0.3) + # 
+  geom_hline(yintercept = 2.6, color = "grey", size = 0.3) + #
   theme_classic() +
   scale_y_continuous(limits = c(0, 4), breaks = seq(0, 4, by = 0.5)) +
   labs(title = "Pine Needles NIST 1575a",
@@ -201,9 +202,34 @@ NIST1575a_Cu <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Cu, color = Inte
   scale_color_brewer(palette = "Set1") # Adjust the color palette
 
 
-ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu,
-          ncol = 3, nrow = 2, 
+#NIST 1575a Cu
+dt1_NIST1547 <- subset(dt1, Sample_ID=="NIST1547")
+dt1_NIST1547 <- dt1_NIST1547 %>%
+  mutate(Interaction = interaction(Method, Optimization))
+
+NIST1575a_Cu <- ggplot(dt1_NIST1547, aes(x = Total_Weight, y = Cu, color = Interaction)) +
+  geom_boxplot(position = position_dodge(0)) + # No dodging for boxplots
+  geom_jitter(width = 0.1, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+  geom_hline(yintercept = 3.75, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  geom_hline(yintercept = 4.12, color = "grey", size = 0.3) + # 
+  geom_hline(yintercept = 3.38, color = "grey", size = 0.3) + #
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 5), breaks = seq(0, 5, by = 1)) +
+  labs(title = "Pine Needles NIST 1547",
+       x = "Total Weight",
+       y = "Cu [ppm]",
+       color = "Method & Optimization") +
+  scale_color_brewer(palette = "Set1") # Adjust the color palette
+
+
+nists <- ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu, NIST1575a_Cu, 
+          ncol = 1, nrow = 6, 
           common.legend = TRUE, legend = "bottom")
+
+
+
+ggsave(filename = "nists.pdf", plot = nists, width = 3, height = 10, units = "in")
+
   }
 
 #Zn-NISTS
@@ -874,6 +900,25 @@ ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu,
   
 }
 
+
+
+
+
+#Modified Bland altman - difference vs TW
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### Median
 {
   
@@ -881,7 +926,7 @@ ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu,
   
   # Assuming dt3 is your dataset and columns are named appropriately
   element_columns <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
-  metadata_columns <- c("Sample", "Sample_ID", "Date", "File", "Total_Weight", "Method", "Material", "Optimization")
+  metadata_columns <- c("Sample", "Sample_ID", "Date", "File", "Total_Weight", "Method", "Material", "Optimization", "P_NIST", "S_NIST", "K_NIST", "Ca_NIST", "Mn_NIST", "Fe_NIST", "Ni_NIST", "Cu_NIST", "Zn_NIST", "As_NIST", "Se_NIST", "Re_NIST")
   
   # Compute the median for each element within the specified groups and add metadata
   dt_median <- dt1 %>%
@@ -902,9 +947,27 @@ ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu,
   # Check the resulting dataframe
   print(dt_median)
 
-  #write.xlsx(dt_median, 'NISTS_04.18.2024-MEDIAN.xlsx')
+  write.xlsx(dt_median, 'NISTS_May24-MEDIAN.xlsx')
   
 }
+
+
+
+#
+
+glimpse(dt_median)
+
+filtered_data <- dt_median %>%
+  filter(Optimization != "T6", Method != "point")
+filtered_data <- filtered_data %>%
+  mutate(Cu_diff = Cu - Cu_NIST)
+plot <- ggplot(filtered_data, aes(x = Total_Weight, y = Cu_diff, color = Sample_ID)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+  labs(x = "Total Weight", y = "Difference between Cu and Cu_NIST", color = "Sample ID") +
+  theme_minimal()
+
+ggsave(filename = "diffplot.png", plot = plot, width = 5, height = 4, units = "in")
 
 
 ####Error calculation
@@ -1398,4 +1461,4 @@ aggregated_data <- dt %>%
   group_by(Sample_ID) %>%
   summarize(Sample_mass = sum(Sample_mass, na.rm = TRUE))
 
-write.xlsx(aggregated_data, "Aggregated_Sample_Mass.xlsx")
+#write.xlsx(aggregated_data, "Aggregated_Sample_Mass.xlsx")
