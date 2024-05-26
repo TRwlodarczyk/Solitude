@@ -917,3 +917,220 @@ for(variable in variables) {
 # Save the combined CLD results to an Excel file
 write.xlsx(all_cld_results, "CLD_Results_All_layers.xlsx")
 
+
+
+
+
+############# Plant table mean max min ICP
+
+{
+  library(ggplot2)
+  library(ggpubr)
+  library(dplyr)
+  library(data.table)
+  library(reshape2)
+  library(reshape)
+  library("readxl")
+  library(ggpubr)
+  library(agricolae)
+  library(tidyverse)
+  library (readr) #to read URL
+  library(stringr) # For str_replace_all
+  library(psych)
+  library(car)
+  library(openxlsx)
+  library(writexl)
+  
+}
+
+
+
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Models_pxrf")
+dt <-read.delim("PXRF_models.txt")
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+# Elements of interest
+elements <- c("P", "S", "Ti", "Cr", "Mn", "Fe", "Cu", "Zn", "As", "Se", "Re", "Ni", "Cd")
+
+# Select relevant columns for the analysis
+relevant_columns <- c("Plot", paste0(elements, "_ICP"))
+
+# Subset the dataset to include only the relevant columns
+dt_subset <- dt %>% select(all_of(relevant_columns))
+
+# Function to calculate descriptive statistics
+calc_stats <- function(data) {
+  data %>%
+    summarize(
+      min = min(value, na.rm = TRUE),
+      max = max(value, na.rm = TRUE),
+      mean_sd = paste0(round(mean(value, na.rm = TRUE), 2), " ± ", round(sd(value, na.rm = TRUE), 2)),
+      median = median(value, na.rm = TRUE)
+    )
+}
+
+# Prepare the data for summary
+dt_long <- dt_subset %>%
+  pivot_longer(cols = -Plot, names_to = "Element", values_to = "value") %>%
+  mutate(Element = gsub("_ICP", "", Element))
+
+# Calculate statistics by Plot and overall
+stats_by_plot <- dt_long %>%
+  group_by(Element, Plot) %>%
+  nest() %>%
+  mutate(stats = map(data, calc_stats)) %>%
+  unnest(stats) %>%
+  select(Element, Plot, min, max, mean_sd, median)
+
+overall_stats <- dt_long %>%
+  group_by(Element) %>%
+  nest() %>%
+  mutate(stats = map(data, calc_stats)) %>%
+  unnest(stats) %>%
+  select(Element, min, max, mean_sd, median) %>%
+  rename_with(~ paste0("Site Average_", .), -Element)
+
+# Combine and format the final table
+final_table <- stats_by_plot %>%
+  pivot_wider(names_from = Plot, values_from = c(min, max, mean_sd, median)) %>%
+  left_join(overall_stats, by = "Element")
+
+# Display the final table
+print(final_table)
+
+
+
+
+write_xlsx(final_table, "Plant_ICP_table.xlsx")
+
+
+write_xlsx(reorganized_table, "Plant_ICP_table3.xlsx")
+
+
+
+
+
+
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+# Elements of interest
+elements <- c("P", "S", "Ti", "Cr", "Mn", "Fe", "Cu", "Zn", "As", "Se", "Re")
+
+# Select relevant columns for the analysis
+relevant_columns <- c("Plot", paste0(elements, "_ICP"))
+
+# Subset the dataset to include only the relevant columns
+dt_subset <- dt %>% select(all_of(relevant_columns))
+
+# Function to calculate descriptive statistics and round values
+calc_stats <- function(data) {
+  data %>%
+    summarize(
+      min = floor(min(value, na.rm = TRUE)),
+      max = floor(max(value, na.rm = TRUE)),
+      mean_sd = paste0(floor(mean(value, na.rm = TRUE)), " ± ", floor(sd(value, na.rm = TRUE))),
+      median = floor(median(value, na.rm = TRUE))
+    )
+}
+
+# Function to handle rounding exceptions for As, Cr, and Re
+calc_stats_exception <- function(data) {
+  data %>%
+    summarize(
+      min = min(value, na.rm = TRUE),
+      max = max(value, na.rm = TRUE),
+      mean_sd = paste0(round(mean(value, na.rm = TRUE), 2), " ± ", round(sd(value, na.rm = TRUE), 2)),
+      median = median(value, na.rm = TRUE)
+    )
+}
+
+# Prepare the data for summary
+dt_long <- dt_subset %>%
+  pivot_longer(cols = -Plot, names_to = "Element", values_to = "value") %>%
+  mutate(Element = gsub("_ICP", "", Element))
+
+# Calculate statistics by Plot and overall, handling exceptions
+stats_by_plot <- dt_long %>%
+  group_by(Element, Plot) %>%
+  nest() %>%
+  mutate(stats = map2(data, Element, ~ if (.y %in% c("As", "Cr", "Re")) calc_stats_exception(.x) else calc_stats(.x))) %>%
+  unnest(stats) %>%
+  select(Element, Plot, min, max, mean_sd, median)
+
+overall_stats <- dt_long %>%
+  group_by(Element) %>%
+  nest() %>%
+  mutate(stats = map2(data, Element, ~ if (.y %in% c("As", "Cr", "Re")) calc_stats_exception(.x) else calc_stats(.x))) %>%
+  unnest(stats) %>%
+  select(Element, min, max, mean_sd, median) %>%
+  rename_with(~ paste0("Site Average_", .), -Element)
+
+# Combine and format the final table
+final_table <- stats_by_plot %>%
+  pivot_wider(names_from = Plot, values_from = c(min, max, mean_sd, median)) %>%
+  left_join(overall_stats, by = "Element")
+
+# Check the final_table for inconsistencies
+print(final_table)
+
+# Separate numeric and character columns
+numeric_stats <- final_table %>%
+  select(Element, starts_with("min"), starts_with("max"), starts_with("median"))
+
+character_stats <- final_table %>%
+  select(Element, starts_with("mean_sd"))
+
+# Pivot numeric statistics
+numeric_stats_long <- numeric_stats %>%
+  pivot_longer(
+    cols = -Element,
+    names_to = c("Statistic", "Plot"),
+    names_sep = "_",
+    values_to = "value"
+  ) %>%
+  mutate(value = as.character(value))  # Convert to character for binding
+
+# Pivot character statistics
+character_stats_long <- character_stats %>%
+  pivot_longer(
+    cols = -Element,
+    names_to = c("Statistic", "Plot"),
+    names_sep = "_",
+    values_to = "value"
+  ) %>%
+  mutate(Statistic = "mean ± SD")
+
+# Combine both long formats
+combined_stats_long <- bind_rows(numeric_stats_long, character_stats_long)
+
+# Handle duplicates and ensure proper values
+combined_stats_long <- combined_stats_long %>%
+  group_by(Element, Statistic, Plot) %>%
+  summarize(value = first(value), .groups = 'drop') %>%
+  mutate(Plot = ifelse(Plot == "Site Average", "Averaged", Plot))
+
+# Pivot wider to get the desired format
+reorganized_table <- combined_stats_long %>%
+  pivot_wider(
+    names_from = Plot,
+    values_from = value,
+    values_fn = list(value = ~ first(na.omit(.x))),
+    values_fill = list(value = NA)
+  ) %>%
+  mutate(Statistic = factor(Statistic, levels = c("min", "max", "mean ± SD", "median"))) %>%
+  arrange(Element, Statistic)
+
+# Manually rename columns
+colnames(reorganized_table) <- c("Element", "Statistic", "Plot1", "Plot2", "Plot5", "Plot6", "Averaged")
+
+# Display the reorganized table
+print(reorganized_table)
