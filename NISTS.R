@@ -29,6 +29,52 @@ dt <-read.delim("NIST_FINAL_May24.txt")
 dt1 <- dt %>% 
   filter(Sample != "QA")
 
+
+# Remove NDs
+
+{
+  # Replace "ND" with 0 in columns 9 to 32
+  for (i in 9:32) {
+    dt1[, i] <- gsub(".*ND.*", 0, dt1[, i])
+  }
+  
+  # Preserve columns 1 to 9 and 33 to 57
+  dt1_preserved <- dt1[, c(1:8, 33:57)]
+  
+  # Transform to dataframe
+  dt1 <- as.data.frame(dt1)
+  
+  # Change character to numeric in columns 9 to 32
+  dt1[, 9:32] <- sapply(dt1[, 9:32], as.numeric)
+  
+  # Combine preserved columns with modified columns
+  dt1 <- cbind(dt1_preserved, dt1[, 9:32])
+  }
+
+
+#apply LODs
+{
+  
+  dt1$Ca[dt1$Ca == 0] <- 10/2
+  dt1$Ti[dt1$Ti == 0] <- 5/2
+  dt1$Cr[dt1$Cr == 0] <- 2/2
+  dt1$Mn[dt1$Mn == 0] <- 1/2
+  dt1$Fe[dt1$Fe == 0] <- 5/2
+  dt1$Co[dt1$Co == 0] <- 3/2
+  dt1$Ni[dt1$Ni == 0] <- 0.2/2
+  dt1$Cu[dt1$Cu == 0] <- 0.5/2
+  dt1$Zn[dt1$Zn == 0] <- 0.6/2
+  dt1$As[dt1$As == 0] <- 0.1/2
+  dt1$Se[dt1$Se == 0] <- 0.1/2
+  dt1$Cd[dt1$Cd == 0] <- 1/2
+  dt1$Re[dt1$Re == 0] <- 0.5/2
+}
+
+
+
+
+
+
 dt2 <- dt1 %>% 
   filter(Optimization == "T1.5")
 dt3 <- dt2 %>% 
@@ -953,7 +999,50 @@ ggsave(filename = "nists.pdf", plot = nists, width = 3, height = 10, units = "in
 
 
 
-#
+#Mean with SD and SE
+{
+  
+  library(dplyr)
+  
+  # Assuming dt3 is your dataset and columns are named appropriately
+  element_columns <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
+  metadata_columns <- c("Sample", "Sample_ID", "Date", "File", "Total_Weight", "Method", "Material", "Optimization", "P_NIST", "S_NIST", "K_NIST", "Ca_NIST", "Mn_NIST", "Fe_NIST", "Ni_NIST", "Cu_NIST", "Zn_NIST", "As_NIST", "Se_NIST", "Re_NIST")
+  
+  # Function to calculate standard error
+  se <- function(x) {
+    sd(x, na.rm = TRUE) / sqrt(length(na.omit(x)))
+  }
+  
+  # Compute the mean, SD, and SE for each element within the specified groups and add metadata
+  dt_stats <- dt1 %>%
+    group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+    summarise(across(all_of(element_columns), list(mean = ~ mean(.x, na.rm = TRUE),
+                                                   sd = ~ sd(.x, na.rm = TRUE),
+                                                   se = ~ se(.x)), .names = "{.col}_{.fn}"), .groups = "drop") %>%
+    # Ensure each group is represented once for the join to prevent duplicates
+    distinct(Sample_ID, Total_Weight, Method, Optimization, .keep_all = TRUE) %>%
+    # Join metadata based on the most frequent occurrence or a specific entry for each group
+    left_join(dt1 %>%
+                select(Sample_ID, Total_Weight, Method, Optimization, all_of(metadata_columns)) %>%
+                group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+                slice(1), # Assuming the first row is representative for the metadata
+              by = c("Sample_ID", "Total_Weight", "Method", "Optimization"))
+  
+  # Checking if all 'Method' types are present
+  print(unique(dt_stats$Method))
+  
+  # Check the resulting dataframe
+  print(dt_stats)
+  
+  # Write the dataframe to an Excel file
+  write.xlsx(dt_stats, 'NISTS_May24-STATS.xlsx')
+  
+  
+  
+}
+
+
+#GRAPH FOR PAPER DIfference between nist reference and pxrf nist measurement
 
 glimpse(dt_median)
 
@@ -1276,6 +1365,8 @@ ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Norm
 }
   
   
+
+## T test for all NISTs at once for single element
   dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNISTandSD.txt")
   
   
