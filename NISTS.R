@@ -1133,7 +1133,7 @@ diffplot <- ggplot(agg_data, aes(x = Total_Weight, y = Cu_diff, shape = Sample_I
   geom_errorbar(aes(ymin = Cu_diff - Cu_se, ymax = Cu_diff + Cu_se, colour = genecolour, width = width),
                 position = pos, linewidth = 0.2) +  # Error bars with specific colors and dynamic width
   geom_hline(yintercept = 0, color = "darkgrey", size = 0.6) +  # Horizontal line at 0
-  scale_y_continuous(limits = c(-6, 3), breaks = seq(-6, 3, by = 1)) +
+  scale_y_continuous(limits = c(-6, 3), breaks = seq(-6, 3, by = 3)) +
   scale_shape_manual(values = shape_values) +  # Manually set shapes
   scale_colour_identity() +  # Use colors directly from the dataframe
   labs(x = "Total Weight", y = "Relative Difference (PXRF - NIST)", shape = "CRM:") +
@@ -1144,6 +1144,10 @@ print(diffplot)
 
 # Save the plot with specified dimensions
 ggsave("diffplot.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
+
+ggsave("diffplot.pdf", plot = diffplot, width = 10, height = 2, units = "in")
+
+ggsave("diffplot4.pdf", plot = diffplot, width = 10, height = 1.9, units = "in")
 
 }
 
@@ -1190,7 +1194,7 @@ ggsave("diffplot.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
     geom_errorbar(aes(ymin = Zn_diff - Zn_se, ymax = Zn_diff + Zn_se, colour = genecolour, width = width),
                   position = pos, linewidth = 0.2) +  # Error bars with specific colors and dynamic width
     geom_hline(yintercept = 0, color = "darkgrey", size = 0.6) +  # Horizontal line at 0
-    scale_y_continuous(limits = c(-20, 16), breaks = seq(-20, 15, by = 5)) +
+    scale_y_continuous(limits = c(-20, 16), breaks = seq(-20, 15, by = 7)) +
     scale_shape_manual(values = shape_values) +  # Manually set shapes
     scale_colour_identity() +  # Use colors directly from the dataframe
     labs(x = "Total Weight", y = "Relative Difference (PXRF - NIST)", shape = "CRM:") +
@@ -1202,11 +1206,192 @@ ggsave("diffplot.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
   # Save the plot with specified dimensions
   ggsave("diffplot.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
   
+  ggsave("diffplot4.pdf", plot = diffplot, width = 10, height = 1.9, units = "in")
+}
+
+
+# FINAL PLOT - Mn
+{
+  # Calculate Cu_diff for the entire dataset
+  dt_stats <- dt_stats %>%
+    mutate(Mn_diff = Mn_mean - Mn_NIST,
+           Total_Weight = as.factor(Total_Weight))  # Convert Total_Weight to factor
+  
+  # Aggregate data to ensure a single entry per Sample_ID, Total_Weight, Method, and Optimization
+  agg_data <- dt_stats %>%
+    group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+    summarise(Mn_diff = mean(Mn_diff, na.rm = TRUE),
+              Mn_se = mean(Mn_se, na.rm = TRUE),
+              .groups = "drop")
+  
+  # Assign colors based on specific conditions
+  agg_data <- agg_data %>%
+    mutate(genecolour = case_when(
+      Method == 'point' & Optimization == 'T1.5' ~ '#FEB941',
+      Method == 'point' & Optimization == 'T6' ~ '#4793AF',
+      Method == 'cup' & Optimization == 'T6' ~ '#8B322C',
+      TRUE ~ 'black'
+    ))
+  
+  # Add width based on the number of groups for each Total_Weight
+  agg_data <- agg_data %>%
+    group_by(Total_Weight) %>%
+    mutate(width = 0.1 * n())
+  
+  # Sort the data to ensure T6 is plotted last
+  agg_data <- agg_data %>%
+    arrange(Total_Weight, desc(Optimization == 'T6'))
+  
+  # Manually set shapes to ensure a cross instead of a plus sign
+  shape_values <- c(16, 17, 18, 4, 15, 8)  # 4 represents a cross
+  names(shape_values) <- levels(agg_data$Sample_ID)
+  
+  # Create the plot with all points and color specific categories
+  pos <- position_dodge(width = 0.75)
+  diffplot <- ggplot(agg_data, aes(x = Total_Weight, y = Mn_diff, shape = Sample_ID)) +
+    geom_point(aes(colour = genecolour), position = pos, size = 2.5) +  # Plot all points with specific colors
+    geom_errorbar(aes(ymin = Mn_diff - Mn_se, ymax = Mn_diff + Mn_se, colour = genecolour, width = width),
+                  position = pos, linewidth = 0.2) +  # Error bars with specific colors and dynamic width
+    geom_hline(yintercept = 0, color = "darkgrey", size = 0.6) +  # Horizontal line at 0
+    #scale_y_continuous(limits = c(-20, 16), breaks = seq(-20, 15, by = 5)) +
+    scale_shape_manual(values = shape_values) +  # Manually set shapes
+    scale_colour_identity() +  # Use colors directly from the dataframe
+    labs(x = "Total Weight", y = "Relative Difference (PXRF - NIST)", shape = "CRM:") +
+    theme_classic2()
+  
+  # Display the plot
+  print(diffplot)
+  
+  # Save the plot with specified dimensions
+  ggsave("diffplot2.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
+  
+  ggsave("diffplot4.pdf", plot = diffplot, width = 10, height = 1.9, units = "in")
+  
 }
 
 
 
-#t test
+
+
+# FINAL PLOT - Se
+{
+  # Calculate Cu_diff for the entire dataset
+  dt_stats <- dt_stats %>%
+    mutate(Se_diff = Se_mean - Se_NIST,
+           Total_Weight = as.factor(Total_Weight))  # Convert Total_Weight to factor
+  
+  # Aggregate data to ensure a single entry per Sample_ID, Total_Weight, Method, and Optimization
+  agg_data <- dt_stats %>%
+    group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+    summarise(Se_diff = mean(Se_diff, na.rm = TRUE),
+              Se_se = mean(Se_se, na.rm = TRUE),
+              .groups = "drop")
+  
+  # Assign colors based on specific conditions
+  agg_data <- agg_data %>%
+    mutate(genecolour = case_when(
+      Method == 'point' & Optimization == 'T1.5' ~ '#FEB941',
+      Method == 'point' & Optimization == 'T6' ~ '#4793AF',
+      Method == 'cup' & Optimization == 'T6' ~ '#8B322C',
+      TRUE ~ 'black'
+    ))
+  
+  # Add width based on the number of groups for each Total_Weight
+  agg_data <- agg_data %>%
+    group_by(Total_Weight) %>%
+    mutate(width = 0.1 * n())
+  
+  # Sort the data to ensure T6 is plotted last
+  agg_data <- agg_data %>%
+    arrange(Total_Weight, desc(Optimization == 'T6'))
+  
+  # Manually set shapes to ensure a cross instead of a plus sign
+  shape_values <- c(16, 17, 18, 4, 15, 8)  # 4 represents a cross
+  names(shape_values) <- levels(agg_data$Sample_ID)
+  
+  # Create the plot with all points and color specific categories
+  pos <- position_dodge(width = 0.75)
+  diffplot <- ggplot(agg_data, aes(x = Total_Weight, y = Se_diff, shape = Sample_ID)) +
+    geom_point(aes(colour = genecolour), position = pos, size = 2.5) +  # Plot all points with specific colors
+    geom_errorbar(aes(ymin = Se_diff - Se_se, ymax = Se_diff + Se_se, colour = genecolour, width = width),
+                  position = pos, linewidth = 0.2) +  # Error bars with specific colors and dynamic width
+    geom_hline(yintercept = 0, color = "darkgrey", size = 0.6) +  # Horizontal line at 0
+    #scale_y_continuous(limits = c(-20, 16), breaks = seq(-20, 15, by = 5)) +
+    scale_shape_manual(values = shape_values) +  # Manually set shapes
+    scale_colour_identity() +  # Use colors directly from the dataframe
+    labs(x = "Total Weight", y = "Relative Difference (PXRF - NIST)", shape = "CRM:") +
+    theme_classic2()
+  
+  # Display the plot
+  print(diffplot)
+  
+  # Save the plot with specified dimensions
+  ggsave("diffplot3.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
+  
+}
+
+
+
+# FINAL PLOT - Fe
+{
+  # Calculate Cu_diff for the entire dataset
+  dt_stats <- dt_stats %>%
+    mutate(Fe_diff = Fe_mean - Fe_NIST,
+           Total_Weight = as.factor(Total_Weight))  # Convert Total_Weight to factor
+  
+  # Aggregate data to ensure a single entry per Sample_ID, Total_Weight, Method, and Optimization
+  agg_data <- dt_stats %>%
+    group_by(Sample_ID, Total_Weight, Method, Optimization) %>%
+    summarise(Fe_diff = mean(Fe_diff, na.rm = TRUE),
+              Fe_se = mean(Fe_se, na.rm = TRUE),
+              .groups = "drop")
+  
+  # Assign colors based on specific conditions
+  agg_data <- agg_data %>%
+    mutate(genecolour = case_when(
+      Method == 'point' & Optimization == 'T1.5' ~ '#FEB941',
+      Method == 'point' & Optimization == 'T6' ~ '#4793AF',
+      Method == 'cup' & Optimization == 'T6' ~ '#8B322C',
+      TRUE ~ 'black'
+    ))
+  
+  # Add width based on the number of groups for each Total_Weight
+  agg_data <- agg_data %>%
+    group_by(Total_Weight) %>%
+    mutate(width = 0.1 * n())
+  
+  # Sort the data to ensure T6 is plotted last
+  agg_data <- agg_data %>%
+    arrange(Total_Weight, desc(Optimization == 'T6'))
+  
+  # Manually set shapes to ensure a cross instead of a plus sign
+  shape_values <- c(16, 17, 18, 4, 15, 8)  # 4 represents a cross
+  names(shape_values) <- levels(agg_data$Sample_ID)
+  
+  # Create the plot with all points and color specific categories
+  pos <- position_dodge(width = 0.75)
+  diffplot <- ggplot(agg_data, aes(x = Total_Weight, y = Fe_diff, shape = Sample_ID)) +
+    geom_point(aes(colour = genecolour), position = pos, size = 2.5) +  # Plot all points with specific colors
+    geom_errorbar(aes(ymin = Fe_diff - Fe_se, ymax = Fe_diff + Fe_se, colour = genecolour, width = width),
+                  position = pos, linewidth = 0.2) +  # Error bars with specific colors and dynamic width
+    geom_hline(yintercept = 0, color = "darkgrey", size = 0.6) +  # Horizontal line at 0
+    #scale_y_continuous(limits = c(-20, 16), breaks = seq(-20, 15, by = 5)) +
+    scale_shape_manual(values = shape_values) +  # Manually set shapes
+    scale_colour_identity() +  # Use colors directly from the dataframe
+    labs(x = "Total Weight", y = "Relative Difference (PXRF - NIST)", shape = "CRM:") +
+    theme_classic2()
+  
+  # Display the plot
+  print(diffplot)
+  
+  # Save the plot with specified dimensions
+  ggsave("diffplot3.pdf", plot = diffplot, width = 10, height = 2.5, units = "in")
+  
+  ggsave("diffplot4.pdf", plot = diffplot, width = 10, height = 1.9, units = "in")
+  
+}
+
+#t test - FINAL
 
 
 library(dplyr)
@@ -1309,7 +1494,64 @@ dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
 difference <- dt_2_cup_T6$Zn_NIST - dt_2_cup_T6$Zn_mean
 t_test <- t.test(difference, mu = 0) # p val 0.2
 
+
+
+
+
+
+
+dt_0.05 <- subset(dt_stats, Total_Weight=="0.05")
+dt_0.05_point <- subset(dt_0.05, Method=="point")
+dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+difference <- dt_0.05_point_T15$Mn_NIST - dt_0.05_point_T15$Mn_mean
+t_test <- t.test(difference, mu = 0) # p val 0.037
+
+dt_0.05 <- subset(dt_stats, Total_Weight=="0.05")
+dt_0.05_point <- subset(dt_0.05, Method=="point")
+dt_0.05_point_T6 <- subset(dt_0.05_point, Optimization=="T6")
+difference <- dt_0.05_point_T6$Mn_NIST - dt_0.05_point_T6$Mn_mean
+t_test <- t.test(difference, mu = 0) # p val 0.03085
+
+
+dt_2 <- subset(dt_stats, Total_Weight=="2")
+dt_2_cup <- subset(dt_2, Method=="cup")
+dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
+difference <- dt_2_cup_T6$Mn_NIST - dt_2_cup_T6$Mn_mean
+t_test <- t.test(difference, mu = 0) # p val 0.1716
+
+
+
+
+
+dt_0.05 <- subset(dt_stats, Total_Weight=="0.05")
+dt_0.05_point <- subset(dt_0.05, Method=="cup")
+dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+difference <- dt_0.05_point_T15$Mn_NIST - dt_0.05_point_T15$Mn_mean
+t_test <- t.test(difference, mu = 0) # p val 0.1
+
 glimpse(dt_stats)
+
+
+
+
+dt_0.05 <- subset(dt_stats, Total_Weight=="0.05")
+dt_0.05_point <- subset(dt_0.05, Method=="point")
+dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+difference <- dt_0.05_point_T15$Fe_NIST - dt_0.05_point_T15$Fe_mean
+t_test <- t.test(difference, mu = 0) # p val 0.1577
+
+dt_0.05 <- subset(dt_stats, Total_Weight=="0.05")
+dt_0.05_point <- subset(dt_0.05, Method=="point")
+dt_0.05_point_T6 <- subset(dt_0.05_point, Optimization=="T6")
+difference <- dt_0.05_point_T6$Fe_NIST - dt_0.05_point_T6$Fe_mean
+t_test <- t.test(difference, mu = 0) # p val 0.069
+
+
+dt_2 <- subset(dt_stats, Total_Weight=="2")
+dt_2_cup <- subset(dt_2, Method=="cup")
+dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
+difference <- dt_2_cup_T6$Fe_NIST - dt_2_cup_T6$Fe_mean
+t_test <- t.test(difference, mu = 0) # p val 0.1447
 
 
 # Save results to Excel
@@ -1661,192 +1903,12 @@ ggplot(rmsd_data_long, aes(x = as.factor(Total_Weight), y = Element, fill = Norm
   
   
 
-## T test for all NISTs at once for single element
-  dt_error_rmse <-read.delim("NIST_04.18.2024_PXRFandNISTandSD.txt")
-  
-  
-  dt_error_rmse <- dt_error_rmse %>% 
-    filter(Sample != "QA")
-  
-  dt_error_rmse <- dt_error_rmse %>% 
-    filter(Optimization == "T1.5")
-  
-  dt_error_rmse <- dt_error_rmse %>% 
-    filter(Method == "cup")
-  
-  
-  str(dt_error_rmse)
-  
-  dt_error_rmse[, 9:45] <- sapply(dt_error_rmse[, 9:45], as.numeric)
-  
-  
-  dt_error_rmse <- dt_error_rmse %>%
-    select(-matches("_unc"))
-  
-  
-  
-  dt_error_rmse <- dt_error_rmse %>%
-    mutate(across(.cols = 9:20, ~replace_na(., 0)))
-  
-  dt_error_rmse$Cu[dt_error_rmse$Cu == 0] <- 0.5/2
-  dt_error_rmse$Ca[dt_error_rmse$Ca == 0] <- 10/2
-  dt_error_rmse$Mn[dt_error_rmse$Mn == 0] <- 1/2
-  dt_error_rmse$Fe[dt_error_rmse$Fe == 0] <- 5/2
-  dt_error_rmse$Ni[dt_error_rmse$Ni == 0] <- 0.2/2
-  dt_error_rmse$Zn[dt_error_rmse$Zn == 0] <- 0.6/2
-  dt_error_rmse$As[dt_error_rmse$As == 0] <- 0.1/2
-  dt_error_rmse$Se[dt_error_rmse$Se == 0] <- 0.1/2
-  dt_error_rmse$Re[dt_error_rmse$Re == 0] <- 0.5/2
-  dt_error_rmse$Re[dt_error_rmse$Re == 0] <- 0.5/2
-  dt_error_rmse$P[dt_error_rmse$P == 0] <- 5
-
-dt_0.05 <- subset(dt_error_rmse, Total_Weight=="0.05")
-difference <- dt_0.05$Cu_NIST - dt_0.05$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.1 <- subset(dt_error_rmse, Total_Weight=="0.1")
-difference <- dt_0.1$Cu_NIST - dt_0.1$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.2 <- subset(dt_error_rmse, Total_Weight=="0.2")
-difference <- dt_0.2$Cu_NIST - dt_0.2$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.3 <- subset(dt_error_rmse, Total_Weight=="0.3")
-difference <- dt_0.3$Cu_NIST - dt_0.3$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.4 <- subset(dt_error_rmse, Total_Weight=="0.4")
-difference <- dt_0.4$Cu_NIST - dt_0.4$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.5 <- subset(dt_error_rmse, Total_Weight=="0.5")
-difference <- dt_0.5$Cu_NIST - dt_0.5$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.6 <- subset(dt_error_rmse, Total_Weight=="0.6")
-difference <- dt_0.6$Cu_NIST - dt_0.6$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_0.7 <- subset(dt_error_rmse, Total_Weight=="0.7")
-difference <- dt_0.7$Cu_NIST - dt_0.7$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_1 <- subset(dt_error_rmse, Total_Weight=="1")
-difference <- dt_1$Cu_NIST - dt_1$Cu
-t_test <- t.test(difference, mu = 0) 
-
-
-dt_1.5 <- subset(dt_error_rmse, Total_Weight=="1.5")
-difference <- dt_1.5$Cu_NIST - dt_1.5$Cu
-t_test <- t.test(difference, mu = 0) 
-
-dt_1.9 <- subset(dt_error_rmse, Total_Weight=="1.9")
-difference <- dt_1.9$Cu_NIST - dt_1.9$Cu
-t_test <- t.test(difference, mu = 0) 
-
-
-
-# List of elements to perform t-test on
-elements <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
-
-# Function to perform one-sample t-test for a given element
-perform_t_test <- function(data, element, weight) {
-  # Subset data for the specific Total_Weight
-  dt_weight <- subset(data, Total_Weight == weight)
-  
-  # Calculate the difference (assumes NIST values and sample measurements are already correct)
-  difference <- dt_weight[[paste0(element, "_NIST")]] - dt_weight[[element]]
-  
-  # Perform t-test if there are enough non-NA differences
-  if(sum(!is.na(difference)) >= 3) {
-    t_test_result <- t.test(difference, mu = 0)
-    p_value <- t_test_result$p.value
-  } else {
-    p_value <- NA  # Not enough data to perform t-test
-  }
-  return(p_value)
-}
-
-# DataFrame to store results
-results <- data.frame(Element = character(),
-                      Weight = numeric(),
-                      P_Value = numeric())
-
-# Loop through each element and weight
-for (element in elements) {
-  for (weight in unique(dt_error_rmse$Total_Weight)) {
-    p_value <- perform_t_test(dt_error_rmse, element, weight)
-    results <- rbind(results, data.frame(Element = element, Weight = weight, P_Value = p_value))
-  }
-}
-
-# View results
-print(results)
-
-# Save results to Excel
-write.xlsx(results, "T_Test_Results.xlsx")
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-#############At the individual level
-
-# List of elements to perform t-test on
-elements <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
-
-# Function to perform one-sample t-test for a given element and sample
-perform_t_test <- function(data, element, weight, sample_id) {
-  # Subset data for the specific Total_Weight and Sample_ID
-  dt_weight_sample <- subset(data, Total_Weight == weight & Sample_ID == sample_id)
-  
-  # Calculate the difference (assumes NIST values and sample measurements are already correct)
-  difference <- dt_weight_sample[[paste0(element, "_NIST")]] - dt_weight_sample[[element]]
-  
-  # Check if variance is non-zero and there are enough non-NA differences to perform a t-test
-  if(var(difference, na.rm = TRUE) > 0 && sum(!is.na(difference)) >= 3) {
-    t_test_result <- t.test(difference, mu = 0)
-    p_value <- t_test_result$p.value
-  } else {
-    p_value <- NA  # Not enough variation or data to perform t-test
-  }
-  return(p_value)
-}
-
-# DataFrame to store results
-results <- data.frame(Sample_ID = character(),
-                      Element = character(),
-                      Weight = numeric(),
-                      P_Value = numeric())
-
-# Loop through each element, weight, and sample
-for (element in elements) {
-  for (weight in unique(dt_error_rmse$Total_Weight)) {
-    for (sample_id in unique(dt_error_rmse$Sample_ID)) {
-      p_value <- perform_t_test(dt_error_rmse, element, weight, sample_id)
-      results <- rbind(results, data.frame(Sample_ID = sample_id, Element = element, Weight = weight, P_Value = p_value))
-    }
-  }
-}
-
-# View results
-print(results)
-
-
-#write.xlsx(results, "T_Test_Results_SampleID.xlsx")
 
 
 
@@ -1865,3 +1927,322 @@ aggregated_data <- dt %>%
 
 
 }
+
+
+
+#T -test - one more time - final2 - tutaj uwzgledniam wszystkie punkty!!!!!!!!!!! a nie meany, wyniki sa lepsze!!!
+
+{
+  
+  
+  dt <-read.delim("NIST_FINAL_May24.txt")
+  
+  
+  dt1 <- dt %>% 
+    filter(Sample != "QA")
+  
+  
+  # Remove NDs
+  
+  {
+    # Replace "ND" with 0 in columns 9 to 32
+    for (i in 9:32) {
+      dt1[, i] <- gsub(".*ND.*", 0, dt1[, i])
+    }
+    
+    # Preserve columns 1 to 9 and 33 to 57
+    dt1_preserved <- dt1[, c(1:8, 33:57)]
+    
+    # Transform to dataframe
+    dt1 <- as.data.frame(dt1)
+    
+    # Change character to numeric in columns 9 to 32
+    dt1[, 9:32] <- sapply(dt1[, 9:32], as.numeric)
+    
+    # Combine preserved columns with modified columns
+    dt1 <- cbind(dt1_preserved, dt1[, 9:32])
+    }
+  
+  
+  #apply LODs
+  {
+    
+    dt1$Ca[dt1$Ca == 0] <- 10/2
+    dt1$Ti[dt1$Ti == 0] <- 5/2
+    dt1$Cr[dt1$Cr == 0] <- 2/2
+    dt1$Mn[dt1$Mn == 0] <- 1/2
+    dt1$Fe[dt1$Fe == 0] <- 5/2
+    dt1$Co[dt1$Co == 0] <- 3/2
+    dt1$Ni[dt1$Ni == 0] <- 0.2/2
+    dt1$Cu[dt1$Cu == 0] <- 0.5/2
+    dt1$Zn[dt1$Zn == 0] <- 0.6/2
+    dt1$As[dt1$As == 0] <- 0.1/2
+    dt1$Se[dt1$Se == 0] <- 0.1/2
+    dt1$Cd[dt1$Cd == 0] <- 1/2
+    dt1$Re[dt1$Re == 0] <- 0.5/2
+  }
+  
+  
+  
+  
+  
+  
+  dt2 <- dt1 %>% 
+    filter(Optimization == "T1.5")
+  dt3 <- dt2 %>% 
+    filter(Method == "cup")
+  
+  
+  
+  #t test - FINAL
+  
+  
+
+  # Ensure the relevant columns are numeric
+  dt3[, 10:57] <- sapply(dt3[, 10:57], as.numeric)
+  
+  # List of elements to perform t-test on
+  elements <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
+  
+  # Function to perform one-sample t-test for a given element
+  perform_t_test <- function(data, element, weight) {
+    # Subset data for the specific Total_Weight
+    dt_weight <- subset(data, Total_Weight == weight)
+    
+    # Calculate the difference (correct column names)
+    difference <- dt_weight[[paste0(element, "_NIST")]] - dt_weight[[paste0(element)]]
+    
+    # Perform t-test if there are enough non-NA differences
+    if(sum(!is.na(difference)) >= 3) {
+      t_test_result <- t.test(difference, mu = 0, na.action = na.exclude)
+      p_value <- t_test_result$p.value
+    } else {
+      p_value <- NA  # Not enough data to perform t-test
+    }
+    return(p_value)
+  }
+  
+  # DataFrame to store results
+  results <- data.frame(Element = character(),
+                        Weight = numeric(),
+                        P_Value = numeric())
+  
+  # Loop through each element and weight
+  for (element in elements) {
+    for (weight in unique(dt3$Total_Weight)) {
+      p_value <- perform_t_test(dt3, element, weight)
+      results <- rbind(results, data.frame(Element = element, Weight = weight, P_Value = p_value))
+    }
+  }
+  
+  # View results
+  print(results)
+  
+  
+  write.xlsx(results, "T_Test_Results_FINAL2.xlsx")
+  
+  
+  
+  
+  
+  #sprawdzam dodatowe punkty
+  
+  
+  dt <-read.delim("NIST_FINAL_May24.txt")
+  
+  
+  dt1 <- dt %>% 
+    filter(Sample != "QA")
+  
+  
+  # Remove NDs
+  
+  {
+    # Replace "ND" with 0 in columns 9 to 32
+    for (i in 9:32) {
+      dt1[, i] <- gsub(".*ND.*", 0, dt1[, i])
+    }
+    
+    # Preserve columns 1 to 9 and 33 to 57
+    dt1_preserved <- dt1[, c(1:8, 33:57)]
+    
+    # Transform to dataframe
+    dt1 <- as.data.frame(dt1)
+    
+    # Change character to numeric in columns 9 to 32
+    dt1[, 9:32] <- sapply(dt1[, 9:32], as.numeric)
+    
+    # Combine preserved columns with modified columns
+    dt1 <- cbind(dt1_preserved, dt1[, 9:32])
+    }
+  
+  
+  #apply LODs
+  {
+    
+    dt1$Ca[dt1$Ca == 0] <- 10/2
+    dt1$Ti[dt1$Ti == 0] <- 5/2
+    dt1$Cr[dt1$Cr == 0] <- 2/2
+    dt1$Mn[dt1$Mn == 0] <- 1/2
+    dt1$Fe[dt1$Fe == 0] <- 5/2
+    dt1$Co[dt1$Co == 0] <- 3/2
+    dt1$Ni[dt1$Ni == 0] <- 0.2/2
+    dt1$Cu[dt1$Cu == 0] <- 0.5/2
+    dt1$Zn[dt1$Zn == 0] <- 0.6/2
+    dt1$As[dt1$As == 0] <- 0.1/2
+    dt1$Se[dt1$Se == 0] <- 0.1/2
+    dt1$Cd[dt1$Cd == 0] <- 1/2
+    dt1$Re[dt1$Re == 0] <- 0.5/2
+  }
+  
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+  difference <- dt_0.05_point_T15$Cu_NIST - dt_0.05_point_T15$Cu
+  t_test <- t.test(difference, mu = 0) # p val 0.3929
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T6 <- subset(dt_0.05_point, Optimization=="T6")
+  difference <- dt_0.05_point_T6$Cu_NIST - dt_0.05_point_T6$Cu
+  t_test <- t.test(difference, mu = 0) # p val 0.2213
+  
+  
+  dt_2 <- subset(dt1, Total_Weight=="2")
+  dt_2_cup <- subset(dt_2, Method=="cup")
+  dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
+  difference <- dt_2_cup_T6$Cu_NIST - dt_2_cup_T6$Cu
+  t_test <- t.test(difference, mu = 0) # p val 0.000768
+  
+  
+  
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+  difference <- dt_0.05_point_T15$Zn_NIST - dt_0.05_point_T15$Zn
+  t_test <- t.test(difference, mu = 0) # p val 0.007816
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T6 <- subset(dt_0.05_point, Optimization=="T6")
+  difference <- dt_0.05_point_T6$Zn_NIST - dt_0.05_point_T6$Zn
+  t_test <- t.test(difference, mu = 0) # p val 0.0004057
+  
+  
+  dt_2 <- subset(dt1, Total_Weight=="2")
+  dt_2_cup <- subset(dt_2, Method=="cup")
+  dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
+  difference <- dt_2_cup_T6$Zn_NIST - dt_2_cup_T6$Zn
+  t_test <- t.test(difference, mu = 0) # p val 0.0279
+  
+  
+  
+  
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+  difference <- dt_0.05_point_T15$Mn_NIST - dt_0.05_point_T15$Mn
+  t_test <- t.test(difference, mu = 0) # p val 0.0135
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T6 <- subset(dt_0.05_point, Optimization=="T6")
+  difference <- dt_0.05_point_T6$Mn_NIST - dt_0.05_point_T6$Mn
+  t_test <- t.test(difference, mu = 0) # p val 0.00001564
+  
+  
+  dt_2 <- subset(dt1, Total_Weight=="2")
+  dt_2_cup <- subset(dt_2, Method=="cup")
+  dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
+  difference <- dt_2_cup_T6$Mn_NIST - dt_2_cup_T6$Mn
+  t_test <- t.test(difference, mu = 0) # p val 0.009459
+  
+  
+  
+  
+  
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
+  difference <- dt_0.05_point_T15$Fe_NIST - dt_0.05_point_T15$Fe
+  t_test <- t.test(difference, mu = 0) # p val 0.2575
+  
+  dt_0.05 <- subset(dt1, Total_Weight=="0.05")
+  dt_0.05_point <- subset(dt_0.05, Method=="point")
+  dt_0.05_point_T6 <- subset(dt_0.05_point, Optimization=="T6")
+  difference <- dt_0.05_point_T6$Fe_NIST - dt_0.05_point_T6$Fe
+  t_test <- t.test(difference, mu = 0) # p val 0.005261
+  
+  
+  dt_2 <- subset(dt1, Total_Weight=="2")
+  dt_2_cup <- subset(dt_2, Method=="cup")
+  dt_2_cup_T6 <- subset(dt_2_cup, Optimization=="T6")
+  difference <- dt_2_cup_T6$Fe_NIST - dt_2_cup_T6$Fe
+  t_test <- t.test(difference, mu = 0) # p val 0.03243
+  
+  
+  
+}
+
+
+#One sample wilcoxon test instead of one sample t-test - to check
+
+{
+  
+  
+  library(dplyr)
+  library(openxlsx)
+  
+  # Ensure the relevant columns are numeric
+  dt3[, 5:56] <- sapply(dt3[, 5:56], as.numeric)
+  
+  # List of elements to perform Wilcoxon test on
+  elements <- c("P", "S", "K", "Ca", "Mn", "Fe", "Ni", "Cu", "Zn", "As", "Se", "Re")
+  
+  # Function to perform one-sample Wilcoxon test for a given element
+  perform_wilcox_test <- function(data, element, weight) {
+    # Subset data for the specific Total_Weight
+    dt_weight <- subset(data, Total_Weight == weight)
+    
+    # Calculate the difference (correct column names)
+    difference <- dt_weight[[paste0(element, "_NIST")]] - dt_weight[[element]]
+    
+    # Perform Wilcoxon test if there are enough non-NA differences
+    if (sum(!is.na(difference)) >= 3) {
+      wilcox_test_result <- wilcox.test(difference, mu = 0, na.action = na.omit)
+      p_value <- wilcox_test_result$p.value
+    } else {
+      p_value <- NA  # Not enough data to perform Wilcoxon test
+    }
+    return(p_value)
+  }
+  
+  # DataFrame to store results
+  results <- data.frame(Element = character(),
+                        Weight = numeric(),
+                        P_Value = numeric())
+  
+  # Loop through each element and weight
+  for (element in elements) {
+    for (weight in unique(dt3$Total_Weight)) {
+      p_value <- perform_wilcox_test(dt3, element, weight)
+      results <- rbind(results, data.frame(Element = element, Weight = weight, P_Value = p_value))
+    }
+  }
+  
+  # View results
+  print(results)
+  
+  # Save results to an Excel file
+  write.xlsx(results, "Wilcoxon_Test_Results_FINAL.xlsx")
+  
+  # nie ma roznicy miedzy t-test dla wszystkich punktow a wilcoxon
+  
+  
+}
+
+
