@@ -2118,6 +2118,7 @@ aggregated_data <- dt %>%
   
   
   
+  
   dt_0.05 <- subset(dt1, Total_Weight=="0.05")
   dt_0.05_point <- subset(dt_0.05, Method=="point")
   dt_0.05_point_T15 <- subset(dt_0.05_point, Optimization=="T1.5")
