@@ -98,3 +98,36 @@ print(summary_df)
 
 
 write.xlsx(summary_df, "Table-Element-Form2.xlsx")
+
+
+
+
+
+
+
+#### Summary table for Total Weight
+
+library(dplyr)
+
+# Function to calculate summary statistics for Total_Weight
+calculate_total_weight_summary <- function(data) {
+  summary_df <- data %>%
+    group_by(Form) %>%
+    summarize(
+      mean_Total_Weight = mean(Total_Weight, na.rm = TRUE),
+      median_Total_Weight = median(Total_Weight, na.rm = TRUE),
+      min_Total_Weight = min(Total_Weight, na.rm = TRUE),
+      max_Total_Weight = max(Total_Weight, na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  return(summary_df)
+}
+
+# Generate the summary statistics for Total_Weight
+total_weight_summary_df <- calculate_total_weight_summary(dt)
+
+
+write.xlsx(total_weight_summary_df, "Table-TW-Form.xlsx")
+
+
