@@ -131,3 +131,89 @@ total_weight_summary_df <- calculate_total_weight_summary(dt)
 write.xlsx(total_weight_summary_df, "Table-TW-Form.xlsx")
 
 
+
+
+
+
+#NIST summary table 
+
+{
+  
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/NIST-test")
+  dt <-read.delim("NIST_FINAL_May24.txt")
+  
+  dt1 <- dt %>% 
+    filter(Sample != "QA" &
+             Method == "cup" &
+             Optimization == "T1.5" &
+             Total_Weight=="2")
+  
+  
+  
+  
+  
+  
+  
+  library(dplyr)
+  
+  # Function to calculate summary statistics
+  calculate_summary <- function(data, element) {
+    element_NIST <- paste0(element, "_NIST")
+    element_sd <- paste0(element, "_NIST_SD")
+    
+    summary_df <- data %>%
+      group_by(Sample_ID) %>%
+      summarize(
+        NIST_value = first(get(element_NIST), na.rm = TRUE),
+        NIST_SD = first(get(element_sd), na.rm = TRUE),
+        mean_value = mean(as.numeric(get(element)), na.rm = TRUE),
+        median_value = median(as.numeric(get(element)), na.rm = TRUE),
+        min_value = min(as.numeric(get(element)), na.rm = TRUE),
+        max_value = max(as.numeric(get(element)), na.rm = TRUE),
+        sd_value = sd(as.numeric(get(element)), na.rm = TRUE)
+      ) %>%
+      ungroup() %>%
+      mutate(Element = element) %>%
+      select(Element, Sample_ID, everything())
+    
+    return(summary_df)
+  }
+  
+  # Elements to process
+  elements <- c("Cu", "Zn", "Mn", "Se", "Re", "Fe", "P", "S", "K", "Ca")
+  
+  # Generate the summary statistics for each element
+  summary_list <- lapply(elements, function(element) calculate_summary(dt1, element))
+  
+  # Combine all summaries into one dataframe
+  summary_df <- bind_rows(summary_list)
+  
+  # Print the result
+  print(summary_df)
+  
+  
+  
+  # Function to conditionally round values, with special handling for Se
+  conditional_round <- function(x, element) {
+    if (element == "Se") {
+      if_else(abs(x) >= 10, round(x, 0), round(x, 2))
+    } else {
+      if_else(abs(x) >= 30, round(x, 0), round(x, 1))
+    }
+  }
+  
+  # Apply the conditional rounding to specific numeric columns, excluding `_NIST` and `_NIST_SD`
+  summary_df <- summary_df %>%
+    rowwise() %>%
+    mutate(
+      mean_value = conditional_round(mean_value, Element),
+      median_value = conditional_round(median_value, Element),
+      min_value = conditional_round(min_value, Element),
+      max_value = conditional_round(max_value, Element),
+      sd_value = conditional_round(sd_value, Element)
+    ) %>%
+    ungroup()
+  
+  
+  write.xlsx(summary_df, "NIST_summary_df.xlsx")
+}
