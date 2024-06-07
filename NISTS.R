@@ -2247,3 +2247,336 @@ aggregated_data <- dt %>%
 }
 
 
+
+
+
+
+
+#### FINAL PLOT - INDIVIDUAL NISTS
+
+
+{
+  
+  dt <-read.delim("NIST_FINAL_May24.txt")
+  
+  dt1 <- dt %>% 
+    filter(Sample != "QA")
+  
+  
+  
+  {
+    # Replace "ND" with 0 in columns 9 to 32
+    for (i in 9:32) {
+      dt1[, i] <- gsub(".*ND.*", 0, dt1[, i])
+    }
+    
+    # Preserve columns 1 to 9 and 33 to 57
+    dt1_preserved <- dt1[, c(1:8, 33:57)]
+    
+    # Transform to dataframe
+    dt1 <- as.data.frame(dt1)
+    
+    # Change character to numeric in columns 9 to 32
+    dt1[, 9:32] <- sapply(dt1[, 9:32], as.numeric)
+    
+    # Combine preserved columns with modified columns
+    dt1 <- cbind(dt1_preserved, dt1[, 9:32])
+    }
+  
+  
+
+  
+  #apply LODs
+  {
+    
+    dt1$Ca[dt1$Ca == 0] <- 10/2
+    dt1$Ti[dt1$Ti == 0] <- 5/2
+    dt1$Cr[dt1$Cr == 0] <- 2/2
+    dt1$Mn[dt1$Mn == 0] <- 1/2
+    dt1$Fe[dt1$Fe == 0] <- 5/2
+    dt1$Co[dt1$Co == 0] <- 3/2
+    dt1$Ni[dt1$Ni == 0] <- 0.2/2
+    dt1$Cu[dt1$Cu == 0] <- 0.5/2
+    dt1$Zn[dt1$Zn == 0] <- 0.6/2
+    dt1$As[dt1$As == 0] <- 0.1/2
+    dt1$Se[dt1$Se == 0] <- 0.1/2
+    dt1$Cd[dt1$Cd == 0] <- 1/2
+    dt1$Re[dt1$Re == 0] <- 0.5/2
+  }
+  
+  
+  dt1[, 9:33] <- sapply(dt1[, 9:33], as.numeric)
+  
+  
+  
+  dt1 <- dt1 %>%
+    mutate(Total_Weight = as.factor(Total_Weight))
+  
+  
+  #NIST 1515 Cu
+  dt1_2 <- dt1 %>%
+    mutate(genecolour = case_when(
+      Method == 'point' & Optimization == 'T1.5' ~ '#FEB941',
+      Method == 'point' & Optimization == 'T6' ~ '#4793AF',
+      Method == 'cup' & Optimization == 'T6' ~ '#8B322C',
+      TRUE ~ 'black'
+    ))
+  
+  pos <- position_dodge(width = 0.9)
+  
+  
+  dt1_NIST1515 <- subset(dt1_2, Sample_ID=="NIST1515")
+  
+  # Plot the data
+  NIST1515_Cu <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Cu)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) + # Color for boxplots
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Color for jitter points
+    geom_hline(yintercept = 5.69, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 5.56, color = "grey", size = 0.3) + # Horizontal line at 5.56
+    geom_hline(yintercept = 5.82, color = "grey", size = 0.3) + # Horizontal line at 5.82
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 8), breaks = seq(0, 8, by = 2)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "Cu [mg kg-1]") +
+    scale_colour_identity()
+  
+  # Display the plot
+  print(NIST1515_Cu)
+ 
+
+  
+  
+  #NIST 1573a Cu
+  
+  dt1_NIST1573a <- subset(dt1_2, Sample_ID=="NIST1573a")
+
+  
+  NIST1573a_Cu <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Cu)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) + # Color for boxplots
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Color for jitter points
+    geom_hline(yintercept = 4.7, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 4.84, color = "grey", size = 0.3) + # 
+    geom_hline(yintercept = 4.56, color = "grey", size = 0.3) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 8), breaks = seq(0, 8, by = 2)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "Cu [mg kg-1]") +
+    scale_colour_identity()
+  
+  
+  
+  #NIST 1568b Cu
+  dt1_NIST1568b <- subset(dt1_2, Sample_ID=="NIST1568b")
+
+  
+  NIST1568b_Cu <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Cu)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) + # No dodging for boxplots
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 2.35, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 2.51, color = "grey", size = 0.3) + # 
+    geom_hline(yintercept = 2.19, color = "grey", size = 0.3) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 4.8), breaks = seq(0, 4.8, by = 0.8)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "Cu [mg kg-1]") +
+    scale_colour_identity()
+  
+  
+  
+  #NIST 1570a Cu
+  dt1_NIST1570a <- subset(dt1_2, Sample_ID=="NIST1570")
+  
+  NIST1570a_Cu <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Cu)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) +
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 12.22, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 13.08, color = "grey", size = 0.3) + # 
+    geom_hline(yintercept = 11.36, color = "grey", size = 0.3) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(5, 16), breaks = seq(5, 16, by = 2)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "Cu [mg kg-1]")+
+    scale_colour_identity()
+  
+  
+  #NIST 1575a Cu
+  dt1_NIST1575a <- subset(dt1_2, Sample_ID=="NIST1575a")
+  
+  NIST1575a_Cu <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Cu)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) +
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 2.8, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 3.0, color = "grey", size = 0.3) + # 
+    geom_hline(yintercept = 2.6, color = "grey", size = 0.3) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 4), breaks = seq(0, 4, by = 0.8)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "Cu [mg kg-1]")+
+    scale_colour_identity()
+  
+  
+  #NIST 1575a Cu
+  dt1_NIST1547 <- subset(dt1_2, Sample_ID=="NIST1547")
+
+  
+  NIST1547_Cu <- ggplot(dt1_NIST1547, aes(x = Total_Weight, y = Cu)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) +
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + 
+    geom_hline(yintercept = 3.75, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 4.12, color = "grey", size = 0.3) + # 
+    geom_hline(yintercept = 3.38, color = "grey", size = 0.3) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 5), breaks = seq(0, 5, by = 1)) +
+    labs(title = "Pine Needles NIST 1547",
+         x = "Total Weight",
+         y = "Cu [mg kg-1]")+
+    scale_colour_identity()
+  
+  
+  nistsCu <- ggarrange(NIST1515_Cu,NIST1573a_Cu,NIST1568b_Cu,NIST1570a_Cu,NIST1575a_Cu, NIST1547_Cu, 
+                     ncol = 1, nrow = 6, 
+                     common.legend = TRUE, legend = "bottom")
+  
+  
+  
+  ggsave(filename = "nists-new-Cu.pdf", plot = nistsCu, width = 3.5, height = 11, units = "in")
+  
+  
+  
+  ###########################################
+  ###############   Zn   ####################
+  ########################################
+  
+  
+  
+  dt1_NIST1515 <- subset(dt1_2, Sample_ID=="NIST1515")
+  
+  # Plot the data
+  NIST1515_Zn <- ggplot(dt1_NIST1515, aes(x = Total_Weight, y = Zn)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) + # Color for boxplots
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Color for jitter points
+    geom_hline(yintercept = 12.45, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 12.88, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 12.02, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(5, 15), breaks = seq(5, 15, by = 1)) +
+    labs(title = "Apple Leaves NIST 1515",
+         x = "Total Weight",
+         y = "Zn [mg kg-1]") +
+    scale_colour_identity()
+  
+  # Display the plot
+  print(NIST1515_Zn)
+  
+  
+  
+  
+  #NIST 1573a Zn
+  
+  dt1_NIST1573a <- subset(dt1_2, Sample_ID=="NIST1573a")
+  
+  
+  NIST1573a_Zn <- ggplot(dt1_NIST1573a, aes(x = Total_Weight, y = Zn)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) + # Color for boxplots
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Color for jitter points
+    geom_hline(yintercept = 30.94, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 31.49, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 30.39, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(20, 35), breaks = seq(20, 35, by = 1)) +
+    labs(title = "Tomato Leaves NIST 1573a",
+         x = "Total Weight",
+         y = "Zn [mg kg-1]") +
+    scale_colour_identity()
+  
+  
+  
+  #NIST 1568b Zn
+  dt1_NIST1568b <- subset(dt1_2, Sample_ID=="NIST1568b")
+  
+  
+  NIST1568b_Zn <- ggplot(dt1_NIST1568b, aes(x = Total_Weight, y = Zn)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) + # No dodging for boxplots
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 19.42, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 19.68, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 19.16, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(0, 25), breaks = seq(0, 25, by = 2.5)) +
+    labs(title = "Rice Flour NIST 1568b",
+         x = "Total Weight",
+         y = "Zn [mg kg-1]") +
+    scale_colour_identity()
+  
+  
+  
+  #NIST 1570a Zn
+  dt1_NIST1570a <- subset(dt1_2, Sample_ID=="NIST1570")
+  
+  NIST1570a_Zn <- ggplot(dt1_NIST1570a, aes(x = Total_Weight, y = Zn)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) +
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 82.3, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 86.2, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 78.4, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(60, 100), breaks = seq(60, 100, by = 5)) +
+    labs(title = "Spinach leaves NIST 1570",
+         x = "Total Weight",
+         y = "Zn [mg kg-1]")+
+    scale_colour_identity()
+  
+  
+  #NIST 1575a Zn
+  dt1_NIST1575a <- subset(dt1_2, Sample_ID=="NIST1575a")
+  
+  NIST1575a_Zn <- ggplot(dt1_NIST1575a, aes(x = Total_Weight, y = Zn)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) +
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + # Jitter points with specified shape
+    geom_hline(yintercept = 38, color = "darkgrey", size = 1) + # Horizontal line at 5.69
+    geom_hline(yintercept = 40, color = "grey", size = 0.5) + # 
+    geom_hline(yintercept = 36, color = "grey", size = 0.5) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(20, 45), breaks = seq(20, 45, by = 5)) +
+    labs(title = "Pine Needles NIST 1575a",
+         x = "Total Weight",
+         y = "Zn [mg kg-1]")+
+    scale_colour_identity()
+  
+  
+  #NIST 1547a Zn
+  dt1_NIST1547 <- subset(dt1_2, Sample_ID=="NIST1547")
+  
+  
+  NIST1547_Zn <- ggplot(dt1_NIST1547, aes(x = Total_Weight, y = Zn)) +
+    geom_boxplot(aes(colour = genecolour), position = pos) +
+    geom_jitter(aes(colour = genecolour), position = pos, size = 2, alpha = 0.5, shape = 16) + 
+    geom_hline(yintercept = 17.97, color = "darkgrey", size = 0.6) + # Horizontal line at 5.69
+    geom_hline(yintercept = 18.5, color = "grey", size = 0.3) + # 
+    geom_hline(yintercept = 17.44, color = "grey", size = 0.3) + #
+    theme_classic() +
+    scale_y_continuous(limits = c(13, 23), breaks = seq(13, 23, by = 2.5)) +
+    labs(title = "Pine Needles NIST 1547",
+         x = "Total Weight",
+         y = "Zn [mg kg-1]")+
+    scale_colour_identity()
+  
+  
+  nistsZn <- ggarrange(NIST1515_Zn,NIST1573a_Zn,NIST1568b_Zn,NIST1570a_Zn,NIST1575a_Zn, NIST1547_Zn, 
+                       ncol = 1, nrow = 6, 
+                       common.legend = TRUE, legend = "bottom")
+  
+  
+  
+  ggsave(filename = "nists-new-Zn.pdf", plot = nistsZn, width = 3.5, height = 11, units = "in")
+  
+  
+  
+  
+  
+}
