@@ -940,6 +940,9 @@ dt <- dt %>%
   )
 
 
+
+
+
 # Function to calculate summary statistics and reshape the data
 calculate_summary <- function(data, element) {
   element_ICP <- paste0(element, "_ICP")
@@ -1034,6 +1037,9 @@ dt <- dt %>%
     P_diff = abs(P_ICP - P_PXRF),
     Cr_diff = abs(Cr_ICP - Cr_PXRF)
   )
+
+
+
 
 # Function to calculate summary statistics and reshape the data
 calculate_summary <- function(data, element) {
