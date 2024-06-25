@@ -781,7 +781,7 @@ plot_variable <- function(dt, variable_name) {
 variable_names <- c(
   "TEC", "pH", "OM", "ENR", "S_ext", "P_ext", "Ca_ext", "K_ext", 
   "Fe_ext", "Mn_ext", "Cu_ext", "Zn_ext", "Mg_ext", "Soluble_Salts", 
-  "NO3.N", "NH4.N", "Cu", "Se", "Re", "Zn", "Fe", "Na_ext", "Al"
+  "NO3.N", "NH4.N", "Cu", "Se", "Re", "Zn", "Fe", "Mn", "Na_ext", "Al"
 )
 
 # Assuming 'dt_long' is your long-format dataset prepared earlier
@@ -830,8 +830,46 @@ cldResults <- cldList(comparison = PTD$Comparison,
 
 print(cldResults)
 
-
-
+#Mn
+{
+  
+  library(dunn.test)
+  library(multcompView)
+  
+  # Assuming your data frame is named dt and has the variables Mn, Plot, and Layer
+  layers <- unique(dt$Layer)
+  results_list <- list()
+  
+  for (layer in layers) {
+    dt_subset <- subset(dt, Layer == layer)
+    PT <- dunnTest(Mn ~ Plot, data = dt_subset, method = "bh")
+    PTD <- PT$res
+    cldResults <- cldList(comparison = PTD$Comparison,
+                          p.value = PTD$P.adj,
+                          threshold = 0.05)
+    
+    # Store results in a list
+    results_list[[layer]] <- list(
+      dunnTest = PT,
+      cldResults = cldResults
+    )
+    
+    # Print the results for each layer
+    cat("\nResults for Layer:", layer, "\n")
+    print(PT)
+    print(cldResults)
+  }
+  
+  # Combine cldResults into a single data frame for easier viewing
+  combined_cldResults <- do.call(rbind, lapply(names(results_list), function(layer) {
+    df <- results_list[[layer]]$cldResults
+    df$Layer <- layer
+    df
+  }))
+  
+  print(combined_cldResults)
+  
+  }
 
 #Only for Surface
 library(FSA)
@@ -871,7 +909,7 @@ for(variable in variables) {
 }
 
 # Save the combined CLD results to an Excel file
-write.xlsx(all_cld_results, "CLD_Results.xlsx")
+#write.xlsx(all_cld_results, "CLD_Results.xlsx")
 
 
 
@@ -915,7 +953,7 @@ for(variable in variables) {
 }
 
 # Save the combined CLD results to an Excel file
-write.xlsx(all_cld_results, "CLD_Results_All_layers.xlsx")
+#write.xlsx(all_cld_results, "CLD_Results_All_layers.xlsx")
 
 
 

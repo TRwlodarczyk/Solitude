@@ -1106,7 +1106,7 @@ final_df <- final_df %>%
 print(final_df)
 
 # Save the result to an Excel file
-write.xlsx(final_df, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/1_CESM_Report_2024/Revision/CESM_ICP-PXRF2.xlsx")
+#write.xlsx(final_df, "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/1_CESM_Report_2024/Revision/CESM_ICP-PXRF2.xlsx")
 
 
 
@@ -1116,8 +1116,8 @@ dt <- read.delim("Solitude_CESM_Report24.txt")
 dt <- dt[dt$ICP != "n", ] 
 
 Cu <- ggplot(data=dt, aes(x = Cu_PXRF, y = Cu_ICP)) +
-  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#92D050", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Cu_PXRF, y = Cu_ICP), method = "lm", se = FALSE, color = "#92D050", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Cu (pXRF)", y = "Cu (ICP-MS)") +
   scale_y_continuous(limits = c(0, 750), breaks = seq(0, 750, by = 150)) +
@@ -1142,8 +1142,8 @@ Cu
 
 
 Se <- ggplot(data=dt, aes(x = Se_PXRF, y = Se_ICP)) +
-  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#92D050", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Se_PXRF, y = Se_ICP), method = "lm", se = FALSE, color = "#92D050", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Se (pXRF)", y = "Se (ICP-MS)") +
   scale_y_continuous(limits = c(0, 80), breaks = seq(0, 80, by = 20)) +
@@ -1169,8 +1169,8 @@ Se
 
 
 Zn <- ggplot(data=dt, aes(x = Zn_PXRF, y = Zn_ICP)) +
-  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Zn_PXRF, y = Zn_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#92D050", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Zn_PXRF, y = Zn_ICP), method = "lm", se = FALSE, color = "#92D050", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Zn (pXRF)", y = "Zn (ICP-MS)") +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20)) +
@@ -1195,8 +1195,8 @@ Zn
 
 
 Re <- ggplot(data=dt, aes(x = Re_PXRF, y = Re_ICP)) +
-  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#92D050", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Re_PXRF, y = Re_ICP), method = "lm", se = FALSE, color = "#92D050", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Re (pXRF)", y = "Re (ICP-MS)") +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 25)) +
@@ -1222,8 +1222,8 @@ Re
 
 
 Fe <- ggplot(data=dt, aes(x = Fe_PXRF, y = Fe_ICP)) +
-  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Fe_PXRF, y = Fe_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#92D050", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Fe_PXRF, y = Fe_ICP), method = "lm", se = FALSE, color = "#92D050", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Fe (pXRF)", y = "Fe (ICP-MS)") +
   scale_y_continuous(limits = c(0, 4000), breaks = seq(0, 4000, by = 1000)) +
@@ -1249,8 +1249,8 @@ Fe
 
 
 Mn <- ggplot(data=dt, aes(x = Mn_PXRF, y = Mn_ICP)) +
-  geom_point(data=dt, color = "#4793AF", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Mn_PXRF, y = Mn_ICP), method = "lm", se = FALSE, color = "#4793AF", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#92D050", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Mn_PXRF, y = Mn_ICP), method = "lm", se = FALSE, color = "#92D050", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Mn (pXRF)", y = "Mn (ICP-MS)") +
   scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 50)) +
@@ -1275,13 +1275,13 @@ Mn
 
 
 P <- ggplot(data=dt, aes(x = P_PXRF, y = P_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = P_PXRF, y = P_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = P_PXRF, y = P_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "P (pXRF)", y = "P (ICP-MS)") +
   scale_y_continuous(limits = c(0, 17000), breaks = seq(0, 16000, by = 8000)) +
   scale_x_continuous(limits = c(0, 17000), breaks = seq(0, 16000, by = 8000)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme_classic() +
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1301,13 +1301,13 @@ P
 
 
 S <- ggplot(data=dt, aes(x = S_PXRF, y = S_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = S_PXRF, y = S_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = S_PXRF, y = S_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "S (pXRF)", y = "S (ICP-MS)") +
   scale_y_continuous(limits = c(0, 45000), breaks = seq(0, 45000, by = 20000)) +
   scale_x_continuous(limits = c(0, 45000), breaks = seq(0, 45000, by = 20000)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme_classic() + 
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1327,13 +1327,13 @@ S
 
 
 Cr <- ggplot(data=dt, aes(x = Cr_PXRF, y = Cr_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Cr_PXRF, y = Cr_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Cr_PXRF, y = Cr_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Cr (pXRF)", y = "Cr (ICP-MS)") +
   scale_y_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 10)) +
   scale_x_continuous(limits = c(0, 30), breaks = seq(0, 30, by = 10)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme_classic() +
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1353,13 +1353,13 @@ Cr
 
 
 Ti <- ggplot(data=dt, aes(x = Ti_PXRF, y = Ti_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Ti_PXRF, y = Ti_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Ti_PXRF, y = Ti_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Ti (pXRF)", y = "Ti (ICP-MS)") +
  scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 50)) +
   scale_x_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 50)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme_classic() + 
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1373,18 +1373,17 @@ Ti <- ggplot(data=dt, aes(x = Ti_PXRF, y = Ti_ICP)) +
         legend.text = element_text(size = 8),
         legend.title = element_text(size = 16, face = "bold"),
         legend.position = "top")
-
 Ti
 
 
 As <- ggplot(data=dt, aes(x = As_PXRF, y = As_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = As_PXRF, y = As_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = As_PXRF, y = As_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "As (pXRF)", y = "As (ICP-MS)") +
-  scale_y_continuous(limits = c(0, 12), breaks = seq(0, 12, by = 2)) +
-  scale_x_continuous(limits = c(0, 12), breaks = seq(0, 12, by = 2)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  scale_y_continuous(limits = c(0, 12), breaks = seq(0, 12, by = 4)) +
+  scale_x_continuous(limits = c(0, 12), breaks = seq(0, 12, by = 4)) +
+  theme_classic() +
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1405,13 +1404,13 @@ As
 
 
 Cd <- ggplot(data=dt, aes(x = Cd_PXRF, y = Cd_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Cd_PXRF, y = Cd_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Cd_PXRF, y = Cd_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Cd (pXRF)", y = "Cd (ICP-MS)") +
   scale_y_continuous(limits = c(0, 25), breaks = seq(0, 25, by = 5)) +
   scale_x_continuous(limits = c(0, 25), breaks = seq(0, 25, by = 5)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme_classic() +
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1430,13 +1429,13 @@ Cd
 
 
 Ni <- ggplot(data=dt, aes(x = Ni_PXRF, y = Ni_ICP)) +
-  geom_point(data=dt, color = "darkred", size=2.5, stroke=0.7, shape=1) +
-  geom_smooth(data=dt, aes(x = Ni_PXRF, y = Ni_ICP), method = "lm", se = FALSE, color = "darkred", linetype = "solid", size=0.65) +   # Regression line for the first model
+  geom_point(data=dt, color = "#ED7D31", size=2.5, stroke=0.7, shape=1) +
+  geom_smooth(data=dt, aes(x = Ni_PXRF, y = Ni_ICP), method = "lm", se = FALSE, color = "#ED7D31", linetype = "solid", size=0.65) +   # Regression line for the first model
   geom_abline(intercept = 0, slope = 1, color = "darkgrey",linetype = "dashed", linewidth=0.65) +
   labs(x = "Ni (pXRF)", y = "Ni (ICP-MS)") +
   scale_y_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 2)) +
 scale_x_continuous(limits = c(0, 6), breaks = seq(0, 6, by = 2)) +
-  theme_classic() +  # Using theme_classic as theme_classic2 is not part of base ggplot2
+  theme_classic() + 
   theme(panel.grid.major = element_blank(), # Removing major grid lines
         panel.grid.minor = element_blank(), # Removing minor grid lines
         panel.border = element_rect(colour = "black", fill=NA, linewidth=0.5), # Adding border around the plot using updated argument
@@ -1461,22 +1460,22 @@ fig1 <- ggarrange(Cu,Se,Re,Zn,Mn,Fe,
           common.legend = FALSE, legend = "bottom")
 
 
-fig2 <- ggarrange(As, Cd, Ni, Ti, S, P, Cr,
-          ncol = 3, nrow = 3, 
+fig2 <- ggarrange(As, Cd, Ti, S, P, Cr,
+          ncol = 3, nrow = 2, 
           common.legend = FALSE, legend = "bottom")
 
-ggsave(filename = "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/1_CESM_Report_2024/Revision/Corr_good.png", 
+ggsave(filename = "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/1_CESM_Report_2024/Revision/Corr_good_v3.pdf", 
        plot = fig1, 
        width = 12, 
-       height = 7.5, 
+       height = 6.5, 
        units = "in", 
        dpi = 300)
 
 
-ggsave(filename = "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/1_CESM_Report_2024/Revision/Corr_bad.png", 
+ggsave(filename = "C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/CESM/1_CESM_Report_2024/Revision/Corr_bad_v3.pdf", 
        plot = fig2, 
        width = 12, 
-       height = 11.5, 
+       height = 6.5, 
        units = "in", 
        dpi = 300)
 
@@ -1561,7 +1560,9 @@ calculate_soil_parameters_summary <- function(data) {
       mean_Na_ext = mean(Na_ext, na.rm = TRUE),
       sd_Na_ext = sd(Na_ext, na.rm = TRUE),
       mean_Al = mean(Al_ext, na.rm = TRUE),
-      sd_Al = sd(Al_ext, na.rm = TRUE)
+      sd_Al = sd(Al_ext, na.rm = TRUE),
+      mean_Mn = mean(Mn, na.rm = TRUE),
+      sd_Mn= sd(Mn, na.rm = TRUE)
     ) %>%
     ungroup() 
 
@@ -1586,6 +1587,6 @@ soil_parameters_summary_df2 <- soil_parameters_summary_df %>%
 
 
 # Save the result to an Excel file
-write.xlsx(soil_parameters_summary_df2, "Table-Soil222323333.xlsx")
+write.xlsx(soil_parameters_summary_df2, "Table-Soil_with_Mn.xlsx")
 
 
