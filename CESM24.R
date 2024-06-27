@@ -1507,6 +1507,8 @@ dt <-read.delim("SLT_Soil_Brookside.txt")
 
 dt$Zn_ext <- as.numeric(dt$Zn_ext)
 
+#dt <- subset(dt, S_ext < 200)
+  
 library(dplyr)
 library(openxlsx)
 
@@ -1587,6 +1589,6 @@ soil_parameters_summary_df2 <- soil_parameters_summary_df %>%
 
 
 # Save the result to an Excel file
-write.xlsx(soil_parameters_summary_df2, "Table-Soil_with_Mn.xlsx")
+#write.xlsx(soil_parameters_summary_df2, "Table-Soil_with_Mn_Se_ext.xlsx")
 
 

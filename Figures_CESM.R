@@ -750,6 +750,7 @@ dt[,8:64] <- sapply(dt[,8:64],as.numeric)
 
 dt[,"Sample.ID"] <- sapply(dt[,"Sample.ID"],as.character)
 
+#dt <- subset(dt, S_ext < 200)
 
 dt_long <- dt %>%
   pivot_longer(cols = c(TEC, pH, OM, ENR, S_ext, P_ext, Ca_ext, K_ext, Fe_ext, Mn_ext, Cu_ext, Zn_ext, Mg_ext, Soluble_Salts, `NO3.N`, `NH4.N`, Na_ext, Cu, Se, Re, Zn, Fe, Mn, Al),
@@ -801,7 +802,7 @@ if(length(plots) > 0) {
   cat("No valid plots to display.")
 }
 
-#SAVE PDF 10X13 PORTRAIT
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@SAVE PDF 10X13 PORTRAIT
 
 
 
@@ -831,7 +832,7 @@ cldResults <- cldList(comparison = PTD$Comparison,
 print(cldResults)
 
 #Mn
-{
+
   
   library(dunn.test)
   library(multcompView)
@@ -859,6 +860,38 @@ print(cldResults)
     print(PT)
     print(cldResults)
   }
+  
+  
+  #S-ext
+  {
+    
+    library(dunn.test)
+    library(multcompView)
+    
+    # Assuming your data frame is named dt and has the variables Mn, Plot, and Layer
+    layers <- unique(dt$Layer)
+    results_list <- list()
+    
+    for (layer in layers) {
+      dt_subset <- subset(dt, Layer == layer)
+      PT <- dunnTest(S_ext ~ Plot, data = dt_subset, method = "bh")
+      PTD <- PT$res
+      cldResults <- cldList(comparison = PTD$Comparison,
+                            p.value = PTD$P.adj,
+                            threshold = 0.05)
+      
+      # Store results in a list
+      results_list[[layer]] <- list(
+        dunnTest = PT,
+        cldResults = cldResults
+      )
+      
+      # Print the results for each layer
+      cat("\nResults for Layer:", layer, "\n")
+      print(PT)
+      print(cldResults)
+    }
+  
   
   # Combine cldResults into a single data frame for easier viewing
   combined_cldResults <- do.call(rbind, lapply(names(results_list), function(layer) {
