@@ -217,3 +217,56 @@ write.xlsx(total_weight_summary_df, "Table-TW-Form.xlsx")
   
   write.xlsx(summary_df, "NIST_summary_df.xlsx")
 }
+
+
+
+# Soil table
+
+{
+  
+  setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/Tables")
+  dt <-read.delim("SLT_Soil_Brookside.txt")
+  
+  dt1 <- dt %>%
+    filter(Layer=="S"&
+             Plot!="Nat")
+  
+  # Function to calculate summary statistics for Total_Weight
+  calculate_total_weight_summary <- function(data) {
+    summary_df <- data %>%
+      group_by(Plot) %>%
+      summarize(
+        mean_Cu = mean(Cu, na.rm = TRUE),
+        sd_cu = sd(Cu, na.rm = TRUE),
+        mean_zn = mean(Zn, na.rm = TRUE),
+        sd_zn = sd(Zn, na.rm = TRUE),
+        mean_mn = mean(Mn, na.rm = TRUE),
+        sd_mn = sd(Mn, na.rm = TRUE),
+        mean_fe = mean(Fe, na.rm = TRUE),
+        sd_fe = sd(Fe, na.rm = TRUE),
+        mean_re = mean(Re, na.rm = TRUE),
+        sd_re = sd(Re, na.rm = TRUE),
+        mean_se = mean(Se, na.rm = TRUE),
+        sd_se = sd(Se, na.rm = TRUE),
+        mean_ph = mean(pH, na.rm = TRUE),
+        sd_ph = sd(pH, na.rm = TRUE)
+
+      ) %>%
+      ungroup()
+    
+    return(summary_df)
+  }
+  
+  # Generate the summary statistics for Total_Weight
+  total_weight_summary_df <- calculate_total_weight_summary(dt1)
+  
+  
+  write.xlsx(total_weight_summary_df, "Table-Soil.xlsx")
+  
+  
+  
+  
+  
+}
+
+
