@@ -2929,3 +2929,142 @@ aggregated_data <- dt %>%
   
   
 }
+
+
+
+
+
+
+#### WYLICZENIE CV DLA PXRF
+
+
+setwd("C:/Users/twlodarczyk/OneDrive - University of Arizona/Desktop/All documents/1 PhD/CNRS + Synch/Field/Soltitude/1_Manuscript_Analysis/NIST-test")
+dt <-read.delim("NIST_FINAL_May24.txt")
+
+dt1 <- dt %>% 
+  filter(Sample != "QA")
+# Remove NDs
+
+{
+  # Replace "ND" with 0 in columns 9 to 32
+  for (i in 9:32) {
+    dt1[, i] <- gsub(".*ND.*", 0, dt1[, i])
+  }
+  
+  # Preserve columns 1 to 9 and 33 to 57
+  dt1_preserved <- dt1[, c(1:8, 33:57)]
+  
+  # Transform to dataframe
+  dt1 <- as.data.frame(dt1)
+  
+  # Change character to numeric in columns 9 to 32
+  dt1[, 9:32] <- sapply(dt1[, 9:32], as.numeric)
+  
+  # Combine preserved columns with modified columns
+  dt1 <- cbind(dt1_preserved, dt1[, 9:32])
+}
+
+
+#apply NA to LODs
+{
+  
+  dt1$Ca[dt1$Ca == 0] <- NA
+  dt1$Ti[dt1$Ti == 0] <- NA
+  dt1$Cr[dt1$Cr == 0] <- NA
+  dt1$Mn[dt1$Mn == 0] <- NA
+  dt1$Fe[dt1$Fe == 0] <- NA
+  dt1$Co[dt1$Co == 0] <- NA
+  dt1$Ni[dt1$Ni == 0] <- NA
+  dt1$Cu[dt1$Cu == 0] <- NA
+  dt1$Zn[dt1$Zn == 0] <- NA
+  dt1$As[dt1$As == 0] <- NA
+  dt1$Se[dt1$Se == 0] <- NA
+  dt1$Cd[dt1$Cd == 0] <- NA
+  dt1$Re[dt1$Re == 0] <- NA
+}
+
+# Function to calculate CV
+calculate_cv <- function(data, element) {
+  
+  summary_df <- data %>%
+    group_by(Sample_ID, Method, Total_Weight, Optimization) %>%
+    summarize(
+      mean_value = mean(.data[[element]], na.rm = TRUE),
+      sd_value = sd(.data[[element]], na.rm = TRUE),
+      cv = sd_value / mean_value * 100
+    ) %>%
+    ungroup() %>%
+    mutate(Element = element) %>%
+    select(Element, Sample_ID, Method, Total_Weight, Optimization, cv)
+  
+  return(summary_df)
+}
+
+# Elements to process
+elements <- c("Cu", "Zn", "Mn", "Se", "P", "Fe", "S", "K")
+
+# Generate the summary statistics for each element
+summary_list <- lapply(elements, function(element) calculate_cv(dt1, element))
+
+# Combine all summaries into one dataframe
+summary_df <- bind_rows(summary_list)
+
+# Display the resulting dataframe
+print(summary_df)
+
+
+
+
+
+glimpse(summary_df)
+
+
+
+
+# Calculate the mean CV values across all Sample_ID
+mean_cv_df <- summary_df %>%
+  group_by(Element, Method, Optimization, Total_Weight) %>%
+  summarize(mean_cv = mean(cv, na.rm = TRUE)) %>%
+  ungroup()
+
+# Display the resulting dataframe
+print(mean_cv_df)
+
+
+
+
+
+
+
+# Calculate the mean CV values across all Sample_ID
+mean_cv_df <- summary_df %>%
+  group_by(Element, Method, Optimization, Total_Weight) %>%
+  summarize(mean_cv = mean(cv, na.rm = TRUE)) %>%
+  ungroup()
+
+# Reshape the dataframe to wide format
+mean_cv_wide_df <- mean_cv_df %>%
+  pivot_wider(names_from = Total_Weight, values_from = mean_cv)
+
+# Display the resulting dataframe
+print(mean_cv_wide_df)
+
+
+
+
+
+# Function to conditionally round values
+conditional_round <- function(x) {
+  if_else(abs(x) >= 10, round(x, 0), round(x, 1))
+}
+
+# Apply the conditional rounding to all numeric columns
+mean_cv_wide_df2 <- mean_cv_wide_df %>%
+  mutate(across(where(is.numeric), conditional_round))
+
+
+
+
+
+write.xlsx(mean_cv_wide_df2, "Table-NIST-CV.xlsx")
+
